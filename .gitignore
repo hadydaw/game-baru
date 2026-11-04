@@ -1,6 +1,7 @@
 .godot/
 build/
 *.keystore
+!debug.keystore
 *.apk
 *.aab
 .import/
