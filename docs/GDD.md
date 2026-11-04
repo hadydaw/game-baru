@@ -82,3 +82,11 @@ Premis: Pemain adalah peneliti keamanan independen. Ia menyusuri jaringan fiktif
 
 ## 10. Langkah berikutnya
 Rancangan detail sistem (struktur data node, format misi JSON, alur perintah terminal, format save) diajukan untuk ditinjau sebelum coding.
+
+## 11. Ketentuan bahasa (wajib)
+1. Bahasa default game adalah Bahasa Indonesia (`id`).
+2. Saat pertama kali dibuka, semua UI, terminal, menu, tutorial, dialog, notifikasi, pesan error, puzzle, dan teks sistem tampil dalam Bahasa Indonesia.
+3. Bahasa Inggris (`en`) tidak dipakai sebagai fallback utama.
+4. Jika terjemahan suatu kunci belum ada untuk bahasa yang dipilih, yang ditampilkan adalah teks Bahasa Indonesia.
+5. Struktur lokalisasi disiapkan agar `en` bisa ditambahkan nanti tanpa mengubah kode.
+6. Pemain dapat mengganti bahasa secara manual di pengaturan. Tahap 1 hanya menyediakan `id`.
