@@ -98,3 +98,6 @@ Sistem perintah karangan (pindai, hubungkan, ambil, buka) digantikan dengan term
 
 ## 13. Tools, ekonomi, dan reputasi (lihat docs/tools-dan-ekonomi.md)
 Pemain memperoleh tool lewat grup fiktif, Black Market fiktif, atau misi. Ada inventaris, tingkat tool, uang virtual (kredit), reputasi grup, dan sistem unlock. Tool memiliki fungsi nyata di gameplay simulator. Menunggu persetujuan.
+
+## 14. Rancangan final
+Terminal, filesystem, dan permission: docs/final-terminal-filesystem.md. Tools, ekonomi, grup, Black Market: docs/final-tools-ekonomi-grup.md. Menunggu persetujuan.

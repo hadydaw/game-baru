@@ -80,3 +80,6 @@ Bagian 3 (misi), 4 (terminal), dan 6 (bukti) di atas digantikan oleh docs/termin
 
 ## 12. Tools dan ekonomi (menunggu persetujuan)
 Rancangan lengkap di docs/tools-dan-ekonomi.md: core/tools, core/economy, core/unlock, dan penambahan perintah dari tool ke command_registry. Tidak ada coding sampai disetujui.
+
+## 13. Rancangan final
+Lihat docs/final-terminal-filesystem.md dan docs/final-tools-ekonomi-grup.md. Dokumen lama (terminal-linux.md, tools-dan-ekonomi.md) digantikan keduanya.
