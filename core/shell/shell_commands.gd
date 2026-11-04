@@ -65,10 +65,17 @@ static func _ls(s: ShellSession, p: Dictionary) -> Array:
         var isi: Dictionary = node.get("isi", {})
         var nama_list := isi.keys()
         nama_list.sort()
+        var nama_tampil: Array = []
         for nama in nama_list:
             if String(nama).begins_with(".") and not tampil_semua:
                 continue
-            hasil.append(_baris_entri(s, String(nama), isi[nama], rinci))
+            if rinci:
+                hasil.append(_baris_entri(s, String(nama), isi[nama], true))
+            else:
+                nama_tampil.append(String(nama))
+        # Tanpa -l, nama ditampilkan dalam satu baris seperti ls di terminal biasa.
+        if not rinci and not nama_tampil.is_empty():
+            hasil.append(s.baris("info", "  ".join(PackedStringArray(nama_tampil))))
     return hasil
 
 static func _baris_entri(s: ShellSession, nama: String, node: Dictionary, rinci: bool) -> Dictionary:
@@ -114,8 +121,10 @@ static func _cat(s: ShellSession, p: Dictionary) -> Array:
         elif not Permissions.boleh(node, ShellSession.USER, ShellSession.GRUP, "r"):
             hasil.append(s.galat("cat", "%s: %s" % [t, Teks.t("err.izin")]))
         else:
-            for baris_teks in isi_berkas(node).split("\n"):
-                hasil.append(s.baris("info", baris_teks))
+            var isi_teks := isi_berkas(node)
+            if not isi_teks.is_empty():
+                for baris_teks in isi_teks.split("\n"):
+                    hasil.append(s.baris("info", baris_teks))
     return hasil
 
 # Membuat node baru di bawah HOME saja. Mengembalikan pesan galat, atau "" bila berhasil.
