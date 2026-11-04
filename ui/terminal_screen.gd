@@ -74,11 +74,21 @@ func _ready() -> void:
 
     kolom.add_child(_buat_baris_tombol())
 
-    _sesi = ShellSession.new(Vfs.new(_baca_fs()))
+    _sesi = _buat_sesi()
     _riwayat_idx = 0
     _perbarui_prompt()
+    if _sesi == null:
+        return
     _tampil([{"tipe": "info", "teks": "Terminal siap. Ketik \"help\" untuk daftar perintah."}])
     _tampil(_sesi.jalankan("pwd"))
+
+# Membuat sesi shell. Bila gagal, galat ditampilkan di layar agar tidak diam-diam.
+func _buat_sesi() -> ShellSession:
+    var sesi := ShellSession.new(Vfs.new(_baca_fs()))
+    if sesi == null:
+        push_error("TerminalScreen: ShellSession gagal dibuat")
+        _tampil([{"tipe": "error", "teks": "Sesi shell gagal dibuat. Lihat log Godot untuk detail."}])
+    return sesi
 
 func _muat_font() -> Font:
     if ResourceLoader.exists(FONT_PATH):
@@ -172,6 +182,9 @@ func _tekan_tombol(t: String) -> void:
 func _kirim(teks: String) -> void:
     var t := teks.strip_edges()
     _masukan.clear()
+    if _sesi == null:
+        _tampil([{"tipe": "error", "teks": "Sesi shell belum siap, perintah tidak dijalankan."}])
+        return
     if t.is_empty():
         _tampil_perintah("")
         return
@@ -185,6 +198,8 @@ func _batalkan() -> void:
     _masukan.clear()
 
 func _riwayat(arah: int) -> void:
+    if _sesi == null:
+        return
     var r: Array = _sesi.riwayat
     if r.is_empty():
         return
@@ -208,11 +223,14 @@ func _lengkapi() -> void:
         _tampil([{"tipe": "info", "teks": " ".join(PackedStringArray(cocok))}])
 
 func _perbarui_prompt() -> void:
+    if _sesi == null:
+        _label_prompt.text = "$"
+        return
     _label_prompt.text = _sesi.prompt()
 
 # Baris perintah yang sudah dikirim, dengan prompt berwarna seperti terminal Linux.
 func _tampil_perintah(teks: String) -> void:
-    var p := _sesi.prompt()
+    var p := _sesi.prompt() if _sesi != null else "operator@jtn:~$"
     var i := p.find(":")
     var user := p.substr(0, i)
     var jalur := p.substr(i + 1, p.length() - i - 2)
