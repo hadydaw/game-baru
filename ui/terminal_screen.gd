@@ -1,10 +1,11 @@
 class_name TerminalScreen
 extends Control
 
-# Layar terminal tahap 1. Hanya menampilkan keluaran dan menerima masukan.
+# Layar terminal. Hanya menampilkan keluaran dan menerima masukan.
 # Logika shell ada di core/shell.
 
 const WARNA := {"info": "#c9d1d9", "error": "#ff7b72", "clear": "#c9d1d9"}
+const FS_PATH := "res://data/fs/pemain.json"
 
 var _sesi: ShellSession
 var _keluaran: RichTextLabel
@@ -12,6 +13,10 @@ var _masukan: LineEdit
 var _label_prompt: Label
 
 func _ready() -> void:
+    _bangun_ui()
+    _muat_sesi()
+
+func _bangun_ui() -> void:
     set_anchors_preset(Control.PRESET_FULL_RECT)
     var latar := ColorRect.new()
     latar.color = Color("0d1117")
@@ -27,6 +32,7 @@ func _ready() -> void:
     kolom.add_child(_keluaran)
     var baris := HBoxContainer.new()
     _label_prompt = Label.new()
+    _label_prompt.add_theme_color_override("font_color", Color("#7ee787"))
     baris.add_child(_label_prompt)
     _masukan = LineEdit.new()
     _masukan.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -34,16 +40,28 @@ func _ready() -> void:
     _masukan.text_submitted.connect(_kirim)
     baris.add_child(_masukan)
     kolom.add_child(baris)
-    var fs := Vfs.new(_baca_fs())
-    _sesi = ShellSession.new(fs)
+
+func _muat_sesi() -> void:
+    var data := _baca_fs()
+    _sesi = ShellSession.new(Vfs.new(data))
     _perbarui_prompt()
+    _tampil([{"tipe": "info", "teks": "Terminal siap."}])
     _tampil(_sesi.jalankan("pwd"))
     _tampil([{"tipe": "info", "teks": "Ketik \"help\" untuk daftar perintah."}])
 
+# File JSON membungkus root di bawah kunci "/". Vfs membutuhkan node root langsung.
 func _baca_fs() -> Dictionary:
-    var isi := FileAccess.get_file_as_string("res://data/fs/pemain.json")
-    var data = JSON.parse_string(isi)
-    return data if typeof(data) == TYPE_DICTIONARY else {}
+    if not FileAccess.file_exists(FS_PATH):
+        _tampil([{"tipe": "error", "teks": "Berkas filesystem tidak ditemukan: %s" % FS_PATH}])
+        return _fs_cadangan()
+    var data = JSON.parse_string(FileAccess.get_file_as_string(FS_PATH))
+    if typeof(data) != TYPE_DICTIONARY or not data.has("/"):
+        _tampil([{"tipe": "error", "teks": "Format filesystem tidak valid."}])
+        return _fs_cadangan()
+    return data["/"]
+
+func _fs_cadangan() -> Dictionary:
+    return {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}
 
 func _kirim(teks: String) -> void:
     var t := teks.strip_edges()
