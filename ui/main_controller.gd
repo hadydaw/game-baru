@@ -11,6 +11,10 @@ const BANNER_PASAR := "res://assets/banner/banner_pasar.png"
 var _desktop: DesktopView
 
 func _ready() -> void:
+    # Ukuran root harus sudah pasti sebelum anak-anaknya dibuat. Jika tidak, anak
+    # memakai ukuran nol dan semua layar tampil kecil di pojok kiri atas.
+    position = Vector2.ZERO
+    size = get_viewport_rect().size
     set_anchors_preset(Control.PRESET_FULL_RECT)
     _tampilkan_splash()
 
@@ -83,11 +87,12 @@ func _konten_pasar() -> Control:
     return kolom
 
 func _konten_segera_hadir(nama: String) -> Control:
-    var tengah := CenterContainer.new()
-    tengah.set_anchors_preset(Control.PRESET_FULL_RECT)
+    # Label langsung dengan anchor penuh (bukan di dalam CenterContainer), supaya
+    # lebarnya mengikuti layar dan tidak menyempit menjadi satu huruf per baris.
     var teks := Label.new()
+    teks.set_anchors_preset(Control.PRESET_FULL_RECT)
     teks.text = "%s akan tersedia pada tahap berikutnya." % nama
     teks.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    teks.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
     teks.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    tengah.add_child(teks)
-    return tengah
+    return teks
