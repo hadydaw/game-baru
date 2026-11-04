@@ -9,7 +9,7 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
     match nama:
         "pwd": return [s.baris("info", s.cwd)]
         "whoami": return [s.baris("info", ShellSession.USER)]
-        "echo": return [s.baris("info", " ".join(PackedStringArray(p["argumen"])))]
+        "echo": return [s.baris("info", PackedStringArray(p["argumen"]).join(" "))]
         "clear": return [s.baris("clear", "")]
         "history": return _history(s)
         "help": return _help()
