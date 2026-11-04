@@ -62,3 +62,13 @@ Folder: `autoload/` (Game, Locale), `core/` (node_model, mission_state, evidence
 3. Petunjuk tanpa penalti.
 4. Penambahan GUT sekarang atau nanti.
 5. Format nama `misi_01` dan kunci `misi01.*`.
+
+## 10. Keputusan final (disetujui)
+- Puzzle: 6 simbol (A–F), 4 slot, simbol boleh berulang.
+- Tidak ada penguncian waktu. Setelah 6 percobaan habis, pola langsung diulang.
+- Petunjuk tanpa penalti, tersedia setelah 3 kegagalan, dan hanya jika berkas sumbernya sudah dibaca.
+- Framework tes GUT disetujui. Addon ditambahkan ke `addons/gut` saat tersedia.
+- Nama file `misi_01.json` dan kunci `misi01.*` disetujui.
+- Tema misi bersifat fiktif: lembaga, kota, dan tokoh berupa karangan, tidak merujuk instansi atau pejabat nyata.
+- Bahasa default `id`. Tidak ada fallback `en`.
+- Keputusan teknis tambahan: layout tahap 1 dikelola di `ui/main.gd` (tidak ada `layout_controller` terpisah). Save memakai daftar `bukti` berisi id berkas, `dibaca` untuk berkas yang sudah dibaca, dan `node` per id berisi `status` dan `berkas_diambil`.
