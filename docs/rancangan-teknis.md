@@ -76,3 +76,7 @@ Folder: `autoload/` (Game, Locale), `core/` (node_model, mission_state, evidence
 
 ## 11. Revisi (menunggu persetujuan)
 Bagian 3 (misi), 4 (terminal), dan 6 (bukti) di atas digantikan oleh docs/terminal-linux.md. Struktur core menjadi shell/, fs/, dan net/. Tidak ada coding sampai revisi disetujui.
+
+
+## 12. Tools dan ekonomi (menunggu persetujuan)
+Rancangan lengkap di docs/tools-dan-ekonomi.md: core/tools, core/economy, core/unlock, dan penambahan perintah dari tool ke command_registry. Tidak ada coding sampai disetujui.

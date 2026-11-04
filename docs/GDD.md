@@ -94,3 +94,7 @@ Rancangan detail sistem (struktur data node, format misi JSON, alur perintah ter
 
 ## 12. Revisi terminal (lihat docs/terminal-linux.md)
 Sistem perintah karangan (pindai, hubungkan, ambil, buka) digantikan dengan terminal bergaya Linux simulasi. Detail, daftar perintah, dan struktur filesystem ada di docs/terminal-linux.md. Menunggu persetujuan.
+
+
+## 13. Tools, ekonomi, dan reputasi (lihat docs/tools-dan-ekonomi.md)
+Pemain memperoleh tool lewat grup fiktif, Black Market fiktif, atau misi. Ada inventaris, tingkat tool, uang virtual (kredit), reputasi grup, dan sistem unlock. Tool memiliki fungsi nyata di gameplay simulator. Menunggu persetujuan.
