@@ -1,0 +1,20 @@
+{
+  "/": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {
+    "home": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {
+      "operator": {"tipe": "dir", "pemilik": "operator", "grup": "operator", "izin": "rwxr-x---", "isi": {
+        ".catatan": {"tipe": "file", "pemilik": "operator", "grup": "operator", "izin": "rw-r-----", "isi": "Catatan pribadi: arsip kota belum dicek sejak Juli. Jangan lupa tanya Mira soal log transfer.", "ukuran": 98},
+        "dokumen": {"tipe": "dir", "pemilik": "operator", "grup": "operator", "izin": "rwxr-x---", "isi": {
+          "jadwal.txt": {"tipe": "file", "pemilik": "operator", "grup": "operator", "izin": "rw-r-----", "isi": "Senin: kunjungan kantor arsip\nRabu: rapat dengan kontak\nJumat: tutup laporan", "ukuran": 64}
+        }}
+      }}
+    }},
+    "var": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {
+      "log": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {
+        "sistem.log": {"tipe": "file", "pemilik": "root", "grup": "root", "izin": "rw-r--r--", "isi": "Jul 12 sistem dimulai\nJul 13 transfer selesai\nJul 14 akses tidak dikenal", "ukuran": 72}
+      }}
+    }},
+    "etc": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {
+      "rahasia": {"tipe": "file", "pemilik": "root", "grup": "root", "izin": "rw-------", "isi": "Kunci tidak tersedia.", "ukuran": 20}
+    }}
+  }}
+}
