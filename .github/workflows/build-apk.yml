@@ -1,0 +1,85 @@
+name: Build APK (Godot 4.6.3)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: "4.6.3"
+  GODOT_RELEASE: "4.6.3-stable"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pasang JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Pasang Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Unduh Godot headless dan export templates
+        run: |
+          set -e
+          mkdir -p "$HOME/godot" && cd "$HOME/godot"
+          B="https://github.com/godotengine/godot-builds/releases/download/${GODOT_RELEASE}"
+          curl -fL -o godot.zip "$B/Godot_v${GODOT_RELEASE}_linux.x86_64.zip"
+          curl -fL -o templates.tpz "$B/Godot_v${GODOT_RELEASE}_export_templates.tpz"
+          unzip -q godot.zip && mv Godot_v${GODOT_RELEASE}_linux.x86_64 godot-bin
+          chmod +x godot-bin
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          unzip -q templates.tpz -d tpl
+          mv tpl/templates/* "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
+          echo "GODOT_BIN=$HOME/godot/godot-bin" >> "$GITHUB_ENV"
+
+      - name: Atur path SDK dan JDK untuk Godot
+        run: |
+          SDK="$ANDROID_HOME"
+          JDK="$JAVA_HOME"
+          mkdir -p "$HOME/.config/godot"
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$SDK"
+          export/android/java_sdk_path = "$JDK"
+          export/android/debug_keystore = ""
+          EOF
+
+      - name: Kunci debug untuk APK uji
+        run: |
+          keytool -genkeypair -v -keystore debug.keystore -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+            -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          mv debug.keystore .
+
+      - name: Atur nomor versi dari nomor run
+        run: |
+          sed -i "s/^version\/code=.*/version\/code=${GITHUB_RUN_NUMBER}/" export_presets.cfg
+
+      - name: Import proyek dan export APK
+        run: |
+          mkdir -p build
+          "$GODOT_BIN" --headless --import || true
+          "$GODOT_BIN" --headless --export-debug "Android" build/game-baru-debug.apk
+
+      - name: Cek APK dibuat
+        run: |
+          test -s build/game-baru-debug.apk
+          ls -lh build/game-baru-debug.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game-baru-debug-apk
+          path: build/game-baru-debug.apk
+          retention-days: 14
