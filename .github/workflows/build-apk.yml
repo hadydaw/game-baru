@@ -31,18 +31,34 @@ jobs:
           echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
           ls "$SDK" && ls "$SDK/build-tools" || true
 
-      - name: Unduh Godot headless dan export templates
+      - name: Cache Godot dan export templates
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_RELEASE }}-linux-v1
+
+      - name: Unduh Godot headless dan export templates (jika belum ada di cache)
         run: |
           set -e
-          mkdir -p "$HOME/godot" && cd "$HOME/godot"
           B="https://github.com/godotengine/godot-builds/releases/download/${GODOT_RELEASE}"
-          curl -fL -o godot.zip "$B/Godot_v${GODOT_RELEASE}_linux.x86_64.zip"
-          curl -fL -o templates.tpz "$B/Godot_v${GODOT_RELEASE}_export_templates.tpz"
-          unzip -q godot.zip && mv Godot_v${GODOT_RELEASE}_linux.x86_64 godot-bin
-          chmod +x godot-bin
-          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
-          unzip -q templates.tpz -d tpl
-          mv tpl/templates/* "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
+          if [ ! -x "$HOME/godot/godot-bin" ]; then
+            mkdir -p "$HOME/godot"
+            cd "$HOME/godot"
+            curl -fL -o godot.zip "$B/Godot_v${GODOT_RELEASE}_linux.x86_64.zip"
+            unzip -q godot.zip && mv Godot_v${GODOT_RELEASE}_linux.x86_64 godot-bin
+            rm -f godot.zip
+            chmod +x godot-bin
+          fi
+          TPL="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          if [ ! -d "$TPL" ]; then
+            mkdir -p "$TPL"
+            cd "$RUNNER_TEMP"
+            curl -fL -o templates.tpz "$B/Godot_v${GODOT_RELEASE}_export_templates.tpz"
+            unzip -q templates.tpz -d tpl
+            mv tpl/templates/* "$TPL/"
+          fi
           echo "GODOT_BIN=$HOME/godot/godot-bin" >> "$GITHUB_ENV"
 
       - name: Atur path SDK dan JDK untuk Godot
