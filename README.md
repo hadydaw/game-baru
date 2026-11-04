@@ -13,5 +13,5 @@ Tahap 1: persiapan proyek dan pipeline APK uji. Belum ada gameplay, karakter, pe
 Catatan: APK ini ditandatangani kunci debug, hanya untuk uji. Belum ada GitHub Release.
 
 ## Yang belum diverifikasi
-- Build pertama belum dijalankan. Nama paket `com.example.gamebaru` masih placeholder.
+- Build pertama belum dijalankan. Nama paket `com.dawang.gamebaru` masih placeholder.
 - Export template dan SDK di runner perlu dicek pada run pertama.
