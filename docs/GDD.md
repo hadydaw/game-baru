@@ -90,3 +90,7 @@ Rancangan detail sistem (struktur data node, format misi JSON, alur perintah ter
 4. Jika terjemahan suatu kunci belum ada untuk bahasa yang dipilih, yang ditampilkan adalah teks Bahasa Indonesia.
 5. Struktur lokalisasi disiapkan agar `en` bisa ditambahkan nanti tanpa mengubah kode.
 6. Pemain dapat mengganti bahasa secara manual di pengaturan. Tahap 1 hanya menyediakan `id`.
+
+
+## 12. Revisi terminal (lihat docs/terminal-linux.md)
+Sistem perintah karangan (pindai, hubungkan, ambil, buka) digantikan dengan terminal bergaya Linux simulasi. Detail, daftar perintah, dan struktur filesystem ada di docs/terminal-linux.md. Menunggu persetujuan.

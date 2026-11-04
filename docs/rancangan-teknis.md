@@ -72,3 +72,7 @@ Folder: `autoload/` (Game, Locale), `core/` (node_model, mission_state, evidence
 - Tema misi bersifat fiktif: lembaga, kota, dan tokoh berupa karangan, tidak merujuk instansi atau pejabat nyata.
 - Bahasa default `id`. Tidak ada fallback `en`.
 - Keputusan teknis tambahan: layout tahap 1 dikelola di `ui/main.gd` (tidak ada `layout_controller` terpisah). Save memakai daftar `bukti` berisi id berkas, `dibaca` untuk berkas yang sudah dibaca, dan `node` per id berisi `status` dan `berkas_diambil`.
+
+
+## 11. Revisi (menunggu persetujuan)
+Bagian 3 (misi), 4 (terminal), dan 6 (bukti) di atas digantikan oleh docs/terminal-linux.md. Struktur core menjadi shell/, fs/, dan net/. Tidak ada coding sampai revisi disetujui.
