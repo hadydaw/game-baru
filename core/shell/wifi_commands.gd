@@ -27,8 +27,6 @@ static func scan(s: ShellSession, p: Dictionary) -> Array:
 	hasil.append(s.baris("info", Bahasa.dua("%d jaringan ditemukan. Gunakan 'network inspect <SSID>' untuk detail.", "%d networks found. Use 'network inspect <SSID>' for details.", [ssids.size()])))
 	_catat(s, "wifi-scanner --scan: %d networks [%s]" % [ssids.size(), ", ".join(PackedStringArray(ssids))])
 	s.jaringan.buka("wifi:scan")
-	# Hasil scan langsung tampil di Network Manager, seperti aplikasi jaringan sungguhan.
-	s.permintaan_aplikasi = "netmgr"
 	return hasil
 
 static func network(s: ShellSession, p: Dictionary) -> Array:

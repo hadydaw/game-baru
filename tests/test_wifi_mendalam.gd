@@ -28,10 +28,10 @@ func test_scan_menampilkan_tabel_dan_batang_sinyal() -> void:
 	assert_true(t.contains("[####]"), "sinyal -48 dBm penuh")
 	assert_true(t.contains("[#---]"), "sinyal -71 dBm lemah")
 
-func test_scan_meminta_network_manager_terbuka() -> void:
+func test_scan_tidak_membuka_network_manager() -> void:
 	var s := _sesi_terpasang()
 	s.jalankan("wifi-scanner --scan")
-	assert_eq(s.permintaan_aplikasi, "netmgr", "scan meminta jendela Network Manager")
+	assert_eq(s.permintaan_aplikasi, "", "scan hanya menampilkan hasil di Terminal")
 
 func test_monitor_mode_hanya_untuk_chipset_yang_mendukung() -> void:
 	assert_true(WifiLab.mendukung_monitor("ar9271"))
