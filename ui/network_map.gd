@@ -26,6 +26,7 @@ var _lbl_status: Label
 var _lbl_akses: Label
 var _lbl_port: Label
 var _lbl_tetangga: Label
+var _lbl_identitas: Array = []  # Label: operator, perangkat, status
 
 func _ready() -> void:
     mouse_filter = Control.MOUSE_FILTER_STOP
@@ -35,6 +36,7 @@ func _ready() -> void:
     _bangun_panel()
     resized.connect(_susun)
     _susun()
+    _segarkan_identitas()
     _segarkan_detail()
 
 func _bangun_legenda() -> void:
@@ -69,6 +71,16 @@ func _bangun_panel() -> void:
     tumpuk.mouse_filter = Control.MOUSE_FILTER_IGNORE
     margin.add_child(tumpuk)
     _lbl_hint = Tema.label("Ketuk node untuk melihat detail.", Tema.TEKS_REDUP, 22)
+    # Identitas pemain: nama dari sesi (sama dengan nama Login), perangkat, dan status koneksi lokal.
+    var identitas := HFlowContainer.new()
+    identitas.add_theme_constant_override("h_separation", 18)
+    identitas.add_theme_constant_override("v_separation", 4)
+    identitas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    tumpuk.add_child(identitas)
+    for teks in ["Operator: -", "Perangkat: JTN", "Status: Lokal"]:
+        var l := Tema.label(teks, Tema.TEAL if _lbl_identitas.is_empty() else Tema.TEKS, 20)
+        _lbl_identitas.append(l)
+        identitas.add_child(l)
     tumpuk.add_child(_lbl_hint)
     _kolom_detail = VBoxContainer.new()
     _kolom_detail.add_theme_constant_override("separation", 4)
@@ -84,6 +96,20 @@ func _bangun_panel() -> void:
     _lbl_tetangga.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     for l in [_lbl_nama, _lbl_ip, _lbl_status, _lbl_akses, _lbl_port, _lbl_tetangga]:
         _kolom_detail.add_child(l)
+
+func _segarkan_identitas() -> void:
+    if _lbl_identitas.size() < 3:
+        return
+    (_lbl_identitas[0] as Label).text = "Operator: %s" % _sesi.user
+    (_lbl_identitas[1] as Label).text = "Perangkat: JTN"
+    (_lbl_identitas[2] as Label).text = "Status: Lokal"
+
+# Teks identitas gabungan, untuk tes dan pengecekan layout.
+func teks_identitas() -> String:
+    var hasil: Array = []
+    for l in _lbl_identitas:
+        hasil.append((l as Label).text)
+    return " | ".join(PackedStringArray(hasil))
 
 func _susun() -> void:
     _panel.position = Vector2(0, size.y - TINGGI_PANEL)
