@@ -103,7 +103,10 @@ static func petunjuk_ditemukan(s: ShellSession, m: Dictionary) -> Array:
 # Tahap misi dituntun lewat Email: email tahap n+1 datang saat tahap n selesai.
 static func _cek_tahap(s: ShellSession, m: Dictionary) -> bool:
 	var id := String(m["id"])
-	var sudah: Array = Array(s.misi_tahap.get(id, []))
+	# Nomor tahap dibaca sebagai bilangan bulat: JSON memuatnya sebagai float (1.0), yang tidak sama dengan 1.
+	var sudah: Array = []
+	for x in s.misi_tahap.get(id, []):
+		sudah.append(int(x))
 	var baru := false
 	var daftar: Array = m.get("tahap", [])
 	for i in range(daftar.size()):
