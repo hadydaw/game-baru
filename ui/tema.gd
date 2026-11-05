@@ -9,6 +9,20 @@ const TEKS_REDUP := Color("#8fa8a4")
 const LATAR_PANEL := Color(0.04, 0.06, 0.08, 0.72)
 const LATAR_HEADER := Color(0.03, 0.05, 0.07, 0.96)
 
+# Titik merah notifikasi di pojok kanan atas sebuah tombol ikon.
+static func titik_notif(induk: Control) -> Panel:
+    var t := Panel.new()
+    t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    t.add_theme_stylebox_override("panel", kotak(Color(0.9, 0.12, 0.12), Color(0.35, 0.02, 0.02), 2, 11))
+    t.anchor_left = 1.0
+    t.anchor_right = 1.0
+    t.offset_left = -28
+    t.offset_right = -6
+    t.offset_top = 6
+    t.offset_bottom = 28
+    induk.add_child(t)
+    return t
+
 static func kotak(bg: Color, batas: Color, lebar: int, radius: int) -> StyleBoxFlat:
     var s := StyleBoxFlat.new()
     s.bg_color = bg

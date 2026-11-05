@@ -42,3 +42,18 @@ func test_email_misi_muncul_di_kotak_masuk() -> void:
 	assert_eq(Email.jumlah_belum_dibaca(s) >= 1, true)
 	Email.tandai_dibaca(s, "misi:0")
 	assert_true(Email.sudah_dibaca(s, "misi:0"))
+
+func _ada_subjek(s: ShellSession, teks: String) -> bool:
+	for p in s.pesan_misi:
+		if String(p["subjek"]).contains(teks):
+			return true
+	return false
+
+func test_email_tahap_datang_berurutan() -> void:
+	var s := _sesi()
+	assert_true(_ada_subjek(s, "Tahap 1"), "tahap 1 datang saat misi diterima")
+	assert_false(_ada_subjek(s, "Tahap 2"), "tahap 2 belum datang sebelum tahap 1 selesai")
+	s.jalankan("help")
+	s.jalankan("device list")
+	assert_true(_ada_subjek(s, "Tahap 2"), "tahap 2 datang setelah tahap 1 selesai")
+	assert_false(_ada_subjek(s, "Tahap 3"), "tahap 3 belum datang")

@@ -80,6 +80,8 @@ func _tombol_aplikasi(id: String, status: Dictionary) -> Control:
     t.tooltip_text = DesktopView.nama_aplikasi(id)
     t.pressed.connect(func(): aplikasi_diketuk.emit(id))
     kolom.add_child(t)
+    if id == "email" and Email.ada_belum_dibaca_utama():
+        Tema.titik_notif(t)
 
     var terbuka := not status.is_empty()
     var aktif := terbuka and bool(status.get("aktif", false))

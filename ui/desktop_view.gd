@@ -179,7 +179,16 @@ func hubungkan_jendela(m: ManajerJendela) -> void:
     m.daftar_berubah.connect(_segarkan_hotbar)
     _segarkan_hotbar()
 
+# Titik merah ikon Email: tampil selama ada email masuk yang belum dibaca.
+func _segarkan_titik_email() -> void:
+    for s in _sel:
+        var tombol: Button = s["tombol"]
+        if is_instance_valid(tombol) and tombol.has_meta("titik_email"):
+            var titik: Panel = tombol.get_meta("titik_email")
+            titik.visible = Email.ada_belum_dibaca_utama()
+
 func _segarkan_hotbar() -> void:
+    _segarkan_titik_email()
     if is_instance_valid(_hotbar):
         _hotbar.segarkan(_jendela.daftar() if is_instance_valid(_jendela) else [])
 
@@ -195,6 +204,7 @@ func _ketuk_aplikasi(id: String) -> void:
         buka_aplikasi.emit(id)
 
 func _perbarui_jam() -> void:
+    _segarkan_titik_email()
     if is_instance_valid(_panel):
         _panel.segarkan()
 
@@ -221,6 +231,8 @@ func _buat_sel_ikon(a: Dictionary) -> Button:
     var id: String = a["id"]
     tombol.set_meta("id", id)
     tombol.set_meta("ikon_tekstur", gambar.texture)
+    if id == "email":
+        tombol.set_meta("titik_email", Tema.titik_notif(tombol))
     tombol.gui_input.connect(_saat_input_sel.bind(tombol))
     tombol.pressed.connect(_ketuk_sel.bind(id))
     _sel.append({"tombol": tombol, "gambar": gambar, "label": label})

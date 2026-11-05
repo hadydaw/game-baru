@@ -41,6 +41,11 @@ static func daftar(s: ShellSession, status_cari: String) -> Array:
 			hasil.append(p)
 	return hasil
 
+# Dipakai ikon aplikasi untuk titik merah: ada email masuk yang belum dibaca di sesi utama.
+static func ada_belum_dibaca_utama() -> bool:
+	var s := SesiUtama.sesi
+	return s != null and jumlah_belum_dibaca(s) > 0
+
 static func jumlah_belum_dibaca(s: ShellSession) -> int:
 	var n := 0
 	for p in daftar(s, "masuk"):

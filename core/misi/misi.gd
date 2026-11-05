@@ -71,6 +71,7 @@ static func terima(s: ShellSession, id: String) -> bool:
 		return false
 	s.misi[id] = "aktif"
 	_kirim(s, id, String(m["pengirim"]), _pesan_masuk_lengkap(m))
+	_kirim_tahap(s, m, 1)
 	perbarui(s)
 	return true
 
@@ -99,7 +100,7 @@ static func petunjuk_ditemukan(s: ShellSession, m: Dictionary) -> Array:
 			hasil.append(ganti_ip(s, String(p["teks"])))
 	return hasil
 
-# Tahap misi: setiap tahap yang semua tujuannya terpenuhi memberi umpan balik sekali (pesan dari pengirim).
+# Tahap misi dituntun lewat Email: email tahap n+1 datang saat tahap n selesai.
 static func _cek_tahap(s: ShellSession, m: Dictionary) -> bool:
 	var id := String(m["id"])
 	var sudah: Array = Array(s.misi_tahap.get(id, []))
@@ -111,10 +112,17 @@ static func _cek_tahap(s: ShellSession, m: Dictionary) -> bool:
 			continue
 		sudah.append(n)
 		s.misi_tahap[id] = sudah
-		var t: Dictionary = daftar[i]
-		_kirim(s, id, String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": String(t["pesan"]) + _rincian_tahap(m, n)})
+		_kirim_tahap(s, m, n + 1)
 		baru = true
 	return baru
+
+# Email untuk tahap n: instruksi tahap itu beserta daftar tujuannya.
+static func _kirim_tahap(s: ShellSession, m: Dictionary, n: int) -> void:
+	var daftar: Array = m.get("tahap", [])
+	if n < 1 or n > daftar.size():
+		return
+	var t: Dictionary = daftar[n - 1]
+	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": String(t["pesan"]) + _rincian_tahap(m, n)})
 
 static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
 	var ada := false
