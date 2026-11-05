@@ -1,0 +1,45 @@
+{
+  "penjual": {
+    "a": {
+      "nama": "Penjual A — Umum",
+      "deskripsi": "Tool tingkat dasar, stok banyak.",
+      "syarat_grup": "kolektif_senja",
+      "syarat_rep": 0,
+      "item": [
+        {"id": "a1", "tool": "packet_inspector", "tingkat": 1, "stok": 5, "kelangkaan": "umum"},
+        {"id": "a2", "tool": "signal_tracer", "tingkat": 1, "stok": 5, "kelangkaan": "umum"},
+        {"id": "a3", "tool": "firewall_bypass", "tingkat": 1, "stok": 3, "kelangkaan": "umum"}
+      ]
+    },
+    "b": {
+      "nama": "Penjual B — Spesialis Berkas",
+      "deskripsi": "Dekoder dan analisis hash, stok terbatas.",
+      "syarat_grup": "kolektif_senja",
+      "syarat_rep": 0,
+      "item": [
+        {"id": "b1", "tool": "crypt_decoder", "tingkat": 1, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"},
+        {"id": "b2", "tool": "password_analyzer", "tingkat": 1, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"}
+      ]
+    },
+    "c": {
+      "nama": "Penjual C — Jaringan",
+      "deskripsi": "Pelacakan dan inspeksi lalu lintas. Butuh reputasi 50.",
+      "syarat_grup": "kolektif_senja",
+      "syarat_rep": 50,
+      "item": [
+        {"id": "c1", "tool": "signal_tracer", "tingkat": 2, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"},
+        {"id": "c2", "tool": "packet_inspector", "tingkat": 2, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"}
+      ]
+    },
+    "d": {
+      "nama": "Penjual D — Elite",
+      "deskripsi": "Tool tingkat 3, stok sangat terbatas. Butuh reputasi 75.",
+      "syarat_grup": "kolektif_senja",
+      "syarat_rep": 75,
+      "item": [
+        {"id": "d1", "tool": "crypt_decoder", "tingkat": 3, "stok": 1, "kelangkaan": "sangat_langka"},
+        {"id": "d2", "tool": "firewall_bypass", "tingkat": 3, "stok": 1, "kelangkaan": "sangat_langka"}
+      ]
+    }
+  }
+}

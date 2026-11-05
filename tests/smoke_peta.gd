@@ -12,6 +12,7 @@ func _cek(kondisi: bool, pesan: String) -> void:
 		_gagal += 1
 
 func _initialize() -> void:
+	Penyimpanan.berkas_aktif = "user://uji_sesi_smoke_peta.json"
 	await process_frame
 	# Sesi baru agar hasil tidak dipengaruhi penyimpanan dari run sebelumnya.
 	SesiUtama.sesi = ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}))

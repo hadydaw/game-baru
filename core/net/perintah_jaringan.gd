@@ -119,6 +119,7 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     jauh.economy = s.economy
     jauh.reputation = s.reputation
     jauh.inventory = s.inventory
+    jauh.market = s.market
     jauh.cwd = ShellSession.HOME
     jauh.fs.akar = j.fs_node[id]
     s.ssh_aktif = jauh

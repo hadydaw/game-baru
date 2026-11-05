@@ -5,6 +5,7 @@ extends SceneTree
 # Dijalankan headless di CI. Keluar dengan kode 1 bila ada yang gagal.
 
 func _initialize() -> void:
+    Penyimpanan.berkas_aktif = "user://uji_sesi_smoke_terminal.json"
     var layar: Control = TerminalScreen.new()
     root.add_child(layar)
     await process_frame

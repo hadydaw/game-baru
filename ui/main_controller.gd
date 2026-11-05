@@ -7,7 +7,6 @@ extends Control
 
 const LATAR := Color("0d1117")
 const LOGO := "res://assets/logo/logo_jtn.png"
-const BANNER_PASAR := "res://assets/banner/banner_pasar.png"
 
 var _desktop: DesktopView
 var _frame: AppFrame
@@ -106,25 +105,9 @@ func _buat_konten(id: String) -> Control:
         "peta":
             return NetworkMap.new()
         "pasar":
-            return _konten_pasar()
+            return PasarScreen.new()
         _:
             return _konten_segera_hadir(DesktopView.nama_aplikasi(id))
-
-func _konten_pasar() -> Control:
-    var kolom := VBoxContainer.new()
-    kolom.add_theme_constant_override("separation", 12)
-    var banner := TextureRect.new()
-    banner.texture = load(BANNER_PASAR) as Texture2D
-    banner.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-    banner.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-    banner.custom_minimum_size = Vector2(0, 220)
-    banner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    kolom.add_child(banner)
-    var teks := Tema.label("Black Market akan tersedia pada tahap berikutnya.", Tema.TEKS, 24)
-    teks.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    teks.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    kolom.add_child(teks)
-    return kolom
 
 func _konten_segera_hadir(nama: String) -> Control:
     var teks := Tema.label("%s akan tersedia pada tahap berikutnya." % nama, Tema.TEKS, 24)

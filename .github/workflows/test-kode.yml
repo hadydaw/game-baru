@@ -74,3 +74,14 @@ jobs:
             exit 1
           fi
           exit $code
+
+      - name: Jalankan smoke test layar Pasar
+        run: |
+          "$GODOT_BIN" --headless -s tests/smoke_pasar.gd > pasar.log 2>&1
+          code=$?
+          cat pasar.log
+          if grep -q "SCRIPT ERROR\|Parse Error" pasar.log; then
+            echo "Ada error skrip di smoke test pasar"
+            exit 1
+          fi
+          exit $code

@@ -49,6 +49,7 @@ const MAN := {
     "exit": "exit: keluar dari sesi SSH dan kembali ke terminal lokal.",
     "decode": "decode <berkas>: buka berkas terenkripsi. Membutuhkan Crypt Decoder.",
     "analyze": "analyze <berkas>: periksa jenis hash dan salt pada berkas. Membutuhkan Password Analyzer.",
+    "bm": "bm [penjual | info <id> | beli <id>]: lihat penjual Black Market, katalog, detail item, atau membeli tool.",
     "wallet": "wallet: tampilkan saldo kredit dan reputasi per grup.",
     "tools": "tools: tampilkan tool yang dimiliki, tingkat, dan sumbernya.",
     "inspeksi": "inspeksi <host>: baca log transfer node yang sudah dipindai nmap. Membutuhkan Packet Inspector.",

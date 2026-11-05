@@ -3,6 +3,7 @@ extends GutTest
 const AREA := Rect2(0, 64, 1080, 1200)
 
 func before_each() -> void:
+	Penyimpanan.berkas_aktif = "user://uji_sesi_peta.json"
 	# Sesi baru untuk setiap tes agar tidak bergantung pada penyimpanan dan tes lain.
 	SesiUtama.sesi = ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}))
 

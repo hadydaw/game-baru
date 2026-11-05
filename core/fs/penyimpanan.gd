@@ -9,8 +9,13 @@ extends RefCounted
 const VERSI := 1
 const BERKAS := "user://filesystem.json"
 
+# Jalur berkas yang dipakai bila pemanggil tidak memberi jalur. Tes mengganti ini agar tidak menimpa save asli.
+static var berkas_aktif: String = BERKAS
+
 # Hasil muat: {status, data, pesan}. status: "baru", "ok", "pulih_cadangan", atau "rusak".
-static func muat(path: String = BERKAS) -> Dictionary:
+static func muat(path: String = "") -> Dictionary:
+    if path == "":
+        path = berkas_aktif
     var bak := path + ".bak"
     if not FileAccess.file_exists(path) and not FileAccess.file_exists(bak):
         return {"status": "baru", "data": {}, "pesan": ""}
@@ -27,10 +32,12 @@ static func muat(path: String = BERKAS) -> Dictionary:
     return {"status": "rusak", "data": {}, "pesan": simpan_rusak}
 
 # Menyimpan isi sesi. Mengembalikan true bila penulisan dan verifikasi berhasil.
-static func simpan_sesi(sesi: ShellSession, path: String = BERKAS) -> bool:
+static func simpan_sesi(sesi: ShellSession, path: String = "") -> bool:
     return simpan(sesi.to_dict(), path)
 
-static func simpan(data: Dictionary, path: String = BERKAS) -> bool:
+static func simpan(data: Dictionary, path: String = "") -> bool:
+    if path == "":
+        path = berkas_aktif
     var isi := data.duplicate()
     isi["versi"] = VERSI
     var tmp := path + ".tmp"

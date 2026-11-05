@@ -17,6 +17,8 @@ func _fs_uji() -> Dictionary:
 	}
 
 func before_each() -> void:
+	# Simpan ke berkas uji agar save asli pemain tidak tertimpa.
+	Penyimpanan.berkas_aktif = "user://uji_sesi_terminal.json"
 	TerminalScreen._sesi_bersama = null
 	TerminalScreen._buffer_bersama = ""
 	TerminalScreen._scroll_bersama = 0.0

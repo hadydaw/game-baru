@@ -21,6 +21,7 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "trace": return ToolCommands.trace(s, p)
         "decode": return AnalisisCommands.decode(s, p)
         "analyze": return AnalisisCommands.analyze(s, p)
+        "bm": return PasarCommands.jalankan(s, p)
         "man": return _man(s, p)
         "ls": return _ls(s, p)
         "cd": return _cd(s, p)

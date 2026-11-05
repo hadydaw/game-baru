@@ -28,6 +28,13 @@ func miliki(id: String, dari: String, tingkat_awal: int = 1) -> bool:
 	milik[id] = {"tingkat": clampi(tingkat_awal, 1, ToolDefs.maks(id)), "sumber": dari}
 	return true
 
+# Mengatur tingkat tool yang sudah dimiliki. Hanya naik, dan tidak melewati batas maksimal.
+func setel_tingkat(id: String, t: int) -> bool:
+	if not punya(id) or t <= tingkat(id) or t > ToolDefs.maks(id):
+		return false
+	milik[id]["tingkat"] = t
+	return true
+
 func naikkan(id: String) -> bool:
 	if not punya(id) or tingkat(id) >= ToolDefs.maks(id):
 		return false
