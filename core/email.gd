@@ -9,10 +9,22 @@ const PESAN := [
 	{"id": "mira", "dari": "email.mira.dari", "judul": "email.mira.judul", "isi": "email.mira.isi"},
 ]
 
-static func cari(id: String) -> Dictionary:
+# Pesan misi ikut masuk ke kotak E-Mail. Id-nya "misi:<indeks>" mengacu ke sesi.pesan_misi.
+static func pesan_misi(s: ShellSession) -> Array:
+	var hasil: Array = []
+	for i in range(s.pesan_misi.size()):
+		var p: Dictionary = s.pesan_misi[i]
+		hasil.append({"id": "misi:%d" % i, "dari": String(p.get("dari", "")), "judul": String(p.get("subjek", "")), "isi": String(p.get("isi", "")), "mentah": true})
+	return hasil
+
+static func cari(id: String, s: ShellSession = null) -> Dictionary:
 	for p in PESAN:
 		if String(p["id"]) == id:
 			return p
+	if s != null:
+		for p in pesan_misi(s):
+			if String(p["id"]) == id:
+				return p
 	return {}
 
 # Status tersimpan per pesan; pesan yang belum punya catatan dianggap masuk dan belum dibaca.
@@ -24,7 +36,7 @@ static func sudah_dibaca(s: ShellSession, id: String) -> bool:
 
 static func daftar(s: ShellSession, status_cari: String) -> Array:
 	var hasil: Array = []
-	for p in PESAN:
+	for p in PESAN + pesan_misi(s):
 		if status(s, String(p["id"])) == status_cari:
 			hasil.append(p)
 	return hasil

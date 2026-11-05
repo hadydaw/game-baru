@@ -10,14 +10,12 @@ extends Control
 
 const LATAR_KARTU := Color(0.04, 0.07, 0.09, 1.0)
 const LATAR_BARIS := Color(0.05, 0.1, 0.12, 1.0)
-const IKON_PESAN := "res://assets/ikon/aplikasi/app_email.png"
 
 var _sesi: ShellSession
 var _terpilih := ""              # kunci kategori yang disorot di kisi
 var _tampil_daftar := ""         # kunci kategori yang daftarnya tampil; "" = kisi kategori
 var _misi_terpilih := ""         # id misi yang sedang disorot di daftar
 var _rincian := false            # panel Deskripsi menampilkan detail lengkap
-var _pesan_idx := -1             # indeks pesan di sesi.pesan_misi yang sedang dibaca; -1 = tidak ada
 var _judul: Label
 var _kisi_wrap: VBoxContainer
 var _grid: GridContainer
@@ -25,8 +23,6 @@ var _tombol_kategori: Dictionary = {}
 var _daftar_wrap: VBoxContainer
 var _kolom_misi: VBoxContainer
 var _isi_deskripsi: VBoxContainer
-var _pesan_wrap: VBoxContainer
-var _isi_pesan: VBoxContainer
 var _hint: Label
 var _bawah: HBoxContainer
 
@@ -98,29 +94,6 @@ func _ready() -> void:
 	_isi_deskripsi.add_theme_constant_override("separation", 14)
 	pad_deskripsi.add_child(_isi_deskripsi)
 
-	# Pembaca pesan: kepala pengirim dan judul, lalu isi pesan yang bisa digulir.
-	_pesan_wrap = VBoxContainer.new()
-	_pesan_wrap.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_pesan_wrap.add_theme_constant_override("separation", 14)
-	_pesan_wrap.visible = false
-	root.add_child(_pesan_wrap)
-	var gulir_pesan := ScrollContainer.new()
-	gulir_pesan.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	gulir_pesan.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	var kartu_pesan := PanelContainer.new()
-	kartu_pesan.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	kartu_pesan.add_theme_stylebox_override("panel", Tema.kotak(LATAR_KARTU, Tema.TEAL, 2, 14))
-	_pesan_wrap.add_child(kartu_pesan)
-	kartu_pesan.add_child(gulir_pesan)
-	var pad_pesan := MarginContainer.new()
-	pad_pesan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	Tema.margin_seragam(pad_pesan, 18)
-	gulir_pesan.add_child(pad_pesan)
-	_isi_pesan = VBoxContainer.new()
-	_isi_pesan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_isi_pesan.add_theme_constant_override("separation", 16)
-	pad_pesan.add_child(_isi_pesan)
-
 	_hint = Tema.label("", Tema.AMBER, 22)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -134,24 +107,18 @@ func _ready() -> void:
 
 # Semua tampilan dibangun ulang dari data sesi dan bahasa aktif, sehingga selalu sesuai.
 func _segarkan_semua() -> void:
-	if _pesan_idx >= _sesi.pesan_misi.size():
-		_pesan_idx = -1
 	if _tampil_daftar == "":
 		_misi_terpilih = ""
 		_rincian = false
 	_judul.text = Bahasa.t("misi.judul_tersedia") if _tampil_daftar == "" else Bahasa.t(_judul_kategori(_tampil_daftar))
-	_kisi_wrap.visible = _tampil_daftar == "" and _pesan_idx < 0
-	_daftar_wrap.visible = _tampil_daftar != "" and _pesan_idx < 0
-	_pesan_wrap.visible = _pesan_idx >= 0
+	_kisi_wrap.visible = _tampil_daftar == ""
+	_daftar_wrap.visible = _tampil_daftar != ""
 	if _kisi_wrap.visible:
 		_bangun_kisi()
 	if _daftar_wrap.visible:
 		_bangun_daftar()
-	if _pesan_wrap.visible:
-		_bangun_pesan()
 	_bangun_tombol()
-	if _pesan_idx < 0:
-		_hint.text = ""
+	_hint.text = ""
 
 func _judul_kategori(kunci: String) -> String:
 	for k in Misi.KATEGORI:
@@ -261,18 +228,7 @@ func _baris(ikon_path: String, judul: String, keterangan: String, dipilih: bool)
 		kolom.add_child(l_ket)
 	return b
 
-func _pesan_kategori() -> Array:
-	var id_kat := {}
-	for m in Misi.daftar_kategori(_tampil_daftar):
-		id_kat[String(m["id"])] = true
-	var hasil: Array = []
-	for i in range(_sesi.pesan_misi.size()):
-		if id_kat.has(String(_sesi.pesan_misi[i].get("misi", ""))):
-			hasil.append(i)
-	hasil.reverse()
-	return hasil
-
-# Daftar: baris pesan masuk dan misi, lalu panel Deskripsi untuk misi yang disorot.
+# Daftar: baris misi, lalu panel Deskripsi untuk misi yang disorot. Pesan misi ada di aplikasi Email.
 func _bangun_daftar() -> void:
 	for c in _kolom_misi.get_children():
 		c.queue_free()
@@ -283,12 +239,6 @@ func _bangun_daftar() -> void:
 		_kolom_misi.add_child(_teks(Bahasa.t("misi.kategori_kosong"), Tema.TEKS_REDUP, 22))
 		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.tidak_aktif"), Tema.TEKS_REDUP, 22))
 		return
-
-	for i in _pesan_kategori():
-		var p: Dictionary = _sesi.pesan_misi[i]
-		var b := _baris(IKON_PESAN, String(p["subjek"]), Bahasa.t("misi.label_dari") % String(p["dari"]), false)
-		b.pressed.connect(_buka_pesan.bind(i))
-		_kolom_misi.add_child(b)
 
 	var terlihat: Array = []
 	for m in misi_kat:
@@ -362,47 +312,10 @@ func _pilih_misi(id: String) -> void:
 	_rincian = false
 	_segarkan_semua()
 
-func _buka_pesan(idx: int) -> void:
-	_pesan_idx = idx
-	_hint.text = ""
-	_segarkan_semua()
-
-# Pembaca pesan: DARI dan JUDUL di kepala, isi di bawahnya.
-func _bangun_pesan() -> void:
-	for c in _isi_pesan.get_children():
-		c.queue_free()
-	var p: Dictionary = _sesi.pesan_misi[_pesan_idx]
-	var kepala := HBoxContainer.new()
-	kepala.add_theme_constant_override("separation", 18)
-	_isi_pesan.add_child(kepala)
-	var ikon := TextureRect.new()
-	ikon.texture = load(IKON_PESAN) as Texture2D
-	ikon.custom_minimum_size = Vector2(96, 96)
-	ikon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	ikon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	kepala.add_child(ikon)
-	var kolom := VBoxContainer.new()
-	kolom.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	kolom.alignment = BoxContainer.ALIGNMENT_CENTER
-	kepala.add_child(kolom)
-	kolom.add_child(_teks(Bahasa.t("misi.label_dari") % String(p["dari"]), Tema.TEKS, 26))
-	kolom.add_child(_teks(Bahasa.t("misi.label_judul") % String(p["subjek"]), Tema.TEKS, 26))
-	_isi_pesan.add_child(_teks(String(p["isi"]), Tema.TEKS, 24))
-
 # Tombol bawah per tampilan.
 func _bangun_tombol() -> void:
 	for c in _bawah.get_children():
 		c.queue_free()
-	if _pesan_idx >= 0:
-		var kembali := _tombol_bawah(Bahasa.t("misi.tombol_keluar"), Tema.TEKS_REDUP, true)
-		kembali.pressed.connect(func():
-			_pesan_idx = -1
-			_segarkan_semua())
-		_bawah.add_child(kembali)
-		var hapus := _tombol_bawah(Bahasa.t("misi.tombol_hapus"), Tema.AMBER, true)
-		hapus.pressed.connect(_hapus_pesan)
-		_bawah.add_child(hapus)
-		return
 	if _tampil_daftar != "":
 		var keluar := _tombol_bawah(Bahasa.t("misi.tombol_keluar"), Tema.TEKS_REDUP, true)
 		keluar.pressed.connect(func():
@@ -436,23 +349,9 @@ func _bangun_tombol() -> void:
 		_segarkan_semua())
 	_bawah.add_child(pilih)
 
-# MENERIMA membuka pesan dari misi yang disorot. Misi diterima otomatis saat pesannya tiba.
+# MENERIMA: misi sudah diterima otomatis, dan pesannya ada di aplikasi Email.
 func _terima_misi() -> void:
-	for i in range(_sesi.pesan_misi.size()):
-		if String(_sesi.pesan_misi[i].get("misi", "")) == _misi_terpilih:
-			_buka_pesan(i)
-			return
-	_hint.text = Bahasa.t("misi.pesan_belum_ada")
-
-func _hapus_pesan() -> void:
-	if _pesan_idx < 0 or _pesan_idx >= _sesi.pesan_misi.size():
-		_pesan_idx = -1
-		_segarkan_semua()
-		return
-	_sesi.pesan_misi.remove_at(_pesan_idx)
-	_pesan_idx = -1
-	Penyimpanan.simpan_sesi(_sesi)
-	_segarkan_semua()
+	_hint.text = Bahasa.t("misi.pesan_di_email")
 
 func _tombol_bawah(teks: String, warna_batas: Color, aktif: bool) -> Button:
 	var b := Button.new()

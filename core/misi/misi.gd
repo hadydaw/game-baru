@@ -55,7 +55,7 @@ static func perbarui(s: ShellSession) -> void:
 			if not s.misi.has(id):
 				if _semua_ada(s, m.get("syarat_terima", [])):
 					s.misi[id] = "aktif"
-					_kirim(s, id, dari, m["pesan_masuk"])
+					_kirim(s, id, dari, _pesan_masuk_lengkap(m))
 					berubah = true
 			elif String(s.misi[id]) == "aktif" and _tujuan_selesai(s, m):
 				s.misi[id] = "selesai"
@@ -103,7 +103,7 @@ static func _cek_tahap(s: ShellSession, m: Dictionary) -> bool:
 		sudah.append(n)
 		s.misi_tahap[id] = sudah
 		var t: Dictionary = daftar[i]
-		_kirim(s, id, String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": String(t["pesan"])})
+		_kirim(s, id, String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": String(t["pesan"]) + _rincian_tahap(m, n)})
 		baru = true
 	return baru
 
@@ -141,6 +141,29 @@ static func _semua_ada(s: ShellSession, daftar_flag: Array) -> bool:
 		if not s.jaringan.progres.has(String(f)):
 			return false
 	return true
+
+# Email masuk membawa rincian misi lengkap, jadi pemain tidak perlu membuka daftar misi untuk tahu tujuannya.
+static func _pesan_masuk_lengkap(m: Dictionary) -> Dictionary:
+	var p: Dictionary = (m["pesan_masuk"] as Dictionary).duplicate()
+	var hadiah := int(Hadiah.data().get(String(m["id"]), {}).get("kredit", 0))
+	var r := "\n\n"
+	r += Bahasa.dua("Tujuan: ", "Goal: ") + String(m.get("tujuan_ringkas", "")) + "\n"
+	r += Bahasa.dua("Pembayaran: Kr %d", "Payment: Kr %d", [hadiah]) + "\n"
+	r += Bahasa.dua("Persyaratan: ", "Requirements: ") + String(m.get("persyaratan", "-")) + "\n"
+	r += Bahasa.dua("Target: ", "Target: ") + String(m.get("target", "")) + "\n"
+	r += Bahasa.dua("Tahap:", "Stages:")
+	for tahap in m.get("tahap", []):
+		r += "\n- " + String(tahap["judul"])
+	p["isi"] = String(p.get("isi", "")) + r
+	return p
+
+# Email tiap tahap membawa daftar tujuan di tahap itu, sebagai rincian tahap yang baru selesai.
+static func _rincian_tahap(m: Dictionary, n: int) -> String:
+	var r := "\n\n" + Bahasa.dua("Tujuan tahap ini:", "Goals of this stage:")
+	for t in m.get("tujuan", []):
+		if int(t.get("tahap", 0)) == n:
+			r += "\n- " + String(t["teks"])
+	return r
 
 static func _kirim(s: ShellSession, id: String, dari: String, pesan: Dictionary) -> void:
 	s.pesan_misi.append({

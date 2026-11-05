@@ -187,7 +187,7 @@ func _baris(p: Dictionary) -> Control:
 	var judul := Tema.label("", Tema.TEKS, 26)
 	judul.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	isi.add_child(judul)
-	Bahasa.isi(judul, String(p["judul"]))
+	_teks_pesan(judul, p, "judul")
 
 	tombol.pressed.connect(_pilih_pesan.bind(id))
 	return tombol
@@ -197,6 +197,15 @@ func _pasang_pengirim(label: Label, p: Dictionary) -> void:
 	Bahasa.daftar_penyegar(label, func():
 		if is_instance_valid(label):
 			label.text = "%s : %s" % [Bahasa.t("email.dari"), Bahasa.t(String(p["dari"]))])
+
+# Pesan bawaan memakai kunci bahasa; pesan misi sudah dua-bahasa dan disusun ulang saat bahasa berganti.
+func _teks_pesan(label: Label, p: Dictionary, kunci: String) -> void:
+	if bool(p.get("mentah", false)):
+		Bahasa.daftar_penyegar(label, func():
+			if is_instance_valid(label):
+				label.text = Bahasa.pilih(String(p[kunci])))
+	else:
+		Bahasa.isi(label, String(p[kunci]))
 
 func _pilih_pesan(id: String) -> void:
 	_pilih = id
@@ -224,7 +233,7 @@ func _aksi_hapus_daftar() -> void:
 
 # Pembaca: kartu header dengan pengirim dan judul, isi pesan dalam area gulir, lalu tombol aksi.
 func _bangun_pembaca() -> void:
-	var p := Email.cari(_pilih)
+	var p := Email.cari(_pilih, _sesi)
 	if p.is_empty():
 		_pembaca = false
 		_segarkan()
@@ -245,7 +254,7 @@ func _bangun_pembaca() -> void:
 	var judul := Tema.label("", Tema.TEKS, 30)
 	judul.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	kepala.add_child(judul)
-	Bahasa.isi(judul, String(p["judul"]))
+	_teks_pesan(judul, p, "judul")
 
 	var gulir := ScrollContainer.new()
 	gulir.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -261,7 +270,7 @@ func _bangun_pembaca() -> void:
 	isi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	isi.add_theme_constant_override("line_spacing", 10)
 	isi_pad.add_child(isi)
-	Bahasa.isi(isi, String(p["isi"]))
+	_teks_pesan(isi, p, "isi")
 
 	var keluar := _tombol_aksi("email.keluar", Tema.TEKS_REDUP)
 	keluar.pressed.connect(func():
