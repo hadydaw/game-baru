@@ -15,6 +15,17 @@ var riwayat: Array = []
 func _init(p_fs: Vfs) -> void:
     fs = p_fs
 
+# Seluruh keadaan sesi yang perlu disimpan: filesystem, direktori aktif, dan riwayat.
+func to_dict() -> Dictionary:
+    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat}
+
+static func dari_dict(d: Dictionary) -> ShellSession:
+    var s := ShellSession.new(Vfs.new(d.get("fs", {})))
+    var cwd_tersimpan := String(d.get("cwd", HOME))
+    s.cwd = cwd_tersimpan if s.fs.ada(cwd_tersimpan) else HOME
+    s.riwayat = Array(d.get("riwayat", []))
+    return s
+
 func prompt() -> String:
     var tampil := cwd
     if cwd == HOME:

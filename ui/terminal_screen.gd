@@ -87,13 +87,38 @@ static var _sesi_bersama: ShellSession
 func _buat_sesi() -> ShellSession:
     if _sesi_bersama != null:
         return _sesi_bersama
-    var sesi := ShellSession.new(Vfs.new(_baca_fs()))
+    var sesi: ShellSession = null
+    var muat := Penyimpanan.muat()
+    match String(muat["status"]):
+        "ok":
+            sesi = ShellSession.dari_dict(muat["data"])
+        "pulih_cadangan":
+            sesi = ShellSession.dari_dict(muat["data"])
+            _tampil([{"tipe": "error", "teks": "Penyimpanan utama rusak. Data dipulihkan dari cadangan. Berkas rusak disimpan di: %s" % muat["pesan"]}])
+        "rusak":
+            sesi = ShellSession.new(Vfs.new(_baca_fs()))
+            _tampil([{"tipe": "error", "teks": "Penyimpanan rusak dan tidak ada cadangan. Mulai dari filesystem awal. Berkas rusak disimpan di: %s" % muat["pesan"]}])
+        _:
+            sesi = ShellSession.new(Vfs.new(_baca_fs()))
     if sesi == null:
         push_error("TerminalScreen: ShellSession gagal dibuat")
         _tampil([{"tipe": "error", "teks": "Sesi shell gagal dibuat. Lihat log Godot untuk detail."}])
         return null
     _sesi_bersama = sesi
+    if not Penyimpanan.simpan_sesi(sesi):
+        _tampil([{"tipe": "error", "teks": "Gagal menyimpan filesystem ke penyimpanan HP."}])
     return sesi
+
+# Menyimpan keadaan sesi ke penyimpanan lokal. Dipanggil setelah setiap perintah dan saat aplikasi di-pause.
+func _simpan() -> void:
+    if _sesi_bersama == null:
+        return
+    if not Penyimpanan.simpan_sesi(_sesi_bersama):
+        _tampil([{"tipe": "error", "teks": "Gagal menyimpan filesystem ke penyimpanan HP."}])
+
+func _notification(what: int) -> void:
+    if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_WM_CLOSE_REQUEST:
+        _simpan()
 
 func _muat_font() -> Font:
     if ResourceLoader.exists(FONT_PATH):
@@ -197,6 +222,7 @@ func _kirim(teks: String) -> void:
     _tampil(_sesi.jalankan(t))
     _riwayat_idx = _sesi.riwayat.size()
     _perbarui_prompt()
+    _simpan()
 
 func _batalkan() -> void:
     _tampil_perintah(_masukan.text + "^C")
