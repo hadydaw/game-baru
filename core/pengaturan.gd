@@ -14,7 +14,7 @@ const NAMA_MAKS := 16
 static var berkas_aktif: String = BERKAS
 
 static func muat() -> Dictionary:
-	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL}
+	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL, "bahasa": Bahasa.KODE_AWAL}
 	if not FileAccess.file_exists(berkas_aktif):
 		return hasil
 	var parser := JSON.new()
@@ -25,6 +25,8 @@ static func muat() -> Dictionary:
 		hasil["profil_nama"] = String(d["profil_nama"])
 	if UKURAN.has(String(d.get("ukuran_teks", ""))):
 		hasil["ukuran_teks"] = String(d["ukuran_teks"])
+	if Bahasa.KODE.has(String(d.get("bahasa", ""))):
+		hasil["bahasa"] = String(d["bahasa"])
 	return hasil
 
 static func simpan(d: Dictionary) -> bool:
@@ -45,6 +47,18 @@ static func ukuran_teks() -> String:
 
 static func ukuran_font() -> int:
 	return int(UKURAN.get(ukuran_teks(), UKURAN[UKURAN_AWAL]))
+
+static func bahasa() -> String:
+	return String(muat()["bahasa"])
+
+# Menyimpan bahasa dan langsung mengaktifkannya untuk tampilan berikutnya.
+static func set_bahasa(kode: String) -> bool:
+	if not Bahasa.KODE.has(kode):
+		return false
+	if not _ubah("bahasa", kode):
+		return false
+	Bahasa.kode = kode
+	return true
 
 static func set_ukuran_teks(kunci: String) -> bool:
 	if not UKURAN.has(kunci):

@@ -34,7 +34,10 @@ var _panel_login: PanelContainer
 var _input_nama: LineEdit
 var _lbl_error_login: Label
 var _tombol_ukuran: Dictionary = {}
+var _tombol_bahasa: Dictionary = {}
+var _lbl_hint_bahasa: Label
 var _lbl_hint_pengaturan: Label
+var _lbl_contoh: Label
 var _dialog_sesi: KonfirmasiPanel
 
 func _ready() -> void:
@@ -146,25 +149,72 @@ func _gaya_tombol(aktif: bool) -> StyleBoxFlat:
 func _bangun_panel_pengaturan() -> void:
 	_panel_pengaturan = _bangun_panel("Pengaturan")
 	var kolom: VBoxContainer = _kolom_panel(_panel_pengaturan)
-	kolom.add_child(Tema.label("Ukuran teks Terminal", Tema.TEKS, 26))
-	var baris := HBoxContainer.new()
-	baris.add_theme_constant_override("separation", 10)
-	kolom.add_child(baris)
+	kolom.add_theme_constant_override("separation", 18)
+
+	# Teks Terminal: pilihan ukuran dan contoh hasilnya.
+	kolom.add_child(_judul_seksi("Teks Terminal"))
+	var ukuran := []
 	for kunci in ["kecil", "sedang", "besar"]:
-		var b := Button.new()
-		b.text = kunci.capitalize()
-		b.custom_minimum_size = Vector2(0, 80)
-		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.focus_mode = Control.FOCUS_NONE
-		b.pressed.connect(_pilih_ukuran.bind(kunci))
-		baris.add_child(b)
-		_tombol_ukuran[kunci] = b
+		ukuran.append({"kunci": kunci, "teks": kunci.capitalize()})
+	kolom.add_child(_segmen(ukuran, _pilih_ukuran, _tombol_ukuran))
+	_lbl_contoh = Tema.label("Contoh: begini teks Terminal akan tampil.", Tema.TEKS, 26)
+	_lbl_contoh.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	kolom.add_child(_kotak_info(_lbl_contoh))
 	_lbl_hint_pengaturan = Tema.label("Berlaku saat Terminal dibuka berikutnya.", Tema.TEKS_REDUP, 20)
 	_lbl_hint_pengaturan.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	kolom.add_child(_lbl_hint_pengaturan)
+
+	# Bahasa antarmuka. Kode bahasa ditampilkan agar mudah dikenali.
+	kolom.add_child(_judul_seksi("Bahasa"))
+	var bahasa := []
+	for kode in Bahasa.KODE:
+		bahasa.append({"kunci": kode, "teks": "%s  ·  %s" % [kode.to_upper(), Bahasa.NAMA[kode]]})
+	kolom.add_child(_segmen(bahasa, _pilih_bahasa, _tombol_bahasa, 21))
+	_lbl_hint_bahasa = Tema.label("", Tema.TEKS_REDUP, 20)
+	_lbl_hint_bahasa.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	kolom.add_child(_kotak_info(_lbl_hint_bahasa))
+
 	var kembali := _tombol_biasa("Kembali")
 	kembali.pressed.connect(_tutup_panel)
 	kolom.add_child(kembali)
+
+func _judul_seksi(teks: String) -> Label:
+	return Tema.label(teks.to_upper(), Tema.TEAL, 20)
+
+# Kotak info bergaya Desktop: latar gelap dengan batas tipis, dipakai untuk contoh dan keterangan.
+func _kotak_info(isi: Control) -> PanelContainer:
+	var k := PanelContainer.new()
+	k.add_theme_stylebox_override("panel", Tema.kotak(Color(0.03, 0.05, 0.06), WARNA_BATAS, 1, 10))
+	k.add_child(isi)
+	return k
+
+# Pilihan segmen: satu tombol aktif berwarna teal, sisanya gelap.
+func _segmen(pilihan: Array, aksi: Callable, simpan: Dictionary, ukuran_huruf := 24) -> HBoxContainer:
+	var baris := HBoxContainer.new()
+	baris.add_theme_constant_override("separation", 8)
+	for p in pilihan:
+		var b := Button.new()
+		b.text = String(p["teks"])
+		b.custom_minimum_size = Vector2(0, 76)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.focus_mode = Control.FOCUS_NONE
+		b.add_theme_font_size_override("font_size", ukuran_huruf)
+		b.pressed.connect(aksi.bind(p["kunci"]))
+		baris.add_child(b)
+		simpan[p["kunci"]] = b
+	return baris
+
+func _tandai_segmen(simpan: Dictionary, aktif: String) -> void:
+	for kunci in simpan:
+		var b: Button = simpan[kunci]
+		var on: bool = String(kunci) == aktif
+		b.add_theme_stylebox_override("normal", _gaya_segmen(on))
+		b.add_theme_stylebox_override("hover", _gaya_segmen(true))
+		b.add_theme_stylebox_override("pressed", _gaya_segmen(true))
+		b.add_theme_color_override("font_color", Tema.TEKS if on else Tema.TEKS_REDUP)
+
+func _gaya_segmen(aktif: bool) -> StyleBoxFlat:
+	return Tema.kotak(Color(0.06, 0.2, 0.2) if aktif else Color(0.06, 0.1, 0.12), WARNA_TEAL if aktif else WARNA_BATAS, 2 if aktif else 1, 10)
 
 func _bangun_panel_login() -> void:
 	_panel_login = _bangun_panel("Login")
@@ -243,8 +293,10 @@ func _segarkan() -> void:
 	(_tombol["lanjutkan"] as Button).disabled = not Penyimpanan.ada_simpanan()
 	var nama := Pengaturan.nama_profil()
 	(_tombol["login"] as Button).text = "> Login  ·  " + nama if nama != "" else "> Login"
-	for kunci in _tombol_ukuran:
-		_tombol_ukuran[kunci].modulate = Color(0.45, 1.0, 0.85) if kunci == Pengaturan.ukuran_teks() else Color(1, 1, 1)
+	_tandai_segmen(_tombol_ukuran, Pengaturan.ukuran_teks())
+	_tandai_segmen(_tombol_bahasa, Bahasa.kode)
+	if is_instance_valid(_lbl_contoh):
+		_lbl_contoh.add_theme_font_size_override("font_size", Pengaturan.ukuran_font())
 	if (_tombol["lanjutkan"] as Button).disabled:
 		_set_status("Belum ada simpanan. Mulai dengan Sesi Baru.")
 	else:
@@ -280,6 +332,11 @@ func _aksi_login() -> void:
 
 func _aksi_pengaturan() -> void:
 	_tampil_panel(_panel_pengaturan)
+
+func _pilih_bahasa(kode: String) -> void:
+	if Pengaturan.set_bahasa(kode):
+		_lbl_hint_bahasa.text = Bahasa.t("pengaturan.bahasa_diganti")
+		_segarkan()
 
 func _pilih_ukuran(kunci: String) -> void:
 	if Pengaturan.set_ukuran_teks(kunci):

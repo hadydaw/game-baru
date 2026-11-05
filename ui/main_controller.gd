@@ -15,6 +15,7 @@ var _aman := Vector4.ZERO  # kiri, atas, kanan, bawah dalam satuan viewport
 
 func _ready() -> void:
     set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    Bahasa.muat_dari_pengaturan()
     get_viewport().size_changed.connect(_sesuaikan_ukuran)
     _sesuaikan_ukuran()
     _tampilkan_splash()
