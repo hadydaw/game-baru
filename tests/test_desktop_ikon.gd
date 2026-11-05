@@ -103,3 +103,13 @@ func test_reset_susunan_terdengar_di_panel_pengaturan() -> void:
 	assert_true(m._lbl_hint_pengaturan.text.contains("dikembalikan"), "umpan balik terlihat di panel")
 	remove_child(m)
 	m.free()
+
+func test_ikon_mengikuti_pointer_saat_pindah() -> void:
+	d._tahan_id = "terminal"
+	d._mulai_pindah()
+	assert_not_null(d._hantu, "gambar ikon dibuat")
+	var target := Vector2(300, 600)
+	d._sorot_tujuan(target)
+	assert_eq(d._hantu.global_position, target - d._hantu.size * 0.5, "gambar berada di bawah jari")
+	d._selesai_pindah(target)
+	assert_null(d._hantu, "gambar dihapus setelah lepas")

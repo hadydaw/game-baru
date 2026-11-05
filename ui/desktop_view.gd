@@ -54,6 +54,8 @@ var _tahan_timer: Timer
 var _tahan_id := ""
 var _tahan_terpicu := false
 var _pindah_id := ""
+# Gambar ikon yang mengikuti jari selama mode pindah.
+var _hantu: TextureRect
 
 # Urutan ikon: susunan tersimpan lebih dulu, lalu aplikasi baru yang belum ada di susunan itu.
 static func urutan_id() -> Array:
@@ -186,6 +188,7 @@ func _buat_sel_ikon(a: Dictionary) -> Button:
     kolom.add_child(label)
     var id: String = a["id"]
     tombol.set_meta("id", id)
+    tombol.set_meta("ikon_tekstur", gambar.texture)
     tombol.gui_input.connect(_saat_input_sel.bind(tombol))
     tombol.pressed.connect(_ketuk_sel.bind(id))
     _sel.append({"tombol": tombol, "gambar": gambar, "label": label})
@@ -216,7 +219,17 @@ func _mulai_pindah() -> void:
         return
     _tahan_terpicu = true
     _pindah_id = _tahan_id
-    _tombol_id(_pindah_id).modulate = Color(1, 1, 1, 0.5)
+    var t := _tombol_id(_pindah_id)
+    t.modulate = Color(1, 1, 1, 0.25)
+    _hantu = TextureRect.new()
+    _hantu.texture = t.get_meta("ikon_tekstur") as Texture2D
+    _hantu.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    _hantu.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    _hantu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    _hantu.custom_minimum_size = t.custom_minimum_size * 0.7
+    _hantu.size = _hantu.custom_minimum_size
+    add_child(_hantu)
+    _hantu.global_position = t.get_global_rect().get_center() - _hantu.size * 0.5
 
 func _tombol_id(id: String) -> Button:
     for s in _sel:
@@ -233,11 +246,13 @@ func _indeks_di_bawah(pos: Vector2) -> int:
     return -1
 
 func _sorot_tujuan(pos: Vector2) -> void:
+    if is_instance_valid(_hantu):
+        _hantu.global_position = pos - _hantu.size * 0.5
     var tujuan := _indeks_di_bawah(pos)
     for s in _sel:
         var t: Button = s["tombol"]
         if String(t.get_meta("id")) == _pindah_id:
-            t.modulate = Color(1, 1, 1, 0.5)
+            t.modulate = Color(1, 1, 1, 0.25)
         elif tujuan >= 0 and _grid.get_child(tujuan) == t:
             t.modulate = Color(0.45, 1.0, 0.85)
         else:
@@ -248,6 +263,9 @@ func _selesai_pindah(pos: Vector2) -> void:
     var id := _pindah_id
     _pindah_id = ""
     _tahan_id = ""
+    if is_instance_valid(_hantu):
+        _hantu.queue_free()
+    _hantu = null
     for s in _sel:
         s["tombol"].modulate = Color(1, 1, 1)
     if tujuan >= 0:
