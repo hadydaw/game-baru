@@ -130,6 +130,7 @@ func _tampilkan_desktop() -> void:
     add_child(_jendela)
     _jendela.position = Vector2.ZERO
     _jendela.size = size
+    _desktop.hubungkan_jendela(_jendela)
     _atur_area_jendela()
 
 # Area kerja jendela: di antara panel atas dan taskbar, di dalam bingkai Desktop.

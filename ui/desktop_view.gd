@@ -5,6 +5,7 @@ extends Control
 
 signal buka_aplikasi(id: String)
 signal menu_diminta
+signal menu_aplikasi_diminta
 
 const APLIKASI := [
     {"id": "terminal", "nama": "Terminal", "ikon": "res://assets/ikon/aplikasi/app_terminal.png"},
@@ -16,19 +17,13 @@ const APLIKASI := [
     {"id": "misi", "nama": "Misi", "ikon": "res://assets/ikon/aplikasi/app_misi.png"},
     {"id": "log", "nama": "Log", "ikon": "res://assets/ikon/aplikasi/app_log.png"},
 ]
-const IKON_KOIN := "res://assets/ikon/sistem/sys_koin.png"
-const IKON_WIFI := "res://assets/ikon/sistem/sys_wifi_aktif.png"
-const IKON_USER := "res://assets/ikon/sistem/sys_user.png"
 const KOLOM := 4
 const WALL_POTRET := "res://assets/wallpaper/wp_potret.png"
 const WALL_LANSKAP := "res://assets/wallpaper/wp_lanskap.png"
 const JARAK_BINGKAI := 14
 # Tinggi panel atas dan taskbar. Jendela aplikasi mengisi ruang di antara keduanya.
-const TINGGI_PANEL := 64
-const TINGGI_TASKBAR := 80
-
-# Nilai awal. Saldo dan koneksi akan diganti saat sistem ekonomi dan jaringan dibuat.
-const SALDO_AWAL := 500
+const TINGGI_PANEL := PanelAtas.TINGGI
+const TINGGI_TASKBAR := HotBar.TINGGI
 
 # Area aman perangkat: kiri, atas, kanan, bawah (diisi oleh MainController).
 var aman := Vector4.ZERO
@@ -49,7 +44,9 @@ var _wallpaper: TextureRect
 var _margin: MarginContainer
 var _grid: GridContainer
 var _sel: Array = []
-var _label_jam: Label
+var _panel: PanelAtas
+var _hotbar: HotBar
+var _jendela: ManajerJendela
 var _wallpaper_terpasang: String = ""
 
 func _ready() -> void:
@@ -73,7 +70,9 @@ func _ready() -> void:
     var kolom := VBoxContainer.new()
     kolom.add_theme_constant_override("separation", 12)
     bingkai.add_child(kolom)
-    kolom.add_child(_buat_status_bar())
+    _panel = PanelAtas.new()
+    _panel.menu_aplikasi_diminta.connect(func(): menu_aplikasi_diminta.emit())
+    kolom.add_child(_panel)
     kolom.add_child(_spasi())
     _grid = GridContainer.new()
     _grid.columns = KOLOM
@@ -82,7 +81,11 @@ func _ready() -> void:
     for a in APLIKASI:
         _grid.add_child(_buat_sel_ikon(a))
     kolom.add_child(_spasi())
-    kolom.add_child(_buat_taskbar())
+    _hotbar = HotBar.new()
+    _hotbar.home_diminta.connect(func(): menu_aplikasi_diminta.emit())
+    _hotbar.aplikasi_diketuk.connect(_ketuk_aplikasi)
+    kolom.add_child(_hotbar)
+    _segarkan_hotbar()
 
     var jam := Timer.new()
     jam.wait_time = 30.0
@@ -110,66 +113,30 @@ func _spasi() -> Control:
     s.mouse_filter = Control.MOUSE_FILTER_IGNORE
     return s
 
-func _ikon_kecil(path: String, px: int) -> TextureRect:
-    var g := TextureRect.new()
-    g.texture = load(path) as Texture2D
-    g.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-    g.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    g.custom_minimum_size = Vector2(px, px)
-    g.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    return g
+# Menghubungkan hotbar ke manajer jendela. Dipanggil MainController setelah manajer dibuat.
+func hubungkan_jendela(m: ManajerJendela) -> void:
+    _jendela = m
+    m.daftar_berubah.connect(_segarkan_hotbar)
+    _segarkan_hotbar()
 
-func _buat_status_bar() -> Control:
-    var baris := HBoxContainer.new()
-    baris.add_theme_constant_override("separation", 10)
-    baris.add_child(_ikon_kecil(IKON_KOIN, 36))
-    baris.add_child(Tema.label("Kr %d" % SALDO_AWAL, Tema.AMBER, 26))
-    var sisa := _spasi_horizontal()
-    baris.add_child(sisa)
-    baris.add_child(Tema.label("● Lokal", Tema.TEAL, 22))
-    baris.add_child(_ikon_kecil(IKON_WIFI, 30))
-    return baris
+func _segarkan_hotbar() -> void:
+    if is_instance_valid(_hotbar):
+        _hotbar.segarkan(_jendela.daftar() if is_instance_valid(_jendela) else [])
 
-func _buat_taskbar() -> Control:
-    var baris := HBoxContainer.new()
-    baris.add_theme_constant_override("separation", 10)
-    baris.add_child(_ikon_kecil(IKON_USER, 30))
-    var operator := Tema.label("%s@jtn" % ShellSession.nama_pengguna_aktif(), Tema.TEKS_REDUP, 22)
-    operator.clip_text = true
-    operator.custom_minimum_size = Vector2(0, 0)
-    operator.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-    baris.add_child(operator)
-    baris.add_child(_spasi_horizontal())
-    baris.add_child(_tombol_menu())
-    _label_jam = Tema.label("", Tema.TEKS_REDUP, 22)
-    baris.add_child(_label_jam)
-    return baris
-
-# Tombol Menu di taskbar: selalu terlihat dan cukup besar untuk disentuh jari.
-func _tombol_menu() -> Button:
-    var t := Button.new()
-    t.text = "≡ Menu"
-    t.focus_mode = Control.FOCUS_NONE
-    t.custom_minimum_size = Vector2(136, 64)
-    t.add_theme_font_size_override("font_size", 24)
-    t.add_theme_color_override("font_color", Tema.TEKS)
-    var normal := Tema.kotak(Color(0.06, 0.1, 0.12), Tema.TEAL, 2, 10)
-    var aktif := Tema.kotak(Color(0.1, 0.18, 0.2), Tema.TEAL, 2, 10)
-    t.add_theme_stylebox_override("normal", normal)
-    t.add_theme_stylebox_override("hover", aktif)
-    t.add_theme_stylebox_override("pressed", aktif)
-    t.pressed.connect(func(): menu_diminta.emit())
-    return t
-
-func _spasi_horizontal() -> Control:
-    var s := Control.new()
-    s.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    s.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    return s
+# Ketuk aplikasi di hotbar: buka jika belum terbuka; memfokuskan jika terbuka tapi tidak aktif;
+# meminimize jika sudah aktif (perilaku taskbar Xfce).
+func _ketuk_aplikasi(id: String) -> void:
+    if is_instance_valid(_jendela) and _jendela.ada(id):
+        if _jendela.aktif() == id:
+            _jendela.minimize(id)
+        else:
+            _jendela.fokus(id)
+    else:
+        buka_aplikasi.emit(id)
 
 func _perbarui_jam() -> void:
-    var w := Time.get_time_dict_from_system()
-    _label_jam.text = "%02d:%02d" % [w["hour"], w["minute"]]
+    if is_instance_valid(_panel):
+        _panel.segarkan()
 
 func _buat_sel_ikon(a: Dictionary) -> Button:
     var tombol := Button.new()

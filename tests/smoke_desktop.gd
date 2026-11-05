@@ -28,15 +28,12 @@ func _initialize() -> void:
 		wadah.add_child(d)
 		await process_frame
 		await process_frame
-		var tombol_menu: Button = null
-		for b in d.find_children("*", "Button", true, false):
-			if (b as Button).text.contains("Menu"):
-				tombol_menu = b
-		_cek(tombol_menu != null and tombol_menu.is_visible_in_tree(), "tombol Menu ada di Desktop %dx%d" % [ukuran.x, ukuran.y])
+		var tombol_menu: Button = d.find_child("TombolHome", true, false) as Button
+		_cek(tombol_menu != null and tombol_menu.is_visible_in_tree(), "tombol Home ada di hotbar %dx%d" % [ukuran.x, ukuran.y])
 		if tombol_menu != null:
 			var r := tombol_menu.get_global_rect()
-			_cek(r.position.x >= 0 and r.end.x <= ukuran.x and r.end.y <= ukuran.y, "tombol Menu di dalam layar %dx%d" % [ukuran.x, ukuran.y])
-			_cek(r.size.y >= 64, "tombol Menu cukup tinggi untuk disentuh %dx%d" % [ukuran.x, ukuran.y])
+			_cek(r.position.x >= 0 and r.end.x <= ukuran.x and r.end.y <= ukuran.y, "tombol Home di dalam layar %dx%d" % [ukuran.x, ukuran.y])
+			_cek(r.size.y >= 64, "tombol Home cukup tinggi untuk disentuh %dx%d" % [ukuran.x, ukuran.y])
 		wadah.free()
 
 		var wadah2 := Control.new()
