@@ -25,7 +25,8 @@ func _sesuaikan_ukuran() -> void:
     size = vp
     _aman = _hitung_area_aman(vp)
     for anak in get_children():
-        if anak is Control:
+        # Splash mengikuti anchor sendiri; menetapkan size di sini akan menggandakan layarnya.
+        if anak is Control and not anak.has_meta("tanpa_ukuran"):
             anak.position = Vector2.ZERO
             anak.size = vp
     if is_instance_valid(_desktop):
@@ -50,23 +51,14 @@ func _hitung_area_aman(vp: Vector2) -> Vector4:
         (layar.y - aman.end.y) * skala
     )
 
+# Splash: latar penuh layar, logo utuh di tengah area aman. Anchor diatur setelah node masuk pohon
+# dan tanpa ukuran eksplisit. Menetapkan size pada node ber-anchor penuh menambah offset ke ukuran
+# induk, sehingga layar menjadi dua kali lebih besar dan logo terdorong keluar layar.
+const JARAK_SPLASH := 24
+const SKALA_LOGO := 0.6
+
 func _tampilkan_splash() -> void:
-    var splash := Control.new()
-    splash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    splash.size = size
-    var latar := ColorRect.new()
-    latar.color = LATAR
-    latar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    splash.add_child(latar)
-    var tengah := CenterContainer.new()
-    tengah.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    splash.add_child(tengah)
-    var logo := TextureRect.new()
-    logo.texture = load(LOGO) as Texture2D
-    logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-    logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    logo.custom_minimum_size = Vector2.ONE * minf(size.x, size.y) * 0.5
-    tengah.add_child(logo)
+    var splash := _buat_splash(size, _aman)
     add_child(splash)
     await get_tree().create_timer(1.6).timeout
     if not is_instance_valid(splash):
@@ -76,6 +68,41 @@ func _tampilkan_splash() -> void:
     await tween.finished
     splash.queue_free()
     _tampilkan_menu()
+
+# Membangun layar splash tanpa menambahkannya ke pohon. Pemanggil yang menaruhnya di induk.
+func _buat_splash(ukuran: Vector2, aman: Vector4) -> Control:
+    var splash := Control.new()
+    splash.set_meta("tanpa_ukuran", true)
+    splash.add_child(_isi_splash(ukuran, aman))
+    splash.set_anchors_preset(Control.PRESET_FULL_RECT)
+    return splash
+
+func _isi_splash(ukuran: Vector2, aman: Vector4) -> Control:
+    var isi := Control.new()
+    var latar := ColorRect.new()
+    latar.color = LATAR
+    isi.add_child(latar)
+    var margin := MarginContainer.new()
+    margin.add_theme_constant_override("margin_left", int(aman.x) + JARAK_SPLASH)
+    margin.add_theme_constant_override("margin_top", int(aman.y) + JARAK_SPLASH)
+    margin.add_theme_constant_override("margin_right", int(aman.z) + JARAK_SPLASH)
+    margin.add_theme_constant_override("margin_bottom", int(aman.w) + JARAK_SPLASH)
+    isi.add_child(margin)
+    var tengah := CenterContainer.new()
+    margin.add_child(tengah)
+    var logo := TextureRect.new()
+    logo.texture = load(LOGO) as Texture2D
+    logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    var sisi := minf(ukuran.x, ukuran.y) * SKALA_LOGO
+    logo.custom_minimum_size = Vector2(sisi, sisi)
+    tengah.add_child(logo)
+    # Anchor diberikan setelah semua anak terpasang; offset dihitung ulang dari induk, bukan dari ukuran.
+    isi.set_anchors_preset(Control.PRESET_FULL_RECT)
+    latar.set_anchors_preset(Control.PRESET_FULL_RECT)
+    margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+    tengah.set_anchors_preset(Control.PRESET_FULL_RECT)
+    return isi
 
 # Menu utama adalah layar pertama setelah splash. Dari sini pemain masuk ke Desktop.
 func _tampilkan_menu() -> void:

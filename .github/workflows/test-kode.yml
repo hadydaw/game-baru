@@ -107,3 +107,14 @@ jobs:
             exit 1
           fi
           exit $code
+
+      - name: Jalankan smoke test splash
+        run: |
+          "$GODOT_BIN" --headless -s tests/smoke_splash.gd > splash.log 2>&1
+          code=$?
+          cat splash.log
+          if grep -q "SCRIPT ERROR\|Parse Error" splash.log; then
+            echo "Ada error skrip di smoke test splash"
+            exit 1
+          fi
+          exit $code
