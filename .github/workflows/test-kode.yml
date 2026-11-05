@@ -63,3 +63,14 @@ jobs:
             exit 1
           fi
           exit $code
+
+      - name: Jalankan smoke test peta jaringan
+        run: |
+          "$GODOT_BIN" --headless -s tests/smoke_peta.gd > peta.log 2>&1
+          code=$?
+          cat peta.log
+          if grep -q "SCRIPT ERROR\|Parse Error" peta.log; then
+            echo "Ada error skrip di smoke test peta"
+            exit 1
+          fi
+          exit $code

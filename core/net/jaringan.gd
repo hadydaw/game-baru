@@ -66,6 +66,8 @@ func ringkasan(id: String) -> Dictionary:
         "status": String(data[id].get("status", "")),
         "terkunci": terkunci(id),
         "tetangga": data[id].get("tetangga", []),
+        "port": data[id].get("port", {}),
+        "ssh_tersedia": data[id].has("ssh"),
     }
 
 # Semua node yang sudah ditemukan pemain, diurutkan berdasarkan id.

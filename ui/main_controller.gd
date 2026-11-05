@@ -103,6 +103,8 @@ func _buat_konten(id: String) -> Control:
     match id:
         "terminal":
             return TerminalScreen.new()
+        "peta":
+            return NetworkMap.new()
         "pasar":
             return _konten_pasar()
         _:

@@ -119,26 +119,16 @@ static var _sesi_bersama: ShellSession
 func _buat_sesi() -> ShellSession:
     if _sesi_bersama != null:
         return _sesi_bersama
-    var sesi: ShellSession = null
-    var muat := Penyimpanan.muat()
-    match String(muat["status"]):
-        "ok":
-            sesi = ShellSession.dari_dict(muat["data"])
-        "pulih_cadangan":
-            sesi = ShellSession.dari_dict(muat["data"])
-            _tampil([{"tipe": "error", "teks": "Penyimpanan utama rusak. Data dipulihkan dari cadangan. Berkas rusak disimpan di: %s" % muat["pesan"]}])
-        "rusak":
-            sesi = ShellSession.new(Vfs.new(_baca_fs()))
-            _tampil([{"tipe": "error", "teks": "Penyimpanan rusak dan tidak ada cadangan. Mulai dari filesystem awal. Berkas rusak disimpan di: %s" % muat["pesan"]}])
-        _:
-            sesi = ShellSession.new(Vfs.new(_baca_fs()))
+    # Sesi dipakai bersama dengan Peta Jaringan. Pesan pemulihan hanya ditampilkan saat sesi pertama dibuat.
+    var baru := SesiUtama.sesi == null
+    var sesi := SesiUtama.ambil()
     if sesi == null:
         push_error("TerminalScreen: ShellSession gagal dibuat")
         _tampil([{"tipe": "error", "teks": "Sesi shell gagal dibuat. Lihat log Godot untuk detail."}])
         return null
+    if baru and SesiUtama.pesan_status() != "":
+        _tampil([{"tipe": "error", "teks": SesiUtama.pesan_status()}])
     _sesi_bersama = sesi
-    if not Penyimpanan.simpan_sesi(sesi):
-        _tampil([{"tipe": "error", "teks": "Gagal menyimpan filesystem ke penyimpanan HP."}])
     return sesi
 
 # Menyimpan keadaan sesi ke penyimpanan lokal. Dipanggil setelah setiap perintah dan saat aplikasi di-pause.
