@@ -6,6 +6,9 @@ extends RefCounted
 
 const ID := {
     "err.tidak_ada": "Tidak ada berkas atau direktori",
+    "bash.sintaks": "sintaks tidak lengkap dekat '>'",
+    "bash.redirect_banyak": "terlalu banyak tujuan redirect",
+    "bash.kosong": "perintah kosong sebelum '>'",
     "err.izin": "Izin ditolak",
     "err.direktori": "Itu adalah direktori",
     "err.bukan_direktori": "Bukan direktori",
@@ -26,6 +29,26 @@ const ID := {
     "help.judul": "Perintah yang tersedia:",
     "man.tidak_ada": "Tidak ada entri manual untuk",
     "isi.kosong": "(isi belum tersedia)",
+}
+
+# Terjemahan English untuk pesan bergaya Linux. Pesan khusus permainan tetap Bahasa Indonesia.
+const EN := {
+    "err.tidak_ada": "No such file or directory",
+    "err.izin": "Permission denied",
+    "err.direktori": "Is a directory",
+    "err.bukan_direktori": "Not a directory",
+    "err.tidak_ditemukan": "command not found",
+    "err.butuh_argumen": "missing operand",
+    "err.sudah_ada": "File exists",
+    "err.hanya_home": "Permission denied: can only create inside the home directory",
+    "err.tidak_ada_pola": "pattern not found",
+    "err.satu_berkas": "only one file per command",
+    "err.opsi": "invalid option",
+    "err.tidak_ada_induk": "No such file or directory",
+    "man.tidak_ada": "No manual entry for",
+    "bash.sintaks": "syntax error near unexpected token '>'",
+    "bash.redirect_banyak": "ambiguous redirect",
+    "bash.kosong": "syntax error: missing command before '>'",
 }
 
 const MAN := {
@@ -58,7 +81,8 @@ const MAN := {
 }
 
 static func t(kunci: String, parameter: Dictionary = {}) -> String:
-    var teks := String(ID.get(kunci, kunci))
+    var tabel := EN if Bahasa.kode == "en" and EN.has(kunci) else ID
+    var teks := String(tabel.get(kunci, kunci))
     for k in parameter:
         teks = teks.replace("{" + String(k) + "}", str(parameter[k]))
     return teks

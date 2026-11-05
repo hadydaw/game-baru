@@ -172,13 +172,13 @@ func _jalankan_redirect(token: Array, idx: int, masukan: String) -> Array:
     var sisa := idx + 1
     if tujuan.is_empty():
         if sisa >= token.size():
-            return [galat("bash", "sintaks tidak lengkap dekat '>'")]
+            return [galat("bash", Teks.t("bash.sintaks"))]
         tujuan = String(token[sisa])
         sisa += 1
     if sisa < token.size():
-        return [galat("bash", "terlalu banyak tujuan redirect")]
+        return [galat("bash", Teks.t("bash.redirect_banyak"))]
     if idx == 0:
-        return [galat("bash", "perintah kosong sebelum '>'")]
+        return [galat("bash", Teks.t("bash.kosong"))]
     var p := ShellParser.dari_token(token.slice(0, idx), masukan)
     var keluaran := ShellCommands.jalankan(self, p)
     var teks: Array = []
