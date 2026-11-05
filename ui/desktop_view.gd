@@ -8,14 +8,14 @@ signal menu_diminta
 signal menu_aplikasi_diminta
 
 const APLIKASI := [
-    {"id": "terminal", "nama": "Terminal", "ikon": "res://assets/ikon/aplikasi/app_terminal.png"},
-    {"id": "peta", "nama": "Peta Jaringan", "ikon": "res://assets/ikon/aplikasi/app_peta.png"},
-    {"id": "berkas", "nama": "Berkas", "ikon": "res://assets/ikon/aplikasi/app_berkas.png"},
-    {"id": "tools", "nama": "Tools", "ikon": "res://assets/ikon/aplikasi/app_tools.png"},
-    {"id": "forum", "nama": "Forum", "ikon": "res://assets/ikon/aplikasi/app_forum.png"},
-    {"id": "pasar", "nama": "Black Market", "ikon": "res://assets/ikon/aplikasi/app_pasar.png"},
-    {"id": "misi", "nama": "Misi", "ikon": "res://assets/ikon/aplikasi/app_misi.png"},
-    {"id": "log", "nama": "Log", "ikon": "res://assets/ikon/aplikasi/app_log.png"},
+    {"id": "terminal", "nama": "app.terminal", "ikon": "res://assets/ikon/aplikasi/app_terminal.png"},
+    {"id": "peta", "nama": "app.peta", "ikon": "res://assets/ikon/aplikasi/app_peta.png"},
+    {"id": "berkas", "nama": "app.berkas", "ikon": "res://assets/ikon/aplikasi/app_berkas.png"},
+    {"id": "tools", "nama": "app.tools", "ikon": "res://assets/ikon/aplikasi/app_tools.png"},
+    {"id": "forum", "nama": "app.forum", "ikon": "res://assets/ikon/aplikasi/app_forum.png"},
+    {"id": "pasar", "nama": "app.pasar", "ikon": "res://assets/ikon/aplikasi/app_pasar.png"},
+    {"id": "misi", "nama": "app.misi", "ikon": "res://assets/ikon/aplikasi/app_misi.png"},
+    {"id": "log", "nama": "app.log", "ikon": "res://assets/ikon/aplikasi/app_log.png"},
 ]
 const KOLOM := 4
 const WALL_POTRET := "res://assets/wallpaper/wp_potret.png"
@@ -31,7 +31,7 @@ var aman := Vector4.ZERO
 static func nama_aplikasi(id: String) -> String:
     for a in APLIKASI:
         if a["id"] == id:
-            return a["nama"]
+            return Bahasa.t(a["nama"])
     return id
 
 static func ikon_aplikasi(id: String) -> String:
@@ -154,7 +154,7 @@ func _buat_sel_ikon(a: Dictionary) -> Button:
     gambar.mouse_filter = Control.MOUSE_FILTER_IGNORE
     gambar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     kolom.add_child(gambar)
-    var label := Tema.label(a["nama"], Tema.TEKS, 22)
+    var label := Tema.label(Bahasa.t(a["nama"]), Tema.TEKS, 22)
     label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     kolom.add_child(label)

@@ -17,8 +17,8 @@ const IKON_WIFI := "res://assets/ikon/sistem/sys_wifi_aktif.png"
 const IKON_NOTIF_KOSONG := "res://assets/ikon/sistem/sys_notifikasi_kosong.png"
 const IKON_NOTIF_PESAN := "res://assets/ikon/sistem/sys_notifikasi_pesan.png"
 
-const HARI := ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]
-const BULAN := ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
+const HARI := {"id": ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"], "en": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
+const BULAN := {"id": ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"], "en": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]}
 
 var _saldo: Label
 var _notif: TextureRect
@@ -53,7 +53,7 @@ func _ready() -> void:
     sisa.mouse_filter = Control.MOUSE_FILTER_IGNORE
     baris.add_child(sisa)
 
-    var status := Tema.label("● Lokal", Tema.TEAL, 22)
+    var status := Tema.label(Bahasa.t("panel.lokal"), Tema.TEAL, 22)
     status.size_flags_vertical = Control.SIZE_SHRINK_CENTER
     baris.add_child(status)
     baris.add_child(_ikon(IKON_WIFI, 30))
@@ -78,7 +78,7 @@ func _ready() -> void:
 func segarkan() -> void:
     var s := SesiUtama.ambil()
     if s != null:
-        _saldo.text = "Kr %d" % s.economy.saldo
+        _saldo.text = Bahasa.t("panel.saldo") % s.economy.saldo
         var pesan := ada_misi_aktif(s)
         _notif.texture = load(IKON_NOTIF_PESAN if pesan else IKON_NOTIF_KOSONG) as Texture2D
     var w := Time.get_datetime_dict_from_system()
@@ -87,7 +87,8 @@ func segarkan() -> void:
 
 # Tanggal singkat dalam Bahasa Indonesia, misalnya "Kam, 5 Nov 2026".
 static func format_tanggal(w: Dictionary) -> String:
-    return "%s, %d %s %d" % [HARI[int(w["weekday"])], int(w["day"]), BULAN[int(w["month"]) - 1], int(w["year"])]
+    var bahasa := Bahasa.kode if HARI.has(Bahasa.kode) else Bahasa.KODE_AWAL
+    return "%s, %d %s %d" % [HARI[bahasa][int(w["weekday"])], int(w["day"]), BULAN[bahasa][int(w["month"]) - 1], int(w["year"])]
 
 # Ada misi yang sudah diterima dan masih berjalan.
 static func ada_misi_aktif(s: ShellSession) -> bool:

@@ -45,9 +45,9 @@ func _bangun_legenda() -> void:
     baris.add_theme_constant_override("separation", 18)
     baris.mouse_filter = Control.MOUSE_FILTER_IGNORE
     add_child(baris)
-    baris.add_child(_legenda("●", Tema.TEAL, "Aktif"))
-    baris.add_child(_legenda("●", Tema.TEKS_REDUP, "Tidak aktif"))
-    baris.add_child(_legenda("●", Tema.AMBER, "Terkunci"))
+    baris.add_child(_legenda("●", Tema.TEAL, Bahasa.t("peta.aktif")))
+    baris.add_child(_legenda("●", Tema.TEKS_REDUP, Bahasa.t("peta.tidak_aktif")))
+    baris.add_child(_legenda("●", Tema.AMBER, Bahasa.t("peta.terkunci")))
 
 func _legenda(simbol: String, warna: Color, teks: String) -> HBoxContainer:
     var h := HBoxContainer.new()
@@ -70,14 +70,14 @@ func _bangun_panel() -> void:
     tumpuk.add_theme_constant_override("separation", 6)
     tumpuk.mouse_filter = Control.MOUSE_FILTER_IGNORE
     margin.add_child(tumpuk)
-    _lbl_hint = Tema.label("Ketuk node untuk melihat detail.", Tema.TEKS_REDUP, 22)
+    _lbl_hint = Tema.label(Bahasa.t("peta.ketuk"), Tema.TEKS_REDUP, 22)
     # Identitas pemain: nama dari sesi (sama dengan nama Login), perangkat, dan status koneksi lokal.
     var identitas := HFlowContainer.new()
     identitas.add_theme_constant_override("h_separation", 18)
     identitas.add_theme_constant_override("v_separation", 4)
     identitas.mouse_filter = Control.MOUSE_FILTER_IGNORE
     tumpuk.add_child(identitas)
-    for teks in ["Operator: -", "Perangkat: JTN", "Status: Lokal"]:
+    for teks in [Bahasa.t("peta.operator_kosong"), Bahasa.t("peta.perangkat"), Bahasa.t("peta.status_lokal")]:
         var l := Tema.label(teks, Tema.TEAL if _lbl_identitas.is_empty() else Tema.TEKS, 20)
         _lbl_identitas.append(l)
         identitas.add_child(l)
@@ -100,9 +100,9 @@ func _bangun_panel() -> void:
 func _segarkan_identitas() -> void:
     if _lbl_identitas.size() < 3:
         return
-    (_lbl_identitas[0] as Label).text = "Operator: %s" % _sesi.user
-    (_lbl_identitas[1] as Label).text = "Perangkat: JTN"
-    (_lbl_identitas[2] as Label).text = "Status: Lokal"
+    (_lbl_identitas[0] as Label).text = Bahasa.t("peta.operator") % _sesi.user
+    (_lbl_identitas[1] as Label).text = Bahasa.t("peta.perangkat")
+    (_lbl_identitas[2] as Label).text = Bahasa.t("peta.status_lokal")
 
 # Teks identitas gabungan, untuk tes dan pengecekan layout.
 func teks_identitas() -> String:
@@ -206,25 +206,25 @@ func _segarkan_detail() -> void:
     var keadaan := TataLetakPeta.keadaan(r)
     _lbl_nama.text = _pilih
     _lbl_ip.text = "IP  %s" % String(r["ip"])
-    _lbl_status.text = "Status  %s" % _teks_keadaan(keadaan)
-    _lbl_akses.text = "Akses  %s" % ("terkunci, akses belum terbuka" if keadaan == "terkunci" else "terbuka")
+    _lbl_status.text = Bahasa.t("peta.status") % _teks_keadaan(keadaan)
+    _lbl_akses.text = Bahasa.t("peta.akses") % (Bahasa.t("peta.terkunci_akses") if keadaan == "terkunci" else "terbuka")
     if keadaan == "terkunci":
-        _lbl_port.text = "Detail port tidak tersedia."
+        _lbl_port.text = Bahasa.t("peta.port_kosong")
         _lbl_tetangga.text = ""
         return
     _lbl_port.text = "Port  " + _teks_port(r["port"])
     var tetangga: Array = []
     for t in r["tetangga"]:
         tetangga.append(String(t))
-    _lbl_tetangga.text = "Terhubung ke  " + (", ".join(PackedStringArray(tetangga)) if not tetangga.is_empty() else "-")
+    _lbl_tetangga.text = Bahasa.t("peta.terhubung") + (", ".join(PackedStringArray(tetangga)) if not tetangga.is_empty() else "-")
 
 func _teks_keadaan(keadaan: String) -> String:
     match keadaan:
         "aktif":
-            return "Aktif"
+            return Bahasa.t("peta.aktif")
         "terkunci":
-            return "Terkunci"
-    return "Tidak aktif"
+            return Bahasa.t("peta.terkunci")
+    return Bahasa.t("peta.tidak_aktif")
 
 func _teks_port(port: Dictionary) -> String:
     var kunci := port.keys()

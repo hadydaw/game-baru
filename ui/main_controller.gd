@@ -158,12 +158,12 @@ func _minta_kembali_menu() -> void:
         _konfirmasi.dibatalkan.connect(_konfirmasi.sembunyikan)
         add_child(_konfirmasi)
     _konfirmasi.atur_aman(_aman)
-    _konfirmasi.tampil("Kembali ke menu?", "Progres kamu disimpan. Pilih Lanjutkan di menu untuk meneruskan dari sini. Tidak ada data yang dihapus.", "Kembali ke Menu", "Batal")
+    _konfirmasi.tampil(Bahasa.t("dialog.kembali_menu_judul"), Bahasa.t("dialog.kembali_menu_isi"), Bahasa.t("dialog.kembali_menu_ok"), Bahasa.t("umum.batal"))
 
 func _kembali_ke_menu() -> void:
     _konfirmasi.sembunyikan()
     if not Penyimpanan.simpan_sesi(SesiUtama.ambil()):
-        push_warning("Sesi gagal disimpan; tetap di Desktop agar data tidak hilang.")
+        push_warning(Bahasa.t("dialog.gagal_simpan"))
         return
     if is_instance_valid(_jendela):
         _jendela.queue_free()
@@ -190,7 +190,7 @@ func _buat_konten(id: String) -> Control:
             return _konten_segera_hadir(DesktopView.nama_aplikasi(id))
 
 func _konten_segera_hadir(nama: String) -> Control:
-    var teks := Tema.label("%s akan tersedia pada tahap berikutnya." % nama, Tema.TEKS, 24)
+    var teks := Tema.label(Bahasa.t("desktop.segera") % nama, Tema.TEKS, 24)
     teks.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     teks.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     teks.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

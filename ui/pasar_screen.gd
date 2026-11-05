@@ -71,14 +71,14 @@ func _pilih_penjual(pid: String) -> void:
 	_segarkan()
 
 func _segarkan() -> void:
-	_info.text = "Saldo %d Kr  ·  Reputasi %s: %d" % [_sesi.economy.saldo, Reputation.nama_grup("kolektif_senja"), _sesi.reputation.get_nilai("kolektif_senja")]
+	_info.text = Bahasa.t("pasar.saldo") % [_sesi.economy.saldo, Reputation.nama_grup("kolektif_senja"), _sesi.reputation.get_nilai("kolektif_senja")]
 	for pid in _tombol_penjual:
 		_tombol_penjual[pid].modulate = Color(0.45, 1.0, 0.85) if pid == _penjual_aktif else Color(1, 1, 1)
 	for anak in _daftar.get_children():
 		anak.queue_free()
 	var p := BlackMarket.penjual(_penjual_aktif)
 	if not BlackMarket.penjual_terbuka(_penjual_aktif, _sesi.reputation):
-		_daftar.add_child(Tema.label("Belum terbuka. Butuh reputasi %d." % int(p.get("syarat_rep", 0)), WARNA_TERKUNCI, 22))
+		_daftar.add_child(Tema.label(Bahasa.t("pasar.terkunci") % int(p.get("syarat_rep", 0)), WARNA_TERKUNCI, 22))
 		return
 	for it in p.get("item", []):
 		_daftar.add_child(_kartu_item(it))
@@ -100,10 +100,10 @@ func _kartu_item(it: Dictionary) -> Control:
 	teks.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	baris.add_child(teks)
 	teks.add_child(Tema.label("%s  T%d" % [ToolDefs.nama(tool), tgt], Tema.TEKS, 24))
-	teks.add_child(Tema.label("%d Kr  ·  stok %d  ·  %s" % [ToolDefs.harga(tool, tgt), _sesi.market.sisa(id), String(it["kelangkaan"]).replace("_", " ")], Tema.TEKS_REDUP, 19))
+	teks.add_child(Tema.label(Bahasa.t("pasar.harga") % [ToolDefs.harga(tool, tgt), _sesi.market.sisa(id), String(it["kelangkaan"]).replace("_", " ")], Tema.TEKS_REDUP, 19))
 	teks.add_child(Tema.label(_teks_status(status), Tema.AMBER if status == "upgrade" else Tema.TEKS_REDUP, 19))
 	var beli := Button.new()
-	beli.text = "Beli"
+	beli.text = Bahasa.t("pasar.beli")
 	beli.custom_minimum_size = Vector2(150, 64)
 	beli.disabled = status == "dimiliki" or status == "habis"
 	beli.pressed.connect(_beli.bind(id))
@@ -113,12 +113,12 @@ func _kartu_item(it: Dictionary) -> Control:
 func _teks_status(status: String) -> String:
 	match status:
 		"dimiliki":
-			return "Sudah dimiliki"
+			return Bahasa.t("pasar.dimiliki")
 		"upgrade":
-			return "Peningkatan tingkat"
+			return Bahasa.t("pasar.tingkat")
 		"habis":
-			return "Stok habis"
-	return "Tersedia"
+			return Bahasa.t("pasar.habis")
+	return Bahasa.t("pasar.tersedia")
 
 func _beli(id: String) -> void:
 	var hasil := _sesi.market.beli(id, _sesi)

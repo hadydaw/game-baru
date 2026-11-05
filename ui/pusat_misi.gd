@@ -33,10 +33,10 @@ func _ready() -> void:
 func _segarkan() -> void:
 	for anak in _kolom.get_children():
 		anak.queue_free()
-	_kolom.add_child(Tema.label("> Pusat Misi", Tema.TEAL, 34))
-	_kolom.add_child(_bagian("Pesan masuk"))
+	_kolom.add_child(Tema.label(Bahasa.t("misi.judul"), Tema.TEAL, 34))
+	_kolom.add_child(_bagian(Bahasa.t("misi.pesan_masuk")))
 	if _sesi.pesan_misi.is_empty():
-		_kolom.add_child(_teks("Belum ada pesan.", Tema.TEKS_REDUP))
+		_kolom.add_child(_teks(Bahasa.t("misi.belum_pesan"), Tema.TEKS_REDUP))
 	var terbaru := _sesi.pesan_misi.duplicate()
 	terbaru.reverse()
 	for p in terbaru:
@@ -49,14 +49,14 @@ func _segarkan() -> void:
 			aktif.append(m)
 		elif st == "selesai":
 			selesai.append(m)
-	_kolom.add_child(_bagian("Misi aktif"))
+	_kolom.add_child(_bagian(Bahasa.t("misi.aktif")))
 	if aktif.is_empty():
-		_kolom.add_child(_teks("Tidak ada misi aktif. Ikuti pesan yang masuk.", Tema.TEKS_REDUP))
+		_kolom.add_child(_teks(Bahasa.t("misi.tidak_aktif"), Tema.TEKS_REDUP))
 	for m in aktif:
 		_kartu_misi(m, false)  # kartu sudah masuk kolom
-	_kolom.add_child(_bagian("Misi selesai"))
+	_kolom.add_child(_bagian(Bahasa.t("misi.selesai")))
 	if selesai.is_empty():
-		_kolom.add_child(_teks("Belum ada misi yang selesai.", Tema.TEKS_REDUP))
+		_kolom.add_child(_teks(Bahasa.t("misi.belum_selesai"), Tema.TEKS_REDUP))
 	for m in selesai:
 		_kartu_misi(m, true)  # kartu sudah masuk kolom
 
@@ -99,17 +99,17 @@ func _kartu_misi(m: Dictionary, selesai: bool) -> PanelContainer:
 	var kartu := _kartu(Tema.TEAL if not selesai else Tema.TEKS_REDUP)
 	var isi := isi_kartu(kartu)
 	var judul := String(m["judul"])
-	isi.add_child(Tema.label(("[selesai] " if selesai else "") + judul, WARNA_SELESAI if selesai else Tema.TEAL, 28))
-	isi.add_child(_teks("Dari: %s" % m["pengirim"], Tema.TEKS_REDUP))
+	isi.add_child(Tema.label((Bahasa.t("misi.tag_selesai") if selesai else "") + judul, WARNA_SELESAI if selesai else Tema.TEAL, 28))
+	isi.add_child(_teks(Bahasa.t("misi.dari") % m["pengirim"], Tema.TEKS_REDUP))
 	isi.add_child(_teks(String(m["latar"]), Tema.TEKS))
-	isi.add_child(_teks("Target: %s" % m["target"], Tema.TEKS))
+	isi.add_child(_teks(Bahasa.t("misi.target") % m["target"], Tema.TEKS))
 	if m.has("ip"):
-		isi.add_child(_teks("IP target: %s" % m["ip"], Tema.TEAL))
+		isi.add_child(_teks(Bahasa.t("misi.ip_target") % m["ip"], Tema.TEAL))
 	var petunjuk := Misi.petunjuk_ditemukan(_sesi, m)
-	isi.add_child(_teks("Petunjuk ditemukan: %d dari %d" % [petunjuk.size(), m.get("petunjuk", []).size()], Tema.TEKS_REDUP))
+	isi.add_child(_teks(Bahasa.t("misi.petunjuk") % [petunjuk.size(), m.get("petunjuk", []).size()], Tema.TEKS_REDUP))
 	for t in petunjuk:
 		isi.add_child(_teks("· " + String(t), Tema.TEKS))
-	isi.add_child(_teks("Tujuan:", Tema.TEKS))
+	isi.add_child(_teks(Bahasa.t("misi.tujuan"), Tema.TEKS))
 	for t in Misi.status_tujuan(_sesi, m):
 		var tanda := "[x] " if bool(t["selesai"]) else "[ ] "
 		isi.add_child(_teks(tanda + String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS))
@@ -119,8 +119,8 @@ func _kartu_misi(m: Dictionary, selesai: bool) -> PanelContainer:
 func _teks_hadiah(id: String) -> String:
 	var h: Dictionary = Hadiah.data().get(id, {})
 	if h.is_empty():
-		return "Hadiah: -"
-	var bagian: Array = ["Kr %d" % int(h.get("kredit", 0))]
+		return Bahasa.t("misi.hadiah_kosong")
+	var bagian: Array = [Bahasa.t("panel.saldo") % int(h.get("kredit", 0))]
 	for g in h.get("reputasi", {}):
-		bagian.append("reputasi %s +%d" % [g, int(h["reputasi"][g])])
-	return "Hadiah: " + ", ".join(PackedStringArray(bagian))
+		bagian.append(Bahasa.t("misi.reputasi") % [g, int(h["reputasi"][g])])
+	return Bahasa.t("misi.hadiah") + ", ".join(PackedStringArray(bagian))
