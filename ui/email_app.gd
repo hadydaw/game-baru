@@ -150,6 +150,8 @@ func _baris(p: Dictionary) -> Control:
 	var belum := _tab == "masuk" and not Email.sudah_dibaca(_sesi, id)
 	var tombol := Button.new()
 	tombol.focus_mode = Control.FOCUS_NONE
+	# Sentuhan geser diteruskan ke daftar agar bisa scroll ke atas dan bawah; ketuk tetap memilih pesan.
+	tombol.mouse_filter = Control.MOUSE_FILTER_PASS
 	tombol.custom_minimum_size = Vector2(0, 150)
 	tombol.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var warna := LATAR_BELUM if belum else LATAR_KARTU
