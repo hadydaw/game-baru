@@ -125,7 +125,11 @@ static func _kirim_tahap(s: ShellSession, m: Dictionary, n: int) -> void:
 	if n < 1 or n > daftar.size():
 		return
 	var t: Dictionary = daftar[n - 1]
-	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": String(t["pesan"]) + _rincian_tahap(m, n)})
+	var isi := String(t["pesan"]) + _rincian_tahap(m, n)
+	# Pengetahuan tahap: konsep dunia nyata di balik langkah ini, agar pemain ikut belajar.
+	if t.has("pengetahuan"):
+		isi += "\n\n" + Bahasa.dua("Pengetahuan:", "Knowledge:") + "\n" + String(t["pengetahuan"])
+	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": isi})
 
 static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
 	var ada := false
