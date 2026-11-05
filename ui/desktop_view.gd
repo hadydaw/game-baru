@@ -7,21 +7,21 @@ signal buka_aplikasi(id: String)
 signal menu_diminta
 
 const APLIKASI := [
-    {"id": "terminal", "nama": "Terminal", "ikon": "res://assets/ikon/icon_terminal.png"},
-    {"id": "peta", "nama": "Peta Jaringan", "ikon": "res://assets/ikon/icon_peta.png"},
-    {"id": "berkas", "nama": "Berkas", "ikon": "res://assets/ikon/icon_berkas.png"},
-    {"id": "tools", "nama": "Tools", "ikon": "res://assets/ikon/icon_tools.png"},
-    {"id": "forum", "nama": "Forum", "ikon": "res://assets/ikon/icon_forum.png"},
-    {"id": "pasar", "nama": "Black Market", "ikon": "res://assets/ikon/icon_pasar.png"},
-    {"id": "misi", "nama": "Misi", "ikon": "res://assets/ikon/icon_misi.png"},
-    {"id": "log", "nama": "Log", "ikon": "res://assets/ikon/icon_log.png"},
+    {"id": "terminal", "nama": "Terminal", "ikon": "res://assets/ikon/aplikasi/app_terminal.png"},
+    {"id": "peta", "nama": "Peta Jaringan", "ikon": "res://assets/ikon/aplikasi/app_peta.png"},
+    {"id": "berkas", "nama": "Berkas", "ikon": "res://assets/ikon/aplikasi/app_berkas.png"},
+    {"id": "tools", "nama": "Tools", "ikon": "res://assets/ikon/aplikasi/app_tools.png"},
+    {"id": "forum", "nama": "Forum", "ikon": "res://assets/ikon/aplikasi/app_forum.png"},
+    {"id": "pasar", "nama": "Black Market", "ikon": "res://assets/ikon/aplikasi/app_pasar.png"},
+    {"id": "misi", "nama": "Misi", "ikon": "res://assets/ikon/aplikasi/app_misi.png"},
+    {"id": "log", "nama": "Log", "ikon": "res://assets/ikon/aplikasi/app_log.png"},
 ]
-const IKON_KOIN := "res://assets/ikon/ikon_koin.png"
-const IKON_WIFI := "res://assets/ikon/ikon_wifi.png"
-const IKON_USER := "res://assets/ikon/ikon_user.png"
+const IKON_KOIN := "res://assets/ikon/sistem/sys_koin.png"
+const IKON_WIFI := "res://assets/ikon/sistem/sys_wifi_aktif.png"
+const IKON_USER := "res://assets/ikon/sistem/sys_user.png"
 const KOLOM := 4
-const WALL_POTRET := "res://assets/wallpaper/wallpaper_potret.png"
-const WALL_LANSKAP := "res://assets/wallpaper/wallpaper_lanskap.png"
+const WALL_POTRET := "res://assets/wallpaper/wp_potret.png"
+const WALL_LANSKAP := "res://assets/wallpaper/wp_lanskap.png"
 const JARAK_BINGKAI := 14
 
 # Nilai awal. Saldo dan koneksi akan diganti saat sistem ekonomi dan jaringan dibuat.
