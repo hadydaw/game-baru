@@ -11,6 +11,7 @@ const LOGO := "res://assets/logo/logo_jtn.png"
 var _desktop: DesktopView
 var _jendela: ManajerJendela
 var _konfirmasi: KonfirmasiPanel
+var _menu_app: MenuAplikasi
 var _aman := Vector4.ZERO  # kiri, atas, kanan, bawah dalam satuan viewport
 
 func _ready() -> void:
@@ -124,6 +125,7 @@ func _tampilkan_desktop() -> void:
     _desktop.aman = _aman
     _desktop.buka_aplikasi.connect(_buka_aplikasi)
     _desktop.menu_diminta.connect(_minta_kembali_menu)
+    _desktop.menu_aplikasi_diminta.connect(_buka_menu_aplikasi)
     add_child(_desktop)
     _desktop.position = Vector2.ZERO
     _desktop.size = size
@@ -162,6 +164,7 @@ func _minta_kembali_menu() -> void:
 
 func _kembali_ke_menu() -> void:
     _konfirmasi.sembunyikan()
+    _tutup_menu_aplikasi()
     if not Penyimpanan.simpan_sesi(SesiUtama.ambil()):
         push_warning(Bahasa.t("dialog.gagal_simpan"))
         return
@@ -172,6 +175,33 @@ func _kembali_ke_menu() -> void:
         _desktop.queue_free()
     _desktop = null
     _tampilkan_menu()
+
+# Tombol home dan logo panel atas membuka Menu Aplikasi; ketuk lagi untuk menutup.
+func _buka_menu_aplikasi() -> void:
+    if is_instance_valid(_menu_app):
+        _tutup_menu_aplikasi()
+        return
+    _menu_app = MenuAplikasi.new()
+    add_child(_menu_app)
+    var bawah := int(_aman.w) + DesktopView.JARAK_BINGKAI + HotBar.TINGGI + 10
+    var atas := int(_aman.y) + DesktopView.JARAK_BINGKAI + PanelAtas.TINGGI + 10
+    _menu_app.atur_area(atas, bawah)
+    _menu_app.buka_aplikasi.connect(_pilih_dari_menu_aplikasi)
+    _menu_app.keluar_diminta.connect(_keluar_dari_menu_aplikasi)
+    _menu_app.tutup_diminta.connect(_tutup_menu_aplikasi)
+
+func _pilih_dari_menu_aplikasi(id: String) -> void:
+    _tutup_menu_aplikasi()
+    _buka_aplikasi(id)
+
+func _keluar_dari_menu_aplikasi() -> void:
+    _tutup_menu_aplikasi()
+    _minta_kembali_menu()
+
+func _tutup_menu_aplikasi() -> void:
+    if is_instance_valid(_menu_app):
+        _menu_app.queue_free()
+    _menu_app = null
 
 func _buka_aplikasi(id: String) -> void:
     _jendela.buka(id, DesktopView.nama_aplikasi(id), DesktopView.ikon_aplikasi(id), _buat_konten(id))

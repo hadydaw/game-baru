@@ -14,6 +14,14 @@ const BENDERA := {"id": "res://assets/bendera/bendera_id.png", "en": "res://asse
 static var kode := KODE_AWAL
 
 const KAMUS := {
+	"menu_app.judul": {"id": "> Menu Aplikasi", "en": "> Applications"},
+	"menu_app.cari": {"id": "Cari aplikasi...", "en": "Search apps..."},
+	"menu_app.kosong": {"id": "Tidak ada aplikasi yang cocok.", "en": "No matching apps."},
+	"menu_app.keluar": {"id": "Keluar", "en": "Exit"},
+	"kategori.sistem": {"id": "Sistem", "en": "System"},
+	"kategori.jaringan": {"id": "Jaringan", "en": "Network"},
+	"kategori.pasar": {"id": "Pasar", "en": "Market"},
+	"kategori.komunitas": {"id": "Komunitas", "en": "Community"},
 	"app.berkas": {"id": "Berkas", "en": "Files"},
 	"app.forum": {"id": "Forum", "en": "Forum"},
 	"app.log": {"id": "Log", "en": "Logs"},
