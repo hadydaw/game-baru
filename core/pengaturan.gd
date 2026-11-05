@@ -10,11 +10,17 @@ const UKURAN_AWAL := "sedang"
 const NAMA_MIN := 3
 const NAMA_MAKS := 16
 
+# Aplikasi yang bisa diatur posisinya di Desktop. Urutan ini adalah susunan awal.
+const SEMUA_APLIKASI := ["terminal", "peta", "berkas", "tools", "forum", "pasar", "misi", "log"]
+# Ukuran grid ikon Desktop (kolom x baris). Harus sama dengan DesktopView.KOLOM dan BARIS.
+const KOLOM_DESKTOP := 4
+const BARIS_DESKTOP := 3
+
 # Jalur berkas yang dipakai. Tes mengganti ini agar tidak menimpa pengaturan pemain.
 static var berkas_aktif: String = BERKAS
 
 static func muat() -> Dictionary:
-	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL, "bahasa": Bahasa.KODE_AWAL}
+	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL, "bahasa": Bahasa.KODE_AWAL, "posisi_desktop": {}}
 	if not FileAccess.file_exists(berkas_aktif):
 		return hasil
 	var parser := JSON.new()
@@ -27,6 +33,29 @@ static func muat() -> Dictionary:
 		hasil["ukuran_teks"] = String(d["ukuran_teks"])
 	if Bahasa.KODE.has(String(d.get("bahasa", ""))):
 		hasil["bahasa"] = String(d["bahasa"])
+	hasil["posisi_desktop"] = _bersihkan_posisi(d.get("posisi_desktop", {}))
+	return hasil
+
+# Posisi ikon: id -> [kolom, baris]. Hanya id yang dikenal, koordinat dalam grid, dan satu ikon per sel.
+static func _bersihkan_posisi(mentah: Variant) -> Dictionary:
+	var hasil := {}
+	if typeof(mentah) != TYPE_DICTIONARY:
+		return hasil
+	var terpakai := {}
+	for k in mentah:
+		var id := String(k)
+		var v: Variant = mentah[k]
+		if not SEMUA_APLIKASI.has(id) or typeof(v) != TYPE_ARRAY or v.size() != 2:
+			continue
+		var c := int(v[0])
+		var r := int(v[1])
+		if c < 0 or c >= KOLOM_DESKTOP or r < 0 or r >= BARIS_DESKTOP:
+			continue
+		var sel := Vector2i(c, r)
+		if terpakai.has(sel):
+			continue
+		terpakai[sel] = true
+		hasil[id] = [c, r]
 	return hasil
 
 static func simpan(d: Dictionary) -> bool:
@@ -80,3 +109,14 @@ static func set_nama_profil(nama: String) -> bool:
 	if not nama_valid(nama):
 		return false
 	return _ubah("profil_nama", nama)
+
+# Posisi ikon Desktop. Kosong berarti posisi awal. Disimpan sebagai preferensi perangkat, bukan di sesi,
+# sehingga tidak mengubah progres permainan.
+static func posisi_desktop() -> Dictionary:
+	return muat()["posisi_desktop"]
+
+static func set_posisi_desktop(posisi: Dictionary) -> bool:
+	return _ubah("posisi_desktop", _bersihkan_posisi(posisi))
+
+static func reset_posisi_desktop() -> bool:
+	return set_posisi_desktop({})

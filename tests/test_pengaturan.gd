@@ -60,3 +60,32 @@ func test_berkas_rusak_memakai_nilai_awal() -> void:
 	f.close()
 	assert_eq(Pengaturan.ukuran_teks(), "sedang")
 	assert_eq(Pengaturan.nama_profil(), "")
+
+func test_posisi_desktop_awal_kosong() -> void:
+	assert_eq(Pengaturan.posisi_desktop(), {})
+
+func test_posisi_desktop_tersimpan_dan_dibaca_ulang() -> void:
+	assert_true(Pengaturan.set_posisi_desktop({"misi": [1, 2]}))
+	assert_eq(Pengaturan.posisi_desktop(), {"misi": [1, 2]})
+
+func test_posisi_desktop_membuang_id_asing_koordinat_keluar_dan_sel_ganda() -> void:
+	Pengaturan.set_posisi_desktop({"misi": [1, 1], "xxx": [0, 0], "peta": [9, 0], "log": [1, 1]})
+	assert_eq(Pengaturan.posisi_desktop(), {"misi": [1, 1]})
+
+func test_posisi_desktop_berkas_rusak_diabaikan() -> void:
+	var f := FileAccess.open(UJI, FileAccess.WRITE)
+	f.store_string('{"posisi_desktop": [1, 2]}')
+	f.close()
+	assert_eq(Pengaturan.posisi_desktop(), {})
+
+func test_reset_posisi_desktop() -> void:
+	Pengaturan.set_posisi_desktop({"misi": [1, 1]})
+	assert_true(Pengaturan.reset_posisi_desktop())
+	assert_eq(Pengaturan.posisi_desktop(), {})
+
+func test_posisi_tidak_menimpa_pengaturan_lain() -> void:
+	Pengaturan.set_nama_profil("agen_07")
+	Pengaturan.set_ukuran_teks("besar")
+	Pengaturan.set_posisi_desktop({"log": [0, 1]})
+	assert_eq(Pengaturan.nama_profil(), "agen_07")
+	assert_eq(Pengaturan.ukuran_teks(), "besar")

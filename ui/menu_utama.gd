@@ -178,6 +178,11 @@ func _bangun_panel_pengaturan() -> void:
 	_kotak_hint_bahasa.visible = false
 	kolom.add_child(_kotak_hint_bahasa)
 
+	kolom.add_child(_judul_seksi(Bahasa.t("pengaturan.susunan_ikon")))
+	var atur_ulang := _tombol_biasa(Bahasa.t("pengaturan.atur_ulang_ikon"))
+	atur_ulang.pressed.connect(_aksi_atur_ulang_ikon)
+	kolom.add_child(atur_ulang)
+
 	var kembali := _tombol_biasa(Bahasa.t("umum.kembali"))
 	kembali.pressed.connect(_tutup_panel)
 	kolom.add_child(kembali)
@@ -223,6 +228,14 @@ func _tandai_segmen(simpan: Dictionary, aktif: String) -> void:
 
 func _gaya_segmen(aktif: bool) -> StyleBoxFlat:
 	return Tema.kotak(Color(0.06, 0.2, 0.2) if aktif else Color(0.06, 0.1, 0.12), WARNA_TEAL if aktif else WARNA_BATAS, 2 if aktif else 1, 10)
+
+# Mengembalikan urutan ikon Desktop ke susunan awal. Progres permainan tidak ikut berubah.
+func _aksi_atur_ulang_ikon() -> void:
+	# Umpan balik ditampilkan di panel Pengaturan; label status menu berada di balik panel.
+	if Pengaturan.reset_posisi_desktop():
+		_lbl_hint_pengaturan.text = Bahasa.t("pengaturan.ikon_dikembalikan")
+	else:
+		_lbl_hint_pengaturan.text = Bahasa.t("pengaturan.ikon_gagal")
 
 func _bangun_panel_login() -> void:
 	_panel_login = _bangun_panel(Bahasa.t("login.judul"))

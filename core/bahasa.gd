@@ -14,6 +14,10 @@ const BENDERA := {"id": "res://assets/bendera/bendera_id.png", "en": "res://asse
 static var kode := KODE_AWAL
 
 const KAMUS := {
+	"pengaturan.susunan_ikon": {"id": "Susunan ikon Desktop", "en": "Desktop icon layout"},
+	"pengaturan.atur_ulang_ikon": {"id": "Atur ulang susunan ikon", "en": "Reset icon layout"},
+	"pengaturan.ikon_dikembalikan": {"id": "Susunan ikon Desktop dikembalikan ke awal. Buka Desktop untuk melihatnya.", "en": "Desktop icon layout reset. Open the Desktop to see it."},
+	"pengaturan.ikon_gagal": {"id": "Gagal menyimpan pengaturan.", "en": "Failed to save settings."},
 	"intro.judul_cerita": {"id": "Jaringan Terbuka Nusantara", "en": "Nusantara Open Network"},
 	"intro.lewati": {"id": "Lewati", "en": "Skip"},
 	"intro.kembali_pilih": {"id": "Kembali", "en": "Back"},
