@@ -19,6 +19,8 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "tools": return ToolCommands.tools(s)
         "inspeksi": return ToolCommands.inspeksi(s, p)
         "trace": return ToolCommands.trace(s, p)
+        "decode": return AnalisisCommands.decode(s, p)
+        "analyze": return AnalisisCommands.analyze(s, p)
         "man": return _man(s, p)
         "ls": return _ls(s, p)
         "cd": return _cd(s, p)
@@ -144,6 +146,8 @@ static func _cat(s: ShellSession, p: Dictionary) -> Array:
             hasil.append(s.galat("cat", "%s: %s" % [t, Teks.t("err.direktori")]))
         elif not Permissions.boleh(node, ShellSession.USER, ShellSession.GRUP, "r"):
             hasil.append(s.galat("cat", "%s: %s" % [t, Teks.t("err.izin")]))
+        elif AnalisisCommands.tolak_cat(s, node) != "":
+            hasil.append(s.galat("cat", AnalisisCommands.tolak_cat(s, node)))
         else:
             var isi_teks := isi_berkas(node)
             if not isi_teks.is_empty():
