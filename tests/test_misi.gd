@@ -110,3 +110,13 @@ func test_pusat_misi_bisa_dibangun() -> void:
 	await get_tree().process_frame
 	assert_true(layar.find_children("*", "Label", true, false).size() > 0, "layar menampilkan label")
 	layar.free()
+
+# Terminal tidak menampilkan notifikasi Pusat Misi, tetapi pesan tetap tersedia di sesi (aplikasi Misi).
+func test_terminal_tidak_menampilkan_notifikasi_misi() -> void:
+	var s := _baru()
+	assert_eq(s.pesan_misi.size(), 1, "pesan Mira tetap ada")
+	var teks := ""
+	for b in s.jalankan("pwd"):
+		teks += String(b["teks"]) + "\n"
+	assert_false(teks.contains("[Pusat Misi]"), "pwd tidak memuat notifikasi")
+	assert_false(bool(s.pesan_misi[0]["dilaporkan"]), "pesan tidak ditandai dilaporkan oleh Terminal")
