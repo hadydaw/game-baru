@@ -18,6 +18,7 @@ var jaringan: Jaringan
 var economy: Economy
 var inventory: Inventory
 var market: BlackMarket
+var hadiah_diambil: Array = []  # flag misi yang hadiahnya sudah diberikan
 var reputation: Reputation
 var ssh_aktif: ShellSession = null
 
@@ -31,7 +32,7 @@ func _init(p_fs: Vfs, p_jaringan: Jaringan = null) -> void:
 
 # Seluruh keadaan sesi lokal yang perlu disimpan: filesystem, direktori aktif, riwayat, dan jaringan.
 func to_dict() -> Dictionary:
-    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict()}
+    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate()}
 
 static func dari_dict(d: Dictionary) -> ShellSession:
     var j := Jaringan.muat()
@@ -49,6 +50,7 @@ static func dari_dict(d: Dictionary) -> ShellSession:
         s.inventory.terapkan(d["inventaris"])
     if typeof(d.get("pasar")) == TYPE_DICTIONARY:
         s.market.terapkan(d["pasar"])
+    s.hadiah_diambil = Array(d.get("hadiah", []))
     return s
 
 func prompt() -> String:

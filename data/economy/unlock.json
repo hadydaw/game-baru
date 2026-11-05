@@ -1,0 +1,6 @@
+[
+  {"tool": "crypt_decoder", "tingkat": 1, "jalur": "misi", "flag": "misi_relay"},
+  {"tool": "password_analyzer", "tingkat": 1, "jalur": "grup", "reputasi": 25},
+  {"tool": "signal_tracer", "tingkat": 1, "jalur": "penemuan", "flag": "temu:catatan_relay"},
+  {"tool": "packet_inspector", "tingkat": 2, "jalur": "hadiah_kontak", "flag": "kontak:makelar"}
+]

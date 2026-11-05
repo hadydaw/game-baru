@@ -154,6 +154,10 @@ static func _cat(s: ShellSession, p: Dictionary) -> Array:
             if not isi_teks.is_empty():
                 for baris_teks in isi_teks.split("\n"):
                     hasil.append(s.baris("info", baris_teks))
+            # Berkas penemuan menandai flag saat dibaca, lalu unlock dievaluasi ulang.
+            if node.has("penemuan"):
+                s.jaringan.buka("temu:" + String(node["penemuan"]))
+                UnlockRules.evaluasi(s)
     return hasil
 
 # Membuat node baru di bawah HOME saja. Mengembalikan pesan galat, atau "" bila berhasil.
