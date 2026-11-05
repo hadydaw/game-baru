@@ -70,6 +70,16 @@ func dimiliki_dan_terpasang() -> Dictionary:
 		hasil[antena_id] = int(hasil.get(antena_id, 0)) + 1
 	return hasil
 
+# Status adapter untuk tampilan: tidak_terdeteksi, kesalahan (belum ada driver), terputus, atau aktif.
+func status() -> String:
+	if not sudah_dirakit():
+		return "tidak_terdeteksi"
+	if terhubung():
+		return "aktif"
+	if driver_aktif() == "":
+		return "kesalahan"
+	return "terputus"
+
 func driver_aktif() -> String:
 	return String(rakitan.get("driver", ""))
 

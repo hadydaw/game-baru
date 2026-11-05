@@ -13,6 +13,10 @@ var dianalisis: Dictionary = {}          # SSID -> true (security analyze)
 var handshake: Dictionary = {}           # SSID -> true (audit auth)
 var kata_sandi_ditemukan: Dictionary = {}  # SSID -> kata sandi hasil audit run
 var terakses: Dictionary = {}            # SSID -> true (security verify)
+var riwayat: Array = []                  # tiap pemindaian, terbaru di depan: {waktu, perangkat, jumlah, jaringan, dipilih, analisis}
+var waktu_lihat: Dictionary = {}         # SSID -> waktu terakhir ditemukan oleh pemindaian
+
+const BATAS_RIWAYAT := 50
 
 static func data(path: String = DATA) -> Dictionary:
 	var parser := JSON.new()
@@ -39,7 +43,9 @@ func to_dict() -> Dictionary:
 		"dianalisis": dianalisis.duplicate(),
 		"handshake": handshake.duplicate(),
 		"kata_sandi_ditemukan": kata_sandi_ditemukan.duplicate(),
-		"terakses": terakses.duplicate(),
+		"terakses": terakses.duplicate(true),
+		"riwayat": riwayat.duplicate(true),
+		"waktu_lihat": waktu_lihat.duplicate(),
 	}
 
 func terapkan(d: Dictionary) -> void:
@@ -49,6 +55,37 @@ func terapkan(d: Dictionary) -> void:
 	handshake = Dictionary(d.get("handshake", {})).duplicate()
 	kata_sandi_ditemukan = Dictionary(d.get("kata_sandi_ditemukan", {})).duplicate()
 	terakses = Dictionary(d.get("terakses", {})).duplicate()
+	riwayat = Array(d.get("riwayat", [])).duplicate(true)
+	waktu_lihat = Dictionary(d.get("waktu_lihat", {})).duplicate()
+
+# Mencatat satu pemindaian ke riwayat. Entri terbaru ada di depan.
+func catat_scan(perangkat_id: String, ssids: Array, waktu: String) -> void:
+	riwayat.push_front({"waktu": waktu, "perangkat": perangkat_id, "jumlah": ssids.size(), "jaringan": ssids.duplicate(), "dipilih": "", "analisis": {}})
+	while riwayat.size() > BATAS_RIWAYAT:
+		riwayat.pop_back()
+	for ssid in ssids:
+		waktu_lihat[String(ssid)] = waktu
+
+# Jaringan yang dipilih dicatat pada pemindaian terbaru yang memuatnya.
+func catat_pilih(ssid: String) -> void:
+	for e in riwayat:
+		if Array(e["jaringan"]).has(ssid):
+			e["dipilih"] = ssid
+			return
+
+# Hasil analisis dicatat pada semua pemindaian yang memuat jaringan itu.
+func catat_analisis(ssid: String, tingkat: String) -> void:
+	for e in riwayat:
+		if Array(e["jaringan"]).has(ssid):
+			e["analisis"][ssid] = tingkat
+
+# Semua pemindaian yang pernah menemukan jaringan ini.
+func riwayat_jaringan(ssid: String) -> Array:
+	var hasil: Array = []
+	for e in riwayat:
+		if Array(e["jaringan"]).has(ssid):
+			hasil.append(e)
+	return hasil
 
 # Frekuensi dari nomor kanal: kanal 1-14 berada di 2.4 GHz, selebihnya 5 GHz.
 static func frekuensi(j: Dictionary) -> String:

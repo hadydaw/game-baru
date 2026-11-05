@@ -17,6 +17,7 @@ static func scan(s: ShellSession, p: Dictionary) -> Array:
 	var ssids := Dictionary(WifiLab.data().get("jaringan", {})).keys()
 	ssids.sort()
 	s.wifi.ditemukan = []
+	var waktu := Time.get_datetime_string_from_system().substr(0, 16).replace("T", " ")
 	var hasil: Array = [s.baris_kunci("info", "wifi.judul_scan")]
 	hasil.append(s.baris("info", "BSSID              CH   SINYAL          ENK    SSID"))
 	for ssid in ssids:
@@ -25,6 +26,7 @@ static func scan(s: ShellSession, p: Dictionary) -> Array:
 		var dbm := int(j["sinyal"])
 		hasil.append(s.baris("info", "%-17s  %3d  %s %4d dBm  %-5s  %s" % [String(j["bssid"]), int(j["kanal"]), WifiLab.bar(dbm), dbm, String(j["enkripsi"]), String(ssid)]))
 	hasil.append(s.baris("info", Bahasa.dua("%d jaringan ditemukan. Gunakan 'network inspect <SSID>' untuk detail.", "%d networks found. Use 'network inspect <SSID>' for details.", [ssids.size()])))
+	s.wifi.catat_scan(s.perangkat.adapter(), ssids, waktu)
 	_catat(s, "wifi-scanner --scan: %d networks [%s]" % [ssids.size(), ", ".join(PackedStringArray(ssids))])
 	s.jaringan.buka("wifi:scan")
 	return hasil
@@ -52,6 +54,7 @@ static func network(s: ShellSession, p: Dictionary) -> Array:
 				return [s.galat_kunci("network", "wifi.tidak_terlihat", [ssid])]
 			var j := WifiLab.jaringan(ssid)
 			s.wifi.terpilih = ssid
+			s.wifi.catat_pilih(ssid)
 			_catat(s, "network inspect %s: bssid=%s channel=%d signal=%d enc=%s wps=%s clients=%d" % [ssid, String(j["bssid"]), int(j["kanal"]), int(j["sinyal"]), String(j["enkripsi"]), str(bool(j["wps"])), int(j["klien"])])
 			s.jaringan.buka("wifi:pilih:" + ssid)
 			return [
@@ -94,6 +97,7 @@ static func security(s: ShellSession, p: Dictionary) -> Array:
 			var j := WifiLab.jaringan(ssid)
 			var enkripsi := String(j["enkripsi"])
 			s.wifi.dianalisis[ssid] = true
+			s.wifi.catat_analisis(ssid, WifiLab.tingkat_risiko(ssid))
 			s.jaringan.buka("wifi:analisis:" + ssid)
 			var hasil: Array = [
 				s.baris_kunci("info", "wifi.analisis_judul", [ssid]),

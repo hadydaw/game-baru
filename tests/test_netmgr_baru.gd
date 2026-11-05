@@ -1,0 +1,106 @@
+extends GutTest
+
+# Network Manager baru: riwayat pemindaian, status antarmuka, dan layar tanpa checklist.
+
+var _nm: NetworkManager
+
+func before_each() -> void:
+	Bahasa.kode = "id"
+
+func after_each() -> void:
+	if _nm != null:
+		remove_child(_nm)
+		_nm.free()
+		_nm = null
+	SesiUtama.sesi = null
+
+func _sesi_terpasang() -> ShellSession:
+	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
+	Misi.perbarui(s)
+	Misi.terima(s, "misi_1")
+	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install wifi-scanner", "tools install network-analyzer", "tools install password-auditor"]:
+		s.jalankan(c)
+	return s
+
+func test_scan_mencatat_riwayat() -> void:
+	var s := _sesi_terpasang()
+	s.jalankan("wifi-scanner --scan")
+	assert_eq(s.wifi.riwayat.size(), 1, "satu pemindaian tercatat")
+	var e: Dictionary = s.wifi.riwayat[0]
+	assert_eq(int(e["jumlah"]), 3, "tiga jaringan tercatat")
+	assert_eq(String(e["perangkat"]), "usb_wireless_adapter", "perangkat yang dipakai tercatat")
+	assert_true(String(s.wifi.waktu_lihat["LAB-WIFI-01"]) != "", "waktu terakhir terlihat tercatat")
+
+func test_pilih_dan_analisis_tercatat_di_riwayat() -> void:
+	var s := _sesi_terpasang()
+	s.jalankan("wifi-scanner --scan")
+	s.jalankan("network inspect LAB-WIFI-02")
+	s.jalankan("security analyze LAB-WIFI-02")
+	var e: Dictionary = s.wifi.riwayat[0]
+	assert_eq(String(e["dipilih"]), "LAB-WIFI-02", "jaringan yang dipilih tercatat")
+	assert_eq(String(e["analisis"]["LAB-WIFI-02"]), "tinggi", "tingkat risiko hasil analisis tercatat")
+
+func test_riwayat_tetap_ada_setelah_dimuat_ulang() -> void:
+	var s := _sesi_terpasang()
+	s.jalankan("wifi-scanner --scan")
+	s.jalankan("network inspect LAB-WIFI-01")
+	var dimuat := ShellSession.dari_dict(s.to_dict())
+	assert_eq(dimuat.wifi.riwayat.size(), 1, "riwayat ikut tersimpan")
+	assert_eq(String(dimuat.wifi.riwayat[0]["dipilih"]), "LAB-WIFI-01", "pilihan ikut tersimpan")
+	assert_eq(dimuat.wifi.ditemukan.size(), 3, "hasil pemindaian ikut tersimpan")
+
+func test_status_perangkat_berurutan() -> void:
+	var p := Perangkat.new()
+	assert_eq(p.status(), "tidak_terdeteksi", "belum dirakit")
+	var s := _sesi_terpasang()
+	assert_eq(s.perangkat.status(), "aktif", "terhubung dan ber-driver")
+	s.perangkat.putuskan()
+	assert_eq(s.perangkat.status(), "terputus", "terputus tetapi driver ada")
+	s.perangkat.rakitan["driver"] = ""
+	assert_eq(s.perangkat.status(), "kesalahan", "tanpa driver berarti kesalahan")
+
+func test_layar_tidak_memuat_checklist_tahap() -> void:
+	var s := _sesi_terpasang()
+	SesiUtama.sesi = s
+	_nm = NetworkManager.new()
+	add_child(_nm)
+	var teks := _kumpulkan_teks(_nm)
+	assert_false(teks.contains("Deteksi perangkat"), "tidak ada checklist tahap")
+	assert_false(teks.contains("Tahap pengujian"), "tidak ada judul checklist")
+	assert_false(teks.contains("[ ]"), "tidak ada kotak centang")
+
+func test_layar_menampilkan_jaringan_hasil_scan() -> void:
+	var s := _sesi_terpasang()
+	s.jalankan("wifi-scanner --scan")
+	SesiUtama.sesi = s
+	_nm = NetworkManager.new()
+	add_child(_nm)
+	_nm._pilih_tab("pindai")
+	# Setelah pemindaian dari Terminal, layar menampilkan jaringan secara bertahap; saat ini semua sudah tampil.
+	_nm._memindai = false
+	_nm._reveal_n = 3
+	_nm._bangun_tab()
+	var teks := _kumpulkan_teks(_nm)
+	assert_true(teks.contains("LAB-WIFI-01"), "LAB-WIFI-01 tampil")
+	assert_true(teks.contains("LAB-WIFI-03"), "LAB-WIFI-03 tampil")
+
+func _kumpulkan_teks(node: Node) -> String:
+	var hasil := ""
+	for c in node.get_children():
+		if c is Label:
+			hasil += (c as Label).text + "\n"
+		hasil += _kumpulkan_teks(c)
+	return hasil
+
+func test_pemindaian_dari_terminal_langsung_tampil_di_network_manager() -> void:
+	var s := _sesi_terpasang()
+	SesiUtama.sesi = s
+	_nm = NetworkManager.new()
+	add_child(_nm)
+	assert_false(_nm._memindai, "belum ada pemindaian saat layar dibuka")
+	s.jalankan("wifi-scanner --scan")
+	_nm._periksa()
+	assert_true(_nm._memindai, "pemindaian dari Terminal memicu tampilan bertahap")
+	_nm._reveal_n = 3
+	_nm._selesai_reveal()
+	assert_false(_nm._memindai, "tampilan selesai setelah semua jaringan tampil")
