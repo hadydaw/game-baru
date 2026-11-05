@@ -43,6 +43,9 @@ const MAN := {
     "ssh": "ssh [user@]<host>: masuk ke node jarak jauh jika akses tersedia. Ketik exit untuk keluar.",
     "exit": "exit: keluar dari sesi SSH dan kembali ke terminal lokal.",
     "wallet": "wallet: tampilkan saldo kredit dan reputasi per grup.",
+    "tools": "tools: tampilkan tool yang dimiliki, tingkat, dan sumbernya.",
+    "inspeksi": "inspeksi <host>: baca log transfer node yang sudah dipindai nmap. Membutuhkan Packet Inspector.",
+    "trace": "trace <host>: tampilkan jalur koneksi dari node. Membutuhkan Signal Tracer.",
 }
 
 static func t(kunci: String, parameter: Dictionary = {}) -> String:

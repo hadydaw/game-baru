@@ -6,13 +6,19 @@ extends RefCounted
 
 static func jalankan(s: ShellSession, p: Dictionary) -> Array:
     var nama := String(p["nama"])
+    # Perintah milik tool yang belum dimiliki diperlakukan seperti perintah yang tidak ada.
+    if not CommandRegistry.tersedia(s.inventory, nama):
+        return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
     match nama:
         "pwd": return [s.baris("info", s.cwd)]
         "whoami": return [s.baris("info", ShellSession.USER)]
         "echo": return [s.baris("info", " ".join(PackedStringArray(p["argumen"])))]
         "clear": return [s.baris("clear", "")]
         "history": return _history(s)
-        "help": return _help()
+        "help": return _help(s)
+        "tools": return ToolCommands.tools(s)
+        "inspeksi": return ToolCommands.inspeksi(s, p)
+        "trace": return ToolCommands.trace(s, p)
         "man": return _man(s, p)
         "ls": return _ls(s, p)
         "cd": return _cd(s, p)
@@ -46,10 +52,11 @@ static func _history(s: ShellSession) -> Array:
         hasil.append(s.baris("info", "%5d  %s" % [i + 1, s.riwayat[i]]))
     return hasil
 
-static func _help() -> Array:
+static func _help(s: ShellSession) -> Array:
     var hasil: Array = [{"tipe": "info", "teks": Teks.t("help.judul")}]
     for nama in Teks.MAN.keys():
-        hasil.append({"tipe": "info", "teks": "  " + nama})
+        if CommandRegistry.tersedia(s.inventory, String(nama)):
+            hasil.append({"tipe": "info", "teks": "  " + nama})
     return hasil
 
 static func _man(s: ShellSession, p: Dictionary) -> Array:

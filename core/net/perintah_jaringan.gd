@@ -40,6 +40,11 @@ static func ping(s: ShellSession, p: Dictionary) -> Array:
     return hasil
 
 static func nmap(s: ShellSession, p: Dictionary) -> Array:
+    # -sV (versi layanan) dan deteksi firewall hanya tersedia dengan Network Scanner tingkat tertentu.
+    var sv := ShellParser.punya_huruf(p["opsi"], "V")
+    if sv and s.inventory.tingkat("network_scanner") < 2:
+        return [s.galat("nmap", Teks.t("err.opsi"))]
+    var tampil_firewall := s.inventory.tingkat("network_scanner") >= 3
     var args: Array = p["argumen"].duplicate()
     var filter: Array = []
     if ShellParser.punya_huruf(p["opsi"], "p"):
@@ -61,7 +66,9 @@ static func nmap(s: ShellSession, p: Dictionary) -> Array:
     if not j.aktif(id):
         hasil.append(s.baris("info", "Host tampaknya tidak aktif (tidak ada respons)."))
         return hasil
-    hasil.append(s.baris("info", "PORT       STATE    SERVICE"))
+    hasil.append(s.baris("info", "PORT       STATE    SERVICE" + ("      VERSI" if sv else "")))
+    if tampil_firewall:
+        hasil.append(s.baris("info", "Firewall: tingkat %d" % int(j.data[id].get("firewall", 0))))
     var port_dict: Dictionary = j.data[id].get("port", {})
     var nomor_list := port_dict.keys()
     nomor_list.sort()
@@ -71,9 +78,13 @@ static func nmap(s: ShellSession, p: Dictionary) -> Array:
         if not filter.is_empty() and not filter.has(n):
             continue
         var pd: Dictionary = port_dict[nomor]
-        hasil.append(s.baris("info", "%-10s %-8s %s" % ["%s/tcp" % n, String(pd.get("status", "")), String(pd.get("layanan", ""))]))
+        var baris_port := "%-10s %-8s %s" % ["%s/tcp" % n, String(pd.get("status", "")), String(pd.get("layanan", ""))]
+        if sv:
+            baris_port = "%-10s %-8s %-10s %s" % ["%s/tcp" % n, String(pd.get("status", "")), String(pd.get("layanan", "")), String(pd.get("versi", "-"))]
+        hasil.append(s.baris("info", baris_port))
         tampil += 1
     j.jelajahi(id)
+    j.tandai_dipindai(id)
     hasil.append(s.baris("info", "Pemindaian selesai: 1 host, %d port ditampilkan." % tampil))
     return hasil
 
@@ -107,6 +118,7 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     # Saldo dan reputasi milik pemain, bukan milik node, jadi sesi jarak jauh memakai objek yang sama.
     jauh.economy = s.economy
     jauh.reputation = s.reputation
+    jauh.inventory = s.inventory
     jauh.cwd = ShellSession.HOME
     jauh.fs.akar = j.fs_node[id]
     s.ssh_aktif = jauh

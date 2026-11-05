@@ -11,6 +11,7 @@ var data: Dictionary = {}      # konfigurasi node dari JSON, tidak berubah saat 
 var ditemukan: Array = []      # id node yang sudah diketahui pemain
 var progres: Array = []        # flag misi yang sudah terbuka (mengunci/membuka node)
 var fs_node: Dictionary = {}   # filesystem tiap node; bisa berubah lewat SSH
+var dipindai: Array = []       # id node yang sudah pernah dipindai nmap
 
 static func muat(path: String = DATA) -> Jaringan:
     var j := Jaringan.new()
@@ -54,6 +55,13 @@ func jelajahi(id: String) -> void:
         if not ditemukan.has(String(t)):
             ditemukan.append(String(t))
 
+func tandai_dipindai(id: String) -> void:
+    if not dipindai.has(id):
+        dipindai.append(id)
+
+func sudah_dipindai(id: String) -> bool:
+    return dipindai.has(id)
+
 func buka(flag: String) -> void:
     if not progres.has(flag):
         progres.append(flag)
@@ -81,11 +89,12 @@ func daftar_terlihat() -> Array:
     return hasil
 
 func to_dict() -> Dictionary:
-    return {"ditemukan": ditemukan, "progres": progres, "fs": fs_node}
+    return {"ditemukan": ditemukan, "progres": progres, "fs": fs_node, "dipindai": dipindai}
 
 func terapkan(d: Dictionary) -> void:
     ditemukan = Array(d.get("ditemukan", ditemukan))
     progres = Array(d.get("progres", []))
+    dipindai = Array(d.get("dipindai", []))
     var fs_tersimpan: Dictionary = d.get("fs", {})
     for id in fs_tersimpan:
         if fs_node.has(id):

@@ -12,11 +12,13 @@
     "port": {
       "22": {
         "status": "tertutup",
-        "layanan": "ssh"
+        "layanan": "ssh",
+        "versi": "JTN-SSH 2.1"
       },
       "80": {
         "status": "terbuka",
-        "layanan": "http"
+        "layanan": "http",
+        "versi": "JTN-HTTP 1.4"
       }
     },
     "fs": {
@@ -50,7 +52,28 @@
           }
         }
       }
-    }
+    },
+    "firewall": 0,
+    "log": [
+      {
+        "jam": "08:00",
+        "dari": "gerbang",
+        "ke": "10.7.0.8",
+        "bytes": 512
+      },
+      {
+        "jam": "08:14",
+        "dari": "relay",
+        "ke": "gerbang",
+        "bytes": 2048
+      },
+      {
+        "jam": "08:31",
+        "dari": "gerbang",
+        "ke": "10.7.0.4",
+        "bytes": 96
+      }
+    ]
   },
   "arsip": {
     "ip": "10.7.0.8",
@@ -63,7 +86,8 @@
     "port": {
       "22": {
         "status": "terbuka",
-        "layanan": "ssh"
+        "layanan": "ssh",
+        "versi": "JTN-SSH 2.1"
       },
       "80": {
         "status": "tertutup",
@@ -106,7 +130,30 @@
           }
         }
       }
-    }
+    },
+    "firewall": 1,
+    "log": [
+      {
+        "jam": "09:02",
+        "dari": "arsip",
+        "ke": "10.7.1.2",
+        "bytes": 4096
+      },
+      {
+        "jam": "09:20",
+        "dari": "10.7.0.1",
+        "ke": "arsip",
+        "bytes": 128
+      }
+    ],
+    "log_terhapus": [
+      {
+        "jam": "07:55",
+        "dari": "arsip",
+        "ke": "10.7.0.1",
+        "bytes": 700
+      }
+    ]
   },
   "relay": {
     "ip": "10.7.0.4",
