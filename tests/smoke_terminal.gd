@@ -31,6 +31,28 @@ func _initialize() -> void:
     if not teks.contains("bash: xyz: perintah tidak ditemukan"):
         gagal.append("galat perintah tidak tampil")
 
+    # Ctrl sebagai modifier: Ctrl lalu C membatalkan baris, Ctrl lalu L membersihkan layar.
+    var masukan: LineEdit = layar.get("_masukan")
+    layar.call("_set_teks", "tes")
+    layar.call("_tekan_tombol", "Ctrl")
+    layar.call("_tekan_tombol", "c")
+    if masukan.text != "" or not keluaran.get_parsed_text().contains("tes^C"):
+        gagal.append("Ctrl+C tidak membatalkan baris")
+    layar.call("_set_teks", "abc")
+    layar.call("_tekan_tombol", "Ctrl")
+    layar.call("_tekan_tombol", "l")
+    if keluaran.get_parsed_text().contains("tes^C") or masukan.text != "abc":
+        gagal.append("Ctrl+L tidak membersihkan layar atau mengubah masukan")
+    # Keyboard HP mengetik langsung ke LineEdit: Ctrl lalu U harus menghapus baris.
+    layar.call("_set_teks", "hapus saya")
+    layar.call("_tekan_tombol", "Ctrl")
+    masukan.insert_text_at_caret("u")
+    # Keyboard HP memicu text_changed; di headless insert_text_at_caret tidak memicunya, jadi disimulasikan.
+    masukan.text_changed.emit(masukan.text)
+    if masukan.text != "":
+        gagal.append("Ctrl+U dari keyboard tidak menghapus baris")
+    layar.call("_set_teks", "")
+
     if gagal.is_empty():
         print("SMOKE LULUS: layar terminal menampilkan output dan memproses perintah")
         quit(0)

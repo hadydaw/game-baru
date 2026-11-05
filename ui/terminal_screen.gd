@@ -24,6 +24,10 @@ var _margin: MarginContainer
 var _font: Font
 var _riwayat_idx: int = 0
 var _tinggi_keyboard: float = -1.0
+# Ctrl sebagai modifier: aktif sampai dipakai satu kali atau dibatalkan dengan menekannya lagi.
+var _ctrl: bool = false
+var _tombol_ctrl: Button
+var _teks_terakhir: String = ""
 
 func _ready() -> void:
     set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -67,6 +71,7 @@ func _ready() -> void:
     _masukan.add_theme_stylebox_override("normal", Tema.kotak(Color(0.05, 0.08, 0.1), Tema.TEAL, 1, 10))
     _masukan.add_theme_stylebox_override("focus", Tema.kotak(Color(0.05, 0.08, 0.1), Tema.TEAL, 2, 10))
     _masukan.text_submitted.connect(_kirim)
+    _masukan.text_changed.connect(_teks_berubah)
     baris.add_child(_masukan)
     kolom.add_child(baris)
 
@@ -155,6 +160,8 @@ func _buat_baris_tombol() -> Control:
         b.add_theme_stylebox_override("normal", _gaya_tombol(Color(0.06, 0.09, 0.12)))
         b.add_theme_stylebox_override("hover", _gaya_tombol(Color(0.08, 0.13, 0.15)))
         b.add_theme_stylebox_override("pressed", _gaya_tombol(Color(0.1, 0.22, 0.22)))
+        if t == "Ctrl":
+            _tombol_ctrl = b
         b.pressed.connect(_tekan_tombol.bind(t))
         grid.add_child(b)
     return grid
@@ -193,25 +200,73 @@ func _fs_cadangan() -> Dictionary:
     return {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}
 
 func _tekan_tombol(t: String) -> void:
+    if t == "Ctrl":
+        _ctrl = not _ctrl
+        _perbarui_ctrl()
+        return
+    if t not in ["Tab", "Enter", "Backspace", "↑", "↓"]:
+        # Karakter biasa. Bila Ctrl aktif, _teks_berubah yang memprosesnya.
+        _ubah_masukan(func(): _masukan.insert_text_at_caret(t))
+        return
+    # Tombol fungsi membatalkan Ctrl yang sedang aktif.
+    _ctrl = false
+    _perbarui_ctrl()
     match t:
         "Tab":
             _lengkapi()
-        "Ctrl":
-            _batalkan()
         "Enter":
             _kirim(_masukan.text)
         "Backspace":
-            _masukan.delete_char_at_caret()
+            _ubah_masukan(func(): _masukan.delete_char_at_caret())
         "↑":
             _riwayat(-1)
         "↓":
             _riwayat(1)
-        _:
-            _masukan.insert_text_at_caret(t)
+
+# Setiap perubahan masukan (tombol layar maupun keyboard HP) lewat sini.
+# Bila Ctrl aktif dan satu karakter disisipkan, karakter itu dipakai sebagai kombinasi Ctrl.
+func _teks_berubah(baru: String) -> void:
+    var lama := _teks_terakhir
+    if not _ctrl or baru.length() != lama.length() + 1:
+        _teks_terakhir = baru
+        return
+    var h := ShellControl.sisipan(lama, baru)
+    _ctrl = false
+    _perbarui_ctrl()
+    _set_teks(String(h["teks"]))
+    _jalankan_aksi(ShellControl.aksi(String(h["huruf"])))
+
+# Mengubah masukan dari kode. Teks dicatat agar perubahan berikutnya dibandingkan dengan benar,
+# karena mengubah text secara program tidak selalu memicu text_changed.
+func _set_teks(baru: String) -> void:
+    _masukan.text = baru
+    _masukan.caret_column = baru.length()
+    _teks_terakhir = baru
+
+# Menjalankan perubahan (sisip atau hapus) lalu memastikan Ctrl diproses, dengan atau tanpa sinyal.
+func _ubah_masukan(ubah: Callable) -> void:
+    _teks_terakhir = _masukan.text
+    ubah.call()
+    if _masukan.text != _teks_terakhir:
+        _teks_berubah(_masukan.text)
+
+func _jalankan_aksi(a: String) -> void:
+    match a:
+        "batal":
+            _tampil_perintah(_masukan.text + "^C")
+            _set_teks("")
+        "bersihkan":
+            _keluaran.clear()
+        "hapus_baris":
+            _set_teks("")
+
+func _perbarui_ctrl() -> void:
+    if _tombol_ctrl != null:
+        _tombol_ctrl.modulate = Color(0.45, 1.0, 0.85) if _ctrl else Color(1, 1, 1)
 
 func _kirim(teks: String) -> void:
     var t := teks.strip_edges()
-    _masukan.clear()
+    _set_teks("")
     if _sesi == null:
         _tampil([{"tipe": "error", "teks": "Sesi shell belum siap, perintah tidak dijalankan."}])
         return
@@ -224,10 +279,6 @@ func _kirim(teks: String) -> void:
     _perbarui_prompt()
     _simpan()
 
-func _batalkan() -> void:
-    _tampil_perintah(_masukan.text + "^C")
-    _masukan.clear()
-
 func _riwayat(arah: int) -> void:
     if _sesi == null:
         return
@@ -235,16 +286,14 @@ func _riwayat(arah: int) -> void:
     if r.is_empty():
         return
     _riwayat_idx = clampi(_riwayat_idx + arah, 0, r.size())
-    _masukan.text = String(r[_riwayat_idx]) if _riwayat_idx < r.size() else ""
-    _masukan.caret_column = _masukan.text.length()
+    _set_teks(String(r[_riwayat_idx]) if _riwayat_idx < r.size() else "")
 
 # Tab: melengkapi perintah atau nama berkas/direktori. Bila banyak kecocokan, daftarnya ditampilkan.
 func _lengkapi() -> void:
     if _sesi == null:
         return
     var hasil := ShellComplete.lengkapi(_sesi, _masukan.text)
-    _masukan.text = String(hasil["teks"])
-    _masukan.caret_column = _masukan.text.length()
+    _set_teks(String(hasil["teks"]))
     var pilihan: Array = hasil["pilihan"]
     if pilihan.size() > 1:
         _tampil([{"tipe": "info", "teks": "  ".join(PackedStringArray(pilihan))}])
