@@ -12,11 +12,5 @@
       "id": "network_scanner",
       "tingkat": 2
     }
-  },
-  "misi_1": {
-    "kredit": 150,
-    "reputasi": {
-      "kolektif_senja": 5
-    }
   }
 }

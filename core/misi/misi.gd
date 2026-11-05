@@ -9,9 +9,13 @@ extends RefCounted
 
 const DATA := "res://data/misi/misi.json"
 
-static func daftar(path: String = DATA) -> Array:
+# Berkas sumber misi. Tes dapat mengarahkannya ke fixture; permainan memakai DATA.
+static var berkas: String = DATA
+
+static func daftar(path: String = "") -> Array:
+	var sumber := path if path != "" else berkas
 	var parser := JSON.new()
-	if parser.parse(FileAccess.get_file_as_string(path)) != OK or typeof(parser.data) != TYPE_ARRAY:
+	if parser.parse(FileAccess.get_file_as_string(sumber)) != OK or typeof(parser.data) != TYPE_ARRAY:
 		return []
 	var hasil: Array = parser.data
 	hasil.sort_custom(func(a, b): return int(a["urutan"]) < int(b["urutan"]))
@@ -90,7 +94,6 @@ static func _kirim(s: ShellSession, id: String, dari: String, pesan: Dictionary)
 
 # Kategori misi untuk tampilan Misi Tersedia. Urutan di sini adalah urutan tampil di layar.
 const KATEGORI := [
-	{"kunci": "tutorial", "judul": "misi.kat.tutorial", "ikon": "tutorial"},
 	{"kunci": "tutorial_lanjutan", "judul": "misi.kat.tutorial_lanjutan", "ikon": "tutorial_lanjutan"},
 	{"kunci": "harian", "judul": "misi.kat.harian", "ikon": "harian"},
 	{"kunci": "hacktivism", "judul": "misi.kat.hacktivism", "ikon": "hacktivism"},
@@ -102,10 +105,10 @@ const KATEGORI := [
 ]
 
 static func kategori_misi(m: Dictionary) -> String:
-	return String(m.get("kategori", "tutorial"))
+	return String(m.get("kategori", ""))
 
 static func daftar_kategori(kunci: String, sumber: Array = []) -> Array:
-	var data := sumber if not sumber.is_empty() else daftar()
+	var data: Array = sumber if not sumber.is_empty() else daftar()
 	var hasil: Array = []
 	for m in data:
 		if kategori_misi(m) == kunci:

@@ -3,6 +3,8 @@ extends GutTest
 # Pusat Misi 4A: status misi, pemeriksaan tujuan dari tindakan nyata, hadiah sekali, dan persistensi.
 
 const BERKAS := "user://uji_misi.json"
+const FIXTURE_MISI := "res://tests/fixtures/misi_uji.json"
+const FIXTURE_HADIAH := "res://tests/fixtures/hadiah_uji.json"
 
 func _fs_awal() -> Dictionary:
 	var kunci := {"tipe": "file", "pemilik": "operator", "grup": "operator", "izin": "rw-r-----", "isi": "arsip:TK-7731", "ukuran": 13}
@@ -16,12 +18,16 @@ func _baru() -> ShellSession:
 	return s
 
 func before_each() -> void:
+	Misi.berkas = FIXTURE_MISI
+	Hadiah.berkas = FIXTURE_HADIAH
 	Penyimpanan.berkas_aktif = BERKAS
 	Pengaturan.berkas_aktif = "user://uji_misi_pengaturan.json"
 	if FileAccess.file_exists(BERKAS):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(BERKAS))
 
 func after_all() -> void:
+	Misi.berkas = Misi.DATA
+	Hadiah.berkas = Hadiah.DATA
 	Penyimpanan.berkas_aktif = Penyimpanan.BERKAS
 	Pengaturan.berkas_aktif = Pengaturan.BERKAS
 

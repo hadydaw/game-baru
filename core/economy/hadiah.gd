@@ -6,9 +6,13 @@ extends RefCounted
 
 const DATA := "res://data/economy/hadiah.json"
 
-static func data(path: String = DATA) -> Dictionary:
+# Berkas sumber hadiah. Tes dapat mengarahkannya ke fixture; permainan memakai DATA.
+static var berkas: String = DATA
+
+static func data(path: String = "") -> Dictionary:
+	var sumber := path if path != "" else berkas
 	var parser := JSON.new()
-	if parser.parse(FileAccess.get_file_as_string(path)) != OK or typeof(parser.data) != TYPE_DICTIONARY:
+	if parser.parse(FileAccess.get_file_as_string(sumber)) != OK or typeof(parser.data) != TYPE_DICTIONARY:
 		return {}
 	return parser.data
 

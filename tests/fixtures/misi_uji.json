@@ -1,0 +1,45 @@
+[
+  {
+    "id": "misi_1",
+    "kategori": "harian",
+    "urutan": 1,
+    "judul": "Pesan dari Arsip",
+    "pengirim": "Mira",
+    "syarat_terima": [],
+    "pesan_masuk": {
+      "subjek": "Berkas arsip hilang dari jadwal",
+      "isi": "Halo, aku butuh satu orang yang bisa melihat jejak arsip. Server arsip punya alamat {ip:arsip}, tapi tidak muncul di peta biasa. Pindai alamat itu dengan perintah `scan {ip:arsip}`. Kunci aksesnya sudah ada di dokumenmu. — Mira"
+    },
+    "latar": "Arsip Kota Lama memindahkan datanya tanpa catatan resmi. Mira, kontak lama pemain, ingin tahu ke mana berkas itu pergi.",
+    "target": "arsip ({ip:arsip})",
+    "petunjuk": [
+      {
+        "teks": "Kunci akses ke server arsip tersimpan di dokumenmu.",
+        "flag": "baca:jtn:kunci_arsip.txt"
+      },
+      {
+        "teks": "Catatan di server arsip menyebut berkas yang dipindahkan.",
+        "flag": "baca:arsip:catatan.txt"
+      }
+    ],
+    "tujuan": [
+      {
+        "teks": "Pindai IP {ip:arsip} dengan perintah scan",
+        "flag": "pindai:arsip"
+      },
+      {
+        "teks": "Masuk ke server arsip lewat SSH",
+        "flag": "ssh:arsip"
+      },
+      {
+        "teks": "Baca catatan.txt di server arsip",
+        "flag": "baca:arsip:catatan.txt"
+      }
+    ],
+    "pesan_selesai": {
+      "subjek": "Terima kasih",
+      "isi": "Catatan itu cocok dengan yang kucari. Berkas arsip memang dipindahkan ke server kota. Aku akan kabari jalur berikutnya. — Mira"
+    },
+    "node": "arsip"
+  }
+]
