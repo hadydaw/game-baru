@@ -68,12 +68,12 @@ func _kartu(id: String) -> PanelContainer:
 	var teks := VBoxContainer.new()
 	teks.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	baris.add_child(teks)
-	teks.add_child(Tema.label("%s  v%s" % [String(it["nama"]), String(it["versi"])], Tema.TEKS, 24))
-	teks.add_child(Tema.label(Bahasa.t("repo.ukuran") % [String(it["ukuran"]), int(it["harga"])], Tema.TEKS_REDUP, 18))
-	teks.add_child(Tema.label(Bahasa.t(String(it["deskripsi_kunci"])), Tema.TEKS_REDUP, 18))
+	teks.add_child(_bungkus(Tema.label("%s  v%s" % [String(it["nama"]), String(it["versi"])], Tema.TEKS, 24)))
+	teks.add_child(_bungkus(Tema.label(Bahasa.t("repo.ukuran") % [String(it["ukuran"]), int(it["harga"])], Tema.TEKS_REDUP, 18)))
+	teks.add_child(_bungkus(Tema.label(Bahasa.t(String(it["deskripsi_kunci"])), Tema.TEKS_REDUP, 18)))
 	var deps: Array = it.get("deps", [])
 	if not deps.is_empty():
-		teks.add_child(Tema.label(Bahasa.t("repo.dep_kurang") % ", ".join(PackedStringArray(deps)), Tema.AMBER, 18))
+		teks.add_child(_bungkus(Tema.label(Bahasa.t("repo.dep_kurang") % ", ".join(PackedStringArray(deps)), Tema.AMBER, 18)))
 	var tombol := Button.new()
 	tombol.custom_minimum_size = Vector2(170, 72)
 	if not _sesi.repositori.punya(id):
@@ -87,6 +87,12 @@ func _kartu(id: String) -> PanelContainer:
 		tombol.disabled = true
 	baris.add_child(tombol)
 	return kartu
+
+# Teks kartu boleh turun baris agar tombol Pasang tidak terdorong keluar layar.
+func _bungkus(l: Label) -> Label:
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	return l
 
 func _pasang(id: String) -> void:
 	var h := _sesi.repositori.pasang(id, _sesi.economy, _sesi.perangkat)
