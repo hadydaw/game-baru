@@ -6,7 +6,6 @@ extends Control
 
 const FONT_PATH := "res://assets/fonts/JetBrainsMono-Regular.ttf"
 const FS_PATH := "res://data/fs/pemain.json"
-const UKURAN_FONT := 26
 const UKURAN_TOMBOL := 22
 const TINGGI_TOMBOL := 64
 const WARNA_USER := "#3fb950"
@@ -65,7 +64,7 @@ func _ready() -> void:
     _keluaran.selection_enabled = true
     _keluaran.size_flags_vertical = Control.SIZE_EXPAND_FILL
     _keluaran.add_theme_font_override("normal_font", _font)
-    _keluaran.add_theme_font_size_override("normal_font_size", UKURAN_FONT)
+    _keluaran.add_theme_font_size_override("normal_font_size", _ukuran_font())
     _keluaran.add_theme_color_override("default_color", Color(WARNA_TEKS))
     _keluaran.add_theme_stylebox_override("normal", _gaya_latar())
     kolom.add_child(_keluaran)
@@ -74,7 +73,7 @@ func _ready() -> void:
     baris.add_theme_constant_override("separation", 8)
     _label_prompt = Label.new()
     _label_prompt.add_theme_font_override("font", _font)
-    _label_prompt.add_theme_font_size_override("font_size", UKURAN_FONT)
+    _label_prompt.add_theme_font_size_override("font_size", _ukuran_font())
     _label_prompt.add_theme_color_override("font_color", Color(WARNA_USER))
     baris.add_child(_label_prompt)
     _masukan = LineEdit.new()
@@ -83,7 +82,7 @@ func _ready() -> void:
     _masukan.caret_blink = true
     _masukan.clear_button_enabled = false
     _masukan.add_theme_font_override("font", _font)
-    _masukan.add_theme_font_size_override("font_size", UKURAN_FONT)
+    _masukan.add_theme_font_size_override("font_size", _ukuran_font())
     _masukan.add_theme_color_override("font_color", Color(WARNA_TEKS))
     _masukan.add_theme_stylebox_override("normal", Tema.kotak(Color(0.05, 0.08, 0.1), Tema.TEAL, 1, 10))
     _masukan.add_theme_stylebox_override("focus", Tema.kotak(Color(0.05, 0.08, 0.1), Tema.TEAL, 2, 10))
@@ -92,7 +91,7 @@ func _ready() -> void:
     baris.add_child(_masukan)
     _status = Label.new()
     _status.add_theme_font_override("font", _font)
-    _status.add_theme_font_size_override("font_size", UKURAN_FONT - 4)
+    _status.add_theme_font_size_override("font_size", _ukuran_font() - 4)
     _status.add_theme_color_override("font_color", Color(WARNA_JALUR))
     _status.visible = false
     kolom.add_child(_status)
@@ -158,6 +157,17 @@ func _pulihkan_scroll() -> void:
 # Membuat sesi shell. Bila gagal, galat ditampilkan di layar agar tidak diam-diam.
 # Sesi disimpan di luar layar agar filesystem dan direktori kerja tetap ada saat pindah aplikasi.
 static var _sesi_bersama: ShellSession
+
+# Ukuran teks mengikuti pengaturan pemain. Dibaca saat layar dibuat, jadi berlaku saat Terminal dibuka.
+func _ukuran_font() -> int:
+    return Pengaturan.ukuran_font()
+
+# Dipanggil saat Sesi Baru: buffer dan sesi bersama dilepas agar Terminal mulai dari awal.
+static func reset_sesi() -> void:
+    _sesi_bersama = null
+    _buffer_bersama = ""
+    _scroll_bersama = 0.0
+    _ikut_bawah_bersama = true
 # Buffer tampilan dan posisi scroll ikut bertahan saat layar Terminal ditutup lalu dibuka lagi.
 static var _buffer_bersama: String = ""
 static var _scroll_bersama: float = 0.0

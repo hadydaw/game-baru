@@ -72,6 +72,21 @@ func _tampilkan_splash() -> void:
     tween.tween_property(splash, "modulate:a", 0.0, 0.4)
     await tween.finished
     splash.queue_free()
+    _tampilkan_menu()
+
+# Menu utama adalah layar pertama setelah splash. Dari sini pemain masuk ke Desktop.
+func _tampilkan_menu() -> void:
+    var menu := MenuUtama.new()
+    menu.size = size
+    menu.atur_aman(_aman)
+    menu.mulai.connect(_mulai_dari_menu.bind(menu))
+    menu.keluar_diminta.connect(func(): get_tree().quit())
+    add_child(menu)
+    menu.position = Vector2.ZERO
+    menu.size = size
+
+func _mulai_dari_menu(_mode: String, menu: MenuUtama) -> void:
+    menu.queue_free()
     _tampilkan_desktop()
 
 func _tampilkan_desktop() -> void:

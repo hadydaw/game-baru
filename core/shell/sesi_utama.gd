@@ -25,6 +25,12 @@ static func ambil() -> ShellSession:
     return sesi
 
 # Pesan untuk ditampilkan di terminal bila penyimpanan dipulihkan atau rusak. Kosong bila normal.
+# Melepas sesi bersama agar pemuatan berikutnya membaca penyimpanan (atau filesystem awal) dari awal.
+static func reset() -> void:
+    sesi = null
+    status_muat = ""
+    pesan_muat = ""
+
 static func pesan_status() -> String:
     match status_muat:
         "pulih_cadangan":

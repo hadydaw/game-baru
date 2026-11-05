@@ -12,6 +12,27 @@ const BERKAS := "user://filesystem.json"
 # Jalur berkas yang dipakai bila pemanggil tidak memberi jalur. Tes mengganti ini agar tidak menimpa save asli.
 static var berkas_aktif: String = BERKAS
 
+# Ada simpanan utama atau cadangan (dibaca oleh Lanjutkan di menu).
+static func ada_simpanan(path: String = "") -> bool:
+    if path == "":
+        path = berkas_aktif
+    return FileAccess.file_exists(path) or FileAccess.file_exists(path + ".bak")
+
+# Sesi Baru: simpanan lama tidak dihapus, tetapi dipindahkan dengan akhiran waktu.
+# Nama .bak tidak dipakai agar tidak dimuat otomatis sebagai cadangan.
+# Mengembalikan akhiran arsip, atau "" bila tidak ada yang diarsipkan.
+static func arsipkan(path: String = "") -> String:
+    if path == "":
+        path = berkas_aktif
+    if not ada_simpanan(path):
+        return ""
+    var akhiran := ".lama-" + str(Time.get_unix_time_from_system())
+    if FileAccess.file_exists(path):
+        _pindah(path, path + akhiran)
+    if FileAccess.file_exists(path + ".bak"):
+        _pindah(path + ".bak", path + ".bak" + akhiran)
+    return akhiran
+
 # Hasil muat: {status, data, pesan}. status: "baru", "ok", "pulih_cadangan", atau "rusak".
 static func muat(path: String = "") -> Dictionary:
     if path == "":
