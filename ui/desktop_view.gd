@@ -4,6 +4,7 @@ extends Control
 # Desktop JTN: wallpaper penuh layar, bingkai utama di dalam area aman, status bar, grid ikon, dan taskbar.
 
 signal buka_aplikasi(id: String)
+signal menu_diminta
 
 const APLIKASI := [
     {"id": "terminal", "nama": "Terminal", "ikon": "res://assets/ikon/icon_terminal.png"},
@@ -124,11 +125,32 @@ func _buat_taskbar() -> Control:
     var baris := HBoxContainer.new()
     baris.add_theme_constant_override("separation", 10)
     baris.add_child(_ikon_kecil(IKON_USER, 30))
-    baris.add_child(Tema.label("operator@jtn", Tema.TEKS_REDUP, 22))
+    var operator := Tema.label("operator@jtn", Tema.TEKS_REDUP, 22)
+    operator.clip_text = true
+    operator.custom_minimum_size = Vector2(0, 0)
+    operator.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+    baris.add_child(operator)
     baris.add_child(_spasi_horizontal())
+    baris.add_child(_tombol_menu())
     _label_jam = Tema.label("", Tema.TEKS_REDUP, 22)
     baris.add_child(_label_jam)
     return baris
+
+# Tombol Menu di taskbar: selalu terlihat dan cukup besar untuk disentuh jari.
+func _tombol_menu() -> Button:
+    var t := Button.new()
+    t.text = "≡ Menu"
+    t.focus_mode = Control.FOCUS_NONE
+    t.custom_minimum_size = Vector2(136, 64)
+    t.add_theme_font_size_override("font_size", 24)
+    t.add_theme_color_override("font_color", Tema.TEKS)
+    var normal := Tema.kotak(Color(0.06, 0.1, 0.12), Tema.TEAL, 2, 10)
+    var aktif := Tema.kotak(Color(0.1, 0.18, 0.2), Tema.TEAL, 2, 10)
+    t.add_theme_stylebox_override("normal", normal)
+    t.add_theme_stylebox_override("hover", aktif)
+    t.add_theme_stylebox_override("pressed", aktif)
+    t.pressed.connect(func(): menu_diminta.emit())
+    return t
 
 func _spasi_horizontal() -> Control:
     var s := Control.new()

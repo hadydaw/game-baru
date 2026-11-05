@@ -96,3 +96,14 @@ jobs:
             exit 1
           fi
           exit $code
+
+      - name: Jalankan smoke test Desktop dan dialog kembali ke menu
+        run: |
+          "$GODOT_BIN" --headless -s tests/smoke_desktop.gd > desktop.log 2>&1
+          code=$?
+          cat desktop.log
+          if grep -q "SCRIPT ERROR\|Parse Error" desktop.log; then
+            echo "Ada error skrip di smoke test desktop"
+            exit 1
+          fi
+          exit $code

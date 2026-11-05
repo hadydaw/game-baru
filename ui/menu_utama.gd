@@ -35,7 +35,7 @@ var _input_nama: LineEdit
 var _lbl_error_login: Label
 var _tombol_ukuran: Dictionary = {}
 var _lbl_hint_pengaturan: Label
-var _dialog_sesi: ConfirmationDialog
+var _dialog_sesi: KonfirmasiPanel
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -43,12 +43,9 @@ func _ready() -> void:
 	_bangun_kolom()
 	_bangun_panel_pengaturan()
 	_bangun_panel_login()
-	_dialog_sesi = ConfirmationDialog.new()
-	_dialog_sesi.title = "Mulai sesi baru?"
-	_dialog_sesi.dialog_text = "Simpanan lama tidak dihapus permanen. Ia dipindahkan ke arsip di perangkat, lalu sesi dimulai dari awal."
-	_dialog_sesi.ok_button_text = "Mulai baru"
-	_dialog_sesi.cancel_button_text = "Batal"
-	_dialog_sesi.confirmed.connect(_jalankan_sesi_baru)
+	_dialog_sesi = KonfirmasiPanel.new()
+	_dialog_sesi.diterima.connect(_jalankan_sesi_baru)
+	_dialog_sesi.dibatalkan.connect(_dialog_sesi.sembunyikan)
 	add_child(_dialog_sesi)
 	_timer_kursor = Timer.new()
 	_timer_kursor.wait_time = 0.5
@@ -75,10 +72,10 @@ func _bangun_kolom() -> void:
 	var atas := HBoxContainer.new()
 	atas.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_kolom.add_child(atas)
-	var kiri := Tema.label("> Jaringan  //  v%s" % _versi(), Tema.TEKS, 20)
+	var kiri := Tema.label("> JTN  v%s" % _versi(), Tema.TEKS, 20)
 	kiri.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	atas.add_child(kiri)
-	_lbl_status = Tema.label("Terhubung: Lokal  |  Status: Offline", WARNA_OFFLINE, 20)
+	_lbl_status = Tema.label("● Offline", WARNA_OFFLINE, 20)
 	atas.add_child(_lbl_status)
 
 	var judul := Tema.label("> JTN_", WARNA_TEAL, 84)
@@ -258,7 +255,8 @@ func _set_status(teks: String) -> void:
 
 func _aksi_sesi_baru() -> void:
 	if Penyimpanan.ada_simpanan():
-		_dialog_sesi.popup_centered(Vector2i(int(size.x * 0.9), 0))
+		_dialog_sesi.atur_aman(_aman)
+		_dialog_sesi.tampil("Mulai sesi baru?", "Simpanan lama tidak dihapus permanen. Ia dipindahkan ke arsip di perangkat, lalu sesi dimulai dari awal.", "Mulai Baru", "Batal")
 	else:
 		_jalankan_sesi_baru()
 

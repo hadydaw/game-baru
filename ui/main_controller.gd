@@ -10,6 +10,7 @@ const LOGO := "res://assets/logo/logo_jtn.png"
 
 var _desktop: DesktopView
 var _frame: AppFrame
+var _konfirmasi: KonfirmasiPanel
 var _aman := Vector4.ZERO  # kiri, atas, kanan, bawah dalam satuan viewport
 
 func _ready() -> void:
@@ -31,6 +32,8 @@ func _sesuaikan_ukuran() -> void:
         _desktop.atur_aman(_aman)
     if is_instance_valid(_frame):
         _frame.atur_aman(_aman)
+    if is_instance_valid(_konfirmasi):
+        _konfirmasi.atur_aman(_aman)
 
 # Mengubah area aman dari piksel layar ke satuan viewport. Dengan stretch canvas_items
 # dan aspect expand, skala seragam di kedua sumbu, jadi cukup satu nilai skala.
@@ -93,9 +96,34 @@ func _tampilkan_desktop() -> void:
     _desktop = DesktopView.new()
     _desktop.aman = _aman
     _desktop.buka_aplikasi.connect(_buka_aplikasi)
+    _desktop.menu_diminta.connect(_minta_kembali_menu)
     add_child(_desktop)
     _desktop.position = Vector2.ZERO
     _desktop.size = size
+
+# Kembali ke menu tidak menghapus apa pun: sesi disimpan dulu, lalu Desktop ditutup.
+# Pemain bisa memilih Lanjutkan di menu untuk meneruskan dari posisi yang sama.
+func _minta_kembali_menu() -> void:
+    if not is_instance_valid(_konfirmasi):
+        _konfirmasi = KonfirmasiPanel.new()
+        _konfirmasi.diterima.connect(_kembali_ke_menu)
+        _konfirmasi.dibatalkan.connect(_konfirmasi.sembunyikan)
+        add_child(_konfirmasi)
+    _konfirmasi.atur_aman(_aman)
+    _konfirmasi.tampil("Kembali ke menu?", "Progres kamu disimpan. Pilih Lanjutkan di menu untuk meneruskan dari sini. Tidak ada data yang dihapus.", "Kembali ke Menu", "Batal")
+
+func _kembali_ke_menu() -> void:
+    _konfirmasi.sembunyikan()
+    if not Penyimpanan.simpan_sesi(SesiUtama.ambil()):
+        push_warning("Sesi gagal disimpan; tetap di Desktop agar data tidak hilang.")
+        return
+    if is_instance_valid(_frame):
+        _frame.queue_free()
+    _frame = null
+    if is_instance_valid(_desktop):
+        _desktop.queue_free()
+    _desktop = null
+    _tampilkan_menu()
 
 func _buka_aplikasi(id: String) -> void:
     _desktop.visible = false
