@@ -14,6 +14,7 @@ const WARNA_JALUR := "#2dd4bf"
 const WARNA_TEKS := "#e6f7f5"
 const WARNA_ERROR := "#ff7b72"
 const LATAR := Color("#0d1117")
+const BATAS_BUFFER := 60000
 const TOMBOL := ["/", "-", "_", "|", ".", "~", "Tab", "Ctrl", "Enter", "Backspace", "↑", "↓"]
 
 var _sesi: ShellSession
@@ -104,17 +105,63 @@ func _ready() -> void:
 
     kolom.add_child(_buat_baris_tombol())
 
+    tree_exiting.connect(_saat_keluar)
     _sesi = _buat_sesi()
-    _riwayat_idx = 0
     _perbarui_prompt()
     if _sesi == null:
         return
-    _tampil([{"tipe": "info", "teks": "Terminal siap. Ketik \"help\" untuk daftar perintah."}])
-    _tampil(_sesi.jalankan("pwd"))
+    _riwayat_idx = _sesi.riwayat.size()
+    if _buffer_bersama.is_empty():
+        _tampil([{"tipe": "info", "teks": "Terminal siap. Ketik \"help\" untuk daftar perintah."}])
+        _tampil(_sesi.jalankan("pwd"))
+    else:
+        # Layar dibuka lagi: tampilkan kembali seluruh riwayat, tanpa banner dan tanpa pwd baru.
+        _keluaran.append_text(_buffer_bersama)
+        _pulihkan_scroll()
+
+# Menulis ke tampilan sekaligus ke buffer bersama. Buffer dipangkas per baris agar tag BBCode tetap utuh.
+func _tulis(bb: String) -> void:
+    _keluaran.append_text(bb)
+    _buffer_bersama += bb
+    if _buffer_bersama.length() > BATAS_BUFFER:
+        var potong := _buffer_bersama.find("\n", _buffer_bersama.length() - BATAS_BUFFER)
+        if potong >= 0:
+            _buffer_bersama = _buffer_bersama.substr(potong + 1)
+
+func _kosongkan() -> void:
+    _keluaran.clear()
+    _buffer_bersama = ""
+
+# Dipanggil saat layar dilepas (berpindah ke Desktop atau aplikasi lain).
+# Animasi yang belum selesai diselesaikan dulu agar buffer utuh, lalu posisi scroll dicatat.
+func _saat_keluar() -> void:
+    if _busy:
+        _selesaikan_cepat()
+    _simpan_posisi()
+    _simpan()
+
+func _simpan_posisi() -> void:
+    if not is_instance_valid(_keluaran):
+        return
+    var bar := _keluaran.get_v_scroll_bar()
+    _ikut_bawah_bersama = _keluaran.scroll_following or bar.value >= bar.max_value - bar.page - 4.0
+    _scroll_bersama = bar.value
+
+func _pulihkan_scroll() -> void:
+    await get_tree().process_frame
+    if not is_instance_valid(_keluaran):
+        return
+    _keluaran.scroll_following = _ikut_bawah_bersama
+    if not _ikut_bawah_bersama:
+        _keluaran.get_v_scroll_bar().value = _scroll_bersama
 
 # Membuat sesi shell. Bila gagal, galat ditampilkan di layar agar tidak diam-diam.
 # Sesi disimpan di luar layar agar filesystem dan direktori kerja tetap ada saat pindah aplikasi.
 static var _sesi_bersama: ShellSession
+# Buffer tampilan dan posisi scroll ikut bertahan saat layar Terminal ditutup lalu dibuka lagi.
+static var _buffer_bersama: String = ""
+static var _scroll_bersama: float = 0.0
+static var _ikut_bawah_bersama: bool = true
 
 func _buat_sesi() -> ShellSession:
     if _sesi_bersama != null:
@@ -140,6 +187,7 @@ func _simpan() -> void:
 
 func _notification(what: int) -> void:
     if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_WM_CLOSE_REQUEST:
+        _simpan_posisi()
         _simpan()
 
 func _muat_font() -> Font:
@@ -278,7 +326,7 @@ func _jalankan_aksi(a: String) -> void:
             _tampil_perintah(_masukan.text + "^C")
             _set_teks("")
         "bersihkan":
-            _keluaran.clear()
+            _kosongkan()
         "hapus_baris":
             _set_teks("")
 
@@ -316,10 +364,10 @@ func _lanjut() -> void:
     if _ketik_aktif:
         var sisa := _ketik_teks.length() - _ketik_pos
         var n := clampi(ceili(sisa / 10.0), 2, 8)
-        _keluaran.append_text(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos, n)))
+        _tulis(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos, n)))
         _ketik_pos += n
         if _ketik_pos >= _ketik_teks.length():
-            _keluaran.append_text("\n")
+            _tulis("\n")
             _ketik_aktif = false
             _timer.start(maxf(_ketik_jeda, 10) / 1000.0)
         else:
@@ -341,7 +389,7 @@ func _lanjut() -> void:
             _ketik_jeda = int(s["jeda"])
             _timer.start(0.01)
         "clear":
-            _keluaran.clear()
+            _kosongkan()
             _timer.start(0.01)
 
 func _akhiri() -> void:
@@ -355,14 +403,14 @@ func _akhiri() -> void:
 func _selesaikan_cepat() -> void:
     while _busy:
         if _ketik_aktif:
-            _keluaran.append_text(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos)) + "\n")
+            _tulis(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos)) + "\n")
             _ketik_aktif = false
         elif not _langkah.is_empty():
             var s: Dictionary = _langkah.pop_front()
             if String(s["tipe"]) == "baris":
-                _keluaran.append_text(_warna_baris(String(s["tipe_baris"]), String(s["teks"])) + "\n")
+                _tulis(_warna_baris(String(s["tipe_baris"]), String(s["teks"])) + "\n")
             elif String(s["tipe"]) == "clear":
-                _keluaran.clear()
+                _kosongkan()
         else:
             _akhiri()
     _timer.stop()
@@ -424,15 +472,15 @@ func _tampil_perintah(teks: String) -> void:
     var user := p.substr(0, i)
     var jalur := p.substr(i + 1, p.length() - i - 2)
     var bb := "[color=%s]%s[/color]:[color=%s]%s[/color]$ %s" % [WARNA_USER, user, WARNA_JALUR, jalur, _aman(teks)]
-    _keluaran.append_text(bb + "\n")
+    _tulis(bb + "\n")
 
 func _tampil(baris: Array) -> void:
     for b in baris:
         if String(b["tipe"]) == "clear":
-            _keluaran.clear()
+            _kosongkan()
             continue
         var warna := WARNA_ERROR if String(b["tipe"]) == "error" else WARNA_TEKS
-        _keluaran.append_text("[color=%s]%s[/color]\n" % [warna, _aman(String(b["teks"]))])
+        _tulis("[color=%s]%s[/color]\n" % [warna, _aman(String(b["teks"]))])
 
 func _aman(s: String) -> String:
     return s.replace("[", "[lb]")
