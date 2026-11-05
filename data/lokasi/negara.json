@@ -1,0 +1,812 @@
+[
+ {
+  "kode": "indonesia",
+  "x": 0.8,
+  "y": 0.62,
+  "nama": {
+   "id": "Indonesia",
+   "en": "Indonesia"
+  },
+  "kota": [
+   {
+    "kode": "jakarta",
+    "nama": {
+     "id": "Jakarta",
+     "en": "Jakarta"
+    }
+   },
+   {
+    "kode": "surabaya",
+    "nama": {
+     "id": "Surabaya",
+     "en": "Surabaya"
+    }
+   },
+   {
+    "kode": "bandung",
+    "nama": {
+     "id": "Bandung",
+     "en": "Bandung"
+    }
+   },
+   {
+    "kode": "medan",
+    "nama": {
+     "id": "Medan",
+     "en": "Medan"
+    }
+   },
+   {
+    "kode": "yogyakarta",
+    "nama": {
+     "id": "Yogyakarta",
+     "en": "Yogyakarta"
+    }
+   },
+   {
+    "kode": "semarang",
+    "nama": {
+     "id": "Semarang",
+     "en": "Semarang"
+    }
+   },
+   {
+    "kode": "makassar",
+    "nama": {
+     "id": "Makassar",
+     "en": "Makassar"
+    }
+   },
+   {
+    "kode": "denpasar",
+    "nama": {
+     "id": "Denpasar",
+     "en": "Denpasar"
+    }
+   },
+   {
+    "kode": "palembang",
+    "nama": {
+     "id": "Palembang",
+     "en": "Palembang"
+    }
+   },
+   {
+    "kode": "batam",
+    "nama": {
+     "id": "Batam",
+     "en": "Batam"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "jepang",
+  "x": 0.87,
+  "y": 0.36,
+  "nama": {
+   "id": "Jepang",
+   "en": "Japan"
+  },
+  "kota": [
+   {
+    "kode": "tokyo",
+    "nama": {
+     "id": "Tokyo",
+     "en": "Tokyo"
+    }
+   },
+   {
+    "kode": "osaka",
+    "nama": {
+     "id": "Osaka",
+     "en": "Osaka"
+    }
+   },
+   {
+    "kode": "kyoto",
+    "nama": {
+     "id": "Kyoto",
+     "en": "Kyoto"
+    }
+   },
+   {
+    "kode": "yokohama",
+    "nama": {
+     "id": "Yokohama",
+     "en": "Yokohama"
+    }
+   },
+   {
+    "kode": "nagoya",
+    "nama": {
+     "id": "Nagoya",
+     "en": "Nagoya"
+    }
+   },
+   {
+    "kode": "sapporo",
+    "nama": {
+     "id": "Sapporo",
+     "en": "Sapporo"
+    }
+   },
+   {
+    "kode": "fukuoka",
+    "nama": {
+     "id": "Fukuoka",
+     "en": "Fukuoka"
+    }
+   },
+   {
+    "kode": "kobe",
+    "nama": {
+     "id": "Kobe",
+     "en": "Kobe"
+    }
+   },
+   {
+    "kode": "hiroshima",
+    "nama": {
+     "id": "Hiroshima",
+     "en": "Hiroshima"
+    }
+   },
+   {
+    "kode": "nagasaki",
+    "nama": {
+     "id": "Nagasaki",
+     "en": "Nagasaki"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "amerika_serikat",
+  "x": 0.28,
+  "y": 0.34,
+  "nama": {
+   "id": "Amerika Serikat",
+   "en": "United States"
+  },
+  "kota": [
+   {
+    "kode": "new_york",
+    "nama": {
+     "id": "New York",
+     "en": "New York"
+    }
+   },
+   {
+    "kode": "los_angeles",
+    "nama": {
+     "id": "Los Angeles",
+     "en": "Los Angeles"
+    }
+   },
+   {
+    "kode": "chicago",
+    "nama": {
+     "id": "Chicago",
+     "en": "Chicago"
+    }
+   },
+   {
+    "kode": "houston",
+    "nama": {
+     "id": "Houston",
+     "en": "Houston"
+    }
+   },
+   {
+    "kode": "miami",
+    "nama": {
+     "id": "Miami",
+     "en": "Miami"
+    }
+   },
+   {
+    "kode": "san_francisco",
+    "nama": {
+     "id": "San Francisco",
+     "en": "San Francisco"
+    }
+   },
+   {
+    "kode": "las_vegas",
+    "nama": {
+     "id": "Las Vegas",
+     "en": "Las Vegas"
+    }
+   },
+   {
+    "kode": "seattle",
+    "nama": {
+     "id": "Seattle",
+     "en": "Seattle"
+    }
+   },
+   {
+    "kode": "boston",
+    "nama": {
+     "id": "Boston",
+     "en": "Boston"
+    }
+   },
+   {
+    "kode": "washington_dc",
+    "nama": {
+     "id": "Washington D.C.",
+     "en": "Washington D.C."
+    }
+   }
+  ]
+ },
+ {
+  "kode": "inggris",
+  "x": 0.45,
+  "y": 0.27,
+  "nama": {
+   "id": "Inggris",
+   "en": "United Kingdom"
+  },
+  "kota": [
+   {
+    "kode": "london",
+    "nama": {
+     "id": "London",
+     "en": "London"
+    }
+   },
+   {
+    "kode": "manchester",
+    "nama": {
+     "id": "Manchester",
+     "en": "Manchester"
+    }
+   },
+   {
+    "kode": "birmingham",
+    "nama": {
+     "id": "Birmingham",
+     "en": "Birmingham"
+    }
+   },
+   {
+    "kode": "liverpool",
+    "nama": {
+     "id": "Liverpool",
+     "en": "Liverpool"
+    }
+   },
+   {
+    "kode": "edinburgh",
+    "nama": {
+     "id": "Edinburgh",
+     "en": "Edinburgh"
+    }
+   },
+   {
+    "kode": "glasgow",
+    "nama": {
+     "id": "Glasgow",
+     "en": "Glasgow"
+    }
+   },
+   {
+    "kode": "bristol",
+    "nama": {
+     "id": "Bristol",
+     "en": "Bristol"
+    }
+   },
+   {
+    "kode": "leeds",
+    "nama": {
+     "id": "Leeds",
+     "en": "Leeds"
+    }
+   },
+   {
+    "kode": "oxford",
+    "nama": {
+     "id": "Oxford",
+     "en": "Oxford"
+    }
+   },
+   {
+    "kode": "cambridge",
+    "nama": {
+     "id": "Cambridge",
+     "en": "Cambridge"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "prancis",
+  "x": 0.47,
+  "y": 0.3,
+  "nama": {
+   "id": "Prancis",
+   "en": "France"
+  },
+  "kota": [
+   {
+    "kode": "paris",
+    "nama": {
+     "id": "Paris",
+     "en": "Paris"
+    }
+   },
+   {
+    "kode": "marseille",
+    "nama": {
+     "id": "Marseille",
+     "en": "Marseille"
+    }
+   },
+   {
+    "kode": "lyon",
+    "nama": {
+     "id": "Lyon",
+     "en": "Lyon"
+    }
+   },
+   {
+    "kode": "nice",
+    "nama": {
+     "id": "Nice",
+     "en": "Nice"
+    }
+   },
+   {
+    "kode": "bordeaux",
+    "nama": {
+     "id": "Bordeaux",
+     "en": "Bordeaux"
+    }
+   },
+   {
+    "kode": "toulouse",
+    "nama": {
+     "id": "Toulouse",
+     "en": "Toulouse"
+    }
+   },
+   {
+    "kode": "lille",
+    "nama": {
+     "id": "Lille",
+     "en": "Lille"
+    }
+   },
+   {
+    "kode": "strasbourg",
+    "nama": {
+     "id": "Strasbourg",
+     "en": "Strasbourg"
+    }
+   },
+   {
+    "kode": "nantes",
+    "nama": {
+     "id": "Nantes",
+     "en": "Nantes"
+    }
+   },
+   {
+    "kode": "montpellier",
+    "nama": {
+     "id": "Montpellier",
+     "en": "Montpellier"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "uni_emirat_arab",
+  "x": 0.61,
+  "y": 0.44,
+  "nama": {
+   "id": "Uni Emirat Arab",
+   "en": "United Arab Emirates"
+  },
+  "kota": [
+   {
+    "kode": "dubai",
+    "nama": {
+     "id": "Dubai",
+     "en": "Dubai"
+    }
+   },
+   {
+    "kode": "abu_dhabi",
+    "nama": {
+     "id": "Abu Dhabi",
+     "en": "Abu Dhabi"
+    }
+   },
+   {
+    "kode": "sharjah",
+    "nama": {
+     "id": "Sharjah",
+     "en": "Sharjah"
+    }
+   },
+   {
+    "kode": "al_ain",
+    "nama": {
+     "id": "Al Ain",
+     "en": "Al Ain"
+    }
+   },
+   {
+    "kode": "ajman",
+    "nama": {
+     "id": "Ajman",
+     "en": "Ajman"
+    }
+   },
+   {
+    "kode": "ras_al_khaimah",
+    "nama": {
+     "id": "Ras Al Khaimah",
+     "en": "Ras Al Khaimah"
+    }
+   },
+   {
+    "kode": "fujairah",
+    "nama": {
+     "id": "Fujairah",
+     "en": "Fujairah"
+    }
+   },
+   {
+    "kode": "umm_al_quwain",
+    "nama": {
+     "id": "Umm Al Quwain",
+     "en": "Umm Al Quwain"
+    }
+   },
+   {
+    "kode": "hatta",
+    "nama": {
+     "id": "Hatta",
+     "en": "Hatta"
+    }
+   },
+   {
+    "kode": "madinat_zayed",
+    "nama": {
+     "id": "Madinat Zayed",
+     "en": "Madinat Zayed"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "mesir",
+  "x": 0.55,
+  "y": 0.38,
+  "nama": {
+   "id": "Mesir",
+   "en": "Egypt"
+  },
+  "kota": [
+   {
+    "kode": "kairo",
+    "nama": {
+     "id": "Kairo",
+     "en": "Cairo"
+    }
+   },
+   {
+    "kode": "alexandria",
+    "nama": {
+     "id": "Alexandria",
+     "en": "Alexandria"
+    }
+   },
+   {
+    "kode": "giza",
+    "nama": {
+     "id": "Giza",
+     "en": "Giza"
+    }
+   },
+   {
+    "kode": "luxor",
+    "nama": {
+     "id": "Luxor",
+     "en": "Luxor"
+    }
+   },
+   {
+    "kode": "aswan",
+    "nama": {
+     "id": "Aswan",
+     "en": "Aswan"
+    }
+   },
+   {
+    "kode": "port_said",
+    "nama": {
+     "id": "Port Said",
+     "en": "Port Said"
+    }
+   },
+   {
+    "kode": "suez",
+    "nama": {
+     "id": "Suez",
+     "en": "Suez"
+    }
+   },
+   {
+    "kode": "hurghada",
+    "nama": {
+     "id": "Hurghada",
+     "en": "Hurghada"
+    }
+   },
+   {
+    "kode": "sharm_el_sheikh",
+    "nama": {
+     "id": "Sharm El Sheikh",
+     "en": "Sharm El Sheikh"
+    }
+   },
+   {
+    "kode": "mansoura",
+    "nama": {
+     "id": "Mansoura",
+     "en": "Mansoura"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "nigeria",
+  "x": 0.47,
+  "y": 0.5,
+  "nama": {
+   "id": "Nigeria",
+   "en": "Nigeria"
+  },
+  "kota": [
+   {
+    "kode": "lagos",
+    "nama": {
+     "id": "Lagos",
+     "en": "Lagos"
+    }
+   },
+   {
+    "kode": "abuja",
+    "nama": {
+     "id": "Abuja",
+     "en": "Abuja"
+    }
+   },
+   {
+    "kode": "kano",
+    "nama": {
+     "id": "Kano",
+     "en": "Kano"
+    }
+   },
+   {
+    "kode": "ibadan",
+    "nama": {
+     "id": "Ibadan",
+     "en": "Ibadan"
+    }
+   },
+   {
+    "kode": "port_harcourt",
+    "nama": {
+     "id": "Port Harcourt",
+     "en": "Port Harcourt"
+    }
+   },
+   {
+    "kode": "benin_city",
+    "nama": {
+     "id": "Benin City",
+     "en": "Benin City"
+    }
+   },
+   {
+    "kode": "kaduna",
+    "nama": {
+     "id": "Kaduna",
+     "en": "Kaduna"
+    }
+   },
+   {
+    "kode": "enugu",
+    "nama": {
+     "id": "Enugu",
+     "en": "Enugu"
+    }
+   },
+   {
+    "kode": "jos",
+    "nama": {
+     "id": "Jos",
+     "en": "Jos"
+    }
+   },
+   {
+    "kode": "calabar",
+    "nama": {
+     "id": "Calabar",
+     "en": "Calabar"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "brasil",
+  "x": 0.35,
+  "y": 0.68,
+  "nama": {
+   "id": "Brasil",
+   "en": "Brazil"
+  },
+  "kota": [
+   {
+    "kode": "sao_paulo",
+    "nama": {
+     "id": "São Paulo",
+     "en": "São Paulo"
+    }
+   },
+   {
+    "kode": "rio_de_janeiro",
+    "nama": {
+     "id": "Rio de Janeiro",
+     "en": "Rio de Janeiro"
+    }
+   },
+   {
+    "kode": "brasilia",
+    "nama": {
+     "id": "Brasília",
+     "en": "Brasília"
+    }
+   },
+   {
+    "kode": "salvador",
+    "nama": {
+     "id": "Salvador",
+     "en": "Salvador"
+    }
+   },
+   {
+    "kode": "fortaleza",
+    "nama": {
+     "id": "Fortaleza",
+     "en": "Fortaleza"
+    }
+   },
+   {
+    "kode": "belo_horizonte",
+    "nama": {
+     "id": "Belo Horizonte",
+     "en": "Belo Horizonte"
+    }
+   },
+   {
+    "kode": "manaus",
+    "nama": {
+     "id": "Manaus",
+     "en": "Manaus"
+    }
+   },
+   {
+    "kode": "curitiba",
+    "nama": {
+     "id": "Curitiba",
+     "en": "Curitiba"
+    }
+   },
+   {
+    "kode": "recife",
+    "nama": {
+     "id": "Recife",
+     "en": "Recife"
+    }
+   },
+   {
+    "kode": "porto_alegre",
+    "nama": {
+     "id": "Porto Alegre",
+     "en": "Porto Alegre"
+    }
+   }
+  ]
+ },
+ {
+  "kode": "australia",
+  "x": 0.87,
+  "y": 0.72,
+  "nama": {
+   "id": "Australia",
+   "en": "Australia"
+  },
+  "kota": [
+   {
+    "kode": "sydney",
+    "nama": {
+     "id": "Sydney",
+     "en": "Sydney"
+    }
+   },
+   {
+    "kode": "melbourne",
+    "nama": {
+     "id": "Melbourne",
+     "en": "Melbourne"
+    }
+   },
+   {
+    "kode": "brisbane",
+    "nama": {
+     "id": "Brisbane",
+     "en": "Brisbane"
+    }
+   },
+   {
+    "kode": "perth",
+    "nama": {
+     "id": "Perth",
+     "en": "Perth"
+    }
+   },
+   {
+    "kode": "adelaide",
+    "nama": {
+     "id": "Adelaide",
+     "en": "Adelaide"
+    }
+   },
+   {
+    "kode": "canberra",
+    "nama": {
+     "id": "Canberra",
+     "en": "Canberra"
+    }
+   },
+   {
+    "kode": "hobart",
+    "nama": {
+     "id": "Hobart",
+     "en": "Hobart"
+    }
+   },
+   {
+    "kode": "darwin",
+    "nama": {
+     "id": "Darwin",
+     "en": "Darwin"
+    }
+   },
+   {
+    "kode": "gold_coast",
+    "nama": {
+     "id": "Gold Coast",
+     "en": "Gold Coast"
+    }
+   },
+   {
+    "kode": "cairns",
+    "nama": {
+     "id": "Cairns",
+     "en": "Cairns"
+    }
+   }
+  ]
+ }
+]

@@ -42,11 +42,21 @@ static func perbarui(s: ShellSession) -> void:
 				Hadiah.selesaikan_misi(s, id)
 				berubah = true
 
+# Mengganti penanda {ip:id} dengan IP node sesi ini. IP tidak pernah ditulis permanen di data misi.
+static func ganti_ip(s: ShellSession, teks: String) -> String:
+	var re := RegEx.new()
+	re.compile("\\{ip:([a-z_]+)\\}")
+	var hasil := teks
+	for m in re.search_all(teks):
+		var id := m.get_string(1)
+		hasil = hasil.replace(m.get_string(0), s.jaringan.ip(id))
+	return hasil
+
 # Daftar tujuan beserta status masing-masing, untuk tampilan.
 static func status_tujuan(s: ShellSession, m: Dictionary) -> Array:
 	var hasil: Array = []
 	for t in m.get("tujuan", []):
-		hasil.append({"teks": String(t["teks"]), "selesai": s.jaringan.progres.has(String(t["flag"]))})
+		hasil.append({"teks": ganti_ip(s, String(t["teks"])), "selesai": s.jaringan.progres.has(String(t["flag"]))})
 	return hasil
 
 # Hanya petunjuk yang sudah ditemukan pemain lewat eksplorasi yang ditampilkan.
@@ -54,7 +64,7 @@ static func petunjuk_ditemukan(s: ShellSession, m: Dictionary) -> Array:
 	var hasil: Array = []
 	for p in m.get("petunjuk", []):
 		if s.jaringan.progres.has(String(p["flag"])):
-			hasil.append(String(p["teks"]))
+			hasil.append(ganti_ip(s, String(p["teks"])))
 	return hasil
 
 static func _tujuan_selesai(s: ShellSession, m: Dictionary) -> bool:
@@ -73,7 +83,7 @@ static func _kirim(s: ShellSession, id: String, dari: String, pesan: Dictionary)
 	s.pesan_misi.append({
 		"misi": id,
 		"dari": dari,
-		"subjek": String(pesan.get("subjek", "")),
-		"isi": String(pesan.get("isi", "")),
+		"subjek": ganti_ip(s, String(pesan.get("subjek", ""))),
+		"isi": ganti_ip(s, String(pesan.get("isi", ""))),
 		"dilaporkan": false,
 	})

@@ -27,6 +27,7 @@ var reputation: Reputation
 var ssh_aktif: ShellSession = null
 var misi: Dictionary = {}       # id misi -> "aktif" | "selesai" (tidak ada = belum diterima)
 var pesan_misi: Array = []      # pesan masuk dari pengirim misi, urutan kedatangan
+var lokasi: Dictionary = {}     # lokasi pemain di peta dunia: {"negara": kode, "kota": kode}
 
 func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) -> void:
     fs = p_fs
@@ -42,7 +43,7 @@ func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) ->
 
 # Seluruh keadaan sesi lokal yang perlu disimpan: filesystem, direktori aktif, riwayat, dan jaringan.
 func to_dict() -> Dictionary:
-    return {"misi": misi.duplicate(), "pesan_misi": pesan_misi.duplicate(true), "pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate()}
+    return {"misi": misi.duplicate(), "pesan_misi": pesan_misi.duplicate(true), "pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate(), "lokasi": lokasi.duplicate()}
 
 static func dari_dict(d: Dictionary) -> ShellSession:
     var j := Jaringan.muat()
@@ -70,6 +71,8 @@ static func dari_dict(d: Dictionary) -> ShellSession:
     if typeof(d.get("misi")) == TYPE_DICTIONARY:
         s.misi = Dictionary(d["misi"]).duplicate()
     s.pesan_misi = Array(d.get("pesan_misi", [])).duplicate(true)
+    if typeof(d.get("lokasi")) == TYPE_DICTIONARY:
+        s.lokasi = Dictionary(d["lokasi"]).duplicate()
     # Simpanan lama: node yang sudah terbuka lewat tetangga dianggap sudah dipindai.
     PerintahScan.migrasi(s)
     # Simpanan lama belum punya status misi; Misi.perbarui memberi status sesuai flag yang sudah ada.

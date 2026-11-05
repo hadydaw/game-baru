@@ -116,9 +116,55 @@ func _tampilkan_menu() -> void:
     menu.position = Vector2.ZERO
     menu.size = size
 
-func _mulai_dari_menu(_mode: String, menu: MenuUtama) -> void:
+# Sesi baru membuka cerita pembuka dan pemilihan lokasi. Lanjutkan langsung ke Desktop.
+func _mulai_dari_menu(mode: String, menu: MenuUtama) -> void:
     menu.queue_free()
+    if mode == "baru":
+        _tampilkan_cerita()
+    else:
+        _tampilkan_desktop()
+
+func _tampilkan_cerita() -> void:
+    var cerita := LayarCerita.new()
+    cerita.name = "LayarCerita"
+    cerita.size = size
+    cerita.atur_aman(_aman)
+    cerita.selesai.connect(_tampilkan_pilih_lokasi.bind(cerita))
+    add_child(cerita)
+    cerita.position = Vector2.ZERO
+    cerita.size = size
+    _transisi_masuk(cerita)
+
+func _tampilkan_pilih_lokasi(sebelumnya: Control) -> void:
+    sebelumnya.queue_free()
+    var pilih := PilihLokasi.new()
+    pilih.name = "PilihLokasi"
+    pilih.size = size
+    pilih.atur_aman(_aman)
+    pilih.selesai.connect(_simpan_lokasi_awal)
+    pilih.kembali.connect(_kembali_ke_cerita.bind(pilih))
+    add_child(pilih)
+    pilih.position = Vector2.ZERO
+    pilih.size = size
+    _transisi_masuk(pilih)
+
+func _kembali_ke_cerita(sekarang: Control) -> void:
+    sekarang.queue_free()
+    _tampilkan_cerita()
+
+func _simpan_lokasi_awal(kode_negara: String, kode_kota: String) -> void:
+    var sesi := SesiUtama.ambil()
+    sesi.lokasi = {"negara": kode_negara, "kota": kode_kota}
+    Penyimpanan.simpan_sesi(sesi)
+    for anak in get_children():
+        if anak.name == "PilihLokasi":
+            anak.queue_free()
     _tampilkan_desktop()
+
+func _transisi_masuk(node: Control) -> void:
+    node.modulate.a = 0.0
+    var t := create_tween()
+    t.tween_property(node, "modulate:a", 1.0, LayarCerita.DURASI_TRANSISI)
 
 func _tampilkan_desktop() -> void:
     _desktop = DesktopView.new()

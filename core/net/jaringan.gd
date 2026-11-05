@@ -12,6 +12,10 @@ var ditemukan: Array = []      # id node yang sudah diketahui pemain
 var progres: Array = []        # flag misi yang sudah terbuka (mengunci/membuka node)
 var fs_node: Dictionary = {}   # filesystem tiap node; bisa berubah lewat SSH
 var dipindai: Array = []       # id node yang sudah pernah dipindai nmap
+var ip_node: Dictionary = {}   # id node -> IP yang dibuat saat Sesi Baru; kosong = pakai IP dari JSON
+
+# Rentang IP privat yang dipakai saat membuat IP acak. Setiap node memilih salah satu rentang.
+const RENTANG_IP := [["10", 0, 255], ["172", 16, 31], ["192.168", 0, 255]]
 
 static func muat(path: String = DATA) -> Jaringan:
     var j := Jaringan.new()
@@ -27,13 +31,40 @@ static func muat(path: String = DATA) -> Jaringan:
             j.ditemukan.append(String(id))
     return j
 
+# IP sebuah node: hasil acak per sesi bila ada, jika tidak memakai IP dari konfigurasi.
+func ip(id: String) -> String:
+    if ip_node.has(id):
+        return String(ip_node[id])
+    return String(data.get(id, {}).get("ip", ""))
+
+# Membuat IP privat acak yang unik untuk setiap node. Dipanggil sekali saat Sesi Baru.
+func acak_ip(rng: RandomNumberGenerator = null) -> void:
+    if rng == null:
+        rng = RandomNumberGenerator.new()
+        rng.randomize()
+    ip_node.clear()
+    var terpakai := {}
+    for id in data:
+        var alamat := ""
+        while alamat == "" or terpakai.has(alamat):
+            var r: Array = RENTANG_IP[rng.randi() % RENTANG_IP.size()]
+            var awal := String(r[0])
+            if awal == "10":
+                alamat = "10.%d.%d.%d" % [rng.randi_range(0, 255), rng.randi_range(0, 255), rng.randi_range(2, 254)]
+            elif awal == "172":
+                alamat = "172.%d.%d.%d" % [rng.randi_range(16, 31), rng.randi_range(0, 255), rng.randi_range(2, 254)]
+            else:
+                alamat = "192.168.%d.%d" % [rng.randi_range(0, 255), rng.randi_range(2, 254)]
+        terpakai[alamat] = true
+        ip_node[id] = alamat
+
 # Mencari node berdasarkan nama atau IP. Mengembalikan id, atau "" bila tidak ada di konfigurasi.
 # Tidak memeriksa apakah pemain sudah menemukannya; itu tugas pemanggil.
 func cari(nama: String) -> String:
     if data.has(nama):
         return nama
     for id in data:
-        if String(data[id].get("ip", "")) == nama:
+        if ip(String(id)) == nama:
             return String(id)
     return ""
 
@@ -69,7 +100,7 @@ func tandai_ditemukan(id: String) -> void:
 # Mencari node berdasarkan alamat IP saja. Mengembalikan id, atau "" bila tidak ada.
 func cari_ip(ip: String) -> String:
     for id in data:
-        if String(data[id].get("ip", "")) == ip:
+        if ip(String(id)) == ip:
             return String(id)
     return ""
 
@@ -88,7 +119,7 @@ func buka(flag: String) -> void:
 func ringkasan(id: String) -> Dictionary:
     return {
         "id": id,
-        "ip": String(data[id].get("ip", "")),
+        "ip": ip(id),
         "status": String(data[id].get("status", "")),
         "terkunci": terkunci(id),
         "tetangga": data[id].get("tetangga", []),
@@ -107,12 +138,13 @@ func daftar_terlihat() -> Array:
     return hasil
 
 func to_dict() -> Dictionary:
-    return {"ditemukan": ditemukan, "progres": progres, "fs": fs_node, "dipindai": dipindai}
+    return {"ditemukan": ditemukan, "progres": progres, "fs": fs_node, "dipindai": dipindai, "ip_node": ip_node}
 
 func terapkan(d: Dictionary) -> void:
     ditemukan = Array(d.get("ditemukan", ditemukan))
     progres = Array(d.get("progres", []))
     dipindai = Array(d.get("dipindai", []))
+    ip_node = Dictionary(d.get("ip_node", ip_node)).duplicate()
     var fs_tersimpan: Dictionary = d.get("fs", {})
     for id in fs_tersimpan:
         if fs_node.has(id):

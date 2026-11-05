@@ -14,6 +14,19 @@ const BENDERA := {"id": "res://assets/bendera/bendera_id.png", "en": "res://asse
 static var kode := KODE_AWAL
 
 const KAMUS := {
+	"intro.judul_cerita": {"id": "Jaringan Terbuka Nusantara", "en": "Nusantara Open Network"},
+	"intro.lewati": {"id": "Lewati", "en": "Skip"},
+	"intro.kembali_pilih": {"id": "Kembali", "en": "Back"},
+	"intro.hal1": {"id": "Selamat datang di Jaringan Terbuka Nusantara.\n\nKami adalah jaringan peretas independen yang bekerja di luar kendali siapa pun. Sejak Pemerintahan Duka Janggal mulai menyaring informasi yang boleh diakses warga, kami hadir supaya data tetap terbuka bagi siapa saja yang berhak mengetahuinya.", "en": "Welcome to the Nusantara Open Network.\n\nWe are an independent hacker network operating beyond anyone's control. Since the Duka Janggal Government began filtering the information citizens may access, we exist so that data stays open to everyone who has a right to know."},
+	"intro.hal2": {"id": "Pemerintahan Duka Janggal menyebut dirinya penjaga ketertiban. Di balik layar, arsip dan catatan publik dikunci, dan siapa pun yang membukanya dianggap ancaman.\n\nKami tidak mencari kekuasaan. Kami mencari kebenaran yang sengaja disembunyikan.", "en": "The Duka Janggal Government calls itself the guardian of order. Behind the scenes, archives and public records are locked, and anyone who opens them is treated as a threat.\n\nWe do not seek power. We seek the truth that has been deliberately hidden."},
+	"intro.hal3": {"id": "Sebagai agen baru, Anda akan menerima identitas baru, perangkat khusus, dan akses ke jaringan kami.\n\nTugas pertama Anda sederhana: ikuti jejak, pelajari sistem, dan jangan meninggalkan jejak.", "en": "As a new agent, you will receive a new identity, special equipment, and access to our network.\n\nYour first task is simple: follow the trail, learn the systems, and leave no trace."},
+	"intro.hal4": {"id": "Pilih negara tempat Anda memulai. Dari sana, Anda akan membangun reputasi di dunia maya.\n\nKota tempat Anda berada bisa berubah seiring misi berjalan.", "en": "Choose the country where you begin. From there, you will build your reputation in the digital world.\n\nThe city you are in can change as your missions progress."},
+	"intro.judul": {"id": "Selamat datang! Pilih lokasi awalmu!", "en": "Welcome! Choose your starting location!"},
+	"intro.lanjut": {"id": "Lanjutkan", "en": "Continue"},
+	"intro.mulai": {"id": "Mulai", "en": "Start"},
+	"intro.pilih_kota": {"id": "Pilih kota", "en": "Choose a city"},
+	"intro.pilih_negara_dulu": {"id": "Ketuk negara di peta.", "en": "Tap a country on the map."},
+	"intro.lokasi_terpilih": {"id": "Lokasi awal: %s, %s", "en": "Starting location: %s, %s"},
 	"menu_app.judul": {"id": "> Menu Aplikasi", "en": "> Applications"},
 	"menu_app.cari": {"id": "Cari aplikasi...", "en": "Search apps..."},
 	"menu_app.kosong": {"id": "Tidak ada aplikasi yang cocok.", "en": "No matching apps."},

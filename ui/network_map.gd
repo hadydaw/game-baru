@@ -189,7 +189,7 @@ func _gambar_node(id: String, p: Vector2, font: Font) -> void:
         "terkunci":
             _gambar_gembok(p, warna)
     draw_string(font, p + Vector2(-70, RADIUS_NODE + 30), id, HORIZONTAL_ALIGNMENT_CENTER, 140, 22, Tema.TEKS)
-    draw_string(font, p + Vector2(-70, RADIUS_NODE + 52), String(_j.data[id].get("ip", "")), HORIZONTAL_ALIGNMENT_CENTER, 140, 18, Tema.TEKS_REDUP)
+    draw_string(font, p + Vector2(-70, RADIUS_NODE + 52), _j.ip(id), HORIZONTAL_ALIGNMENT_CENTER, 140, 18, Tema.TEKS_REDUP)
 
 func _gambar_gembok(p: Vector2, warna: Color) -> void:
     draw_rect(Rect2(p + Vector2(-10, -2), Vector2(20, 16)), warna)

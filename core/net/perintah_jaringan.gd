@@ -22,7 +22,7 @@ static func ping(s: ShellSession, p: Dictionary) -> Array:
         return [s.galat("ping", "%s: Nama atau layanan tidak diketahui" % target)]
     if j.terkunci(id):
         return [s.galat("ping", "%s: Destination Host Unreachable" % target)]
-    var ip := String(j.data[id].get("ip", ""))
+    var ip := j.ip(id)
     var hasil: Array = [s.baris("info", "PING %s (%s): 56 data bytes" % [target, ip])]
     var diterima := 0
     if j.aktif(id):
@@ -61,7 +61,7 @@ static func nmap(s: ShellSession, p: Dictionary) -> Array:
         return [s.galat("nmap", "%s: Nama atau layanan tidak diketahui" % target)]
     if j.terkunci(id):
         return [s.galat("nmap", "%s: Host tidak dapat dijangkau" % target)]
-    var ip := String(j.data[id].get("ip", ""))
+    var ip := j.ip(id)
     var hasil: Array = [s.baris("info", "Memindai %s (%s)..." % [target, ip])]
     if not j.aktif(id):
         hasil.append(s.baris("info", "Host tampaknya tidak aktif (tidak ada respons)."))
@@ -125,7 +125,7 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     s.ssh_aktif = jauh
     # Tanda bahwa login ke node ini berhasil; dipakai tujuan misi.
     s.jaringan.buka("ssh:" + id)
-    return [s.baris("info", "Terhubung ke %s (%s)." % [id, String(j.data[id].get("ip", ""))])]
+    return [s.baris("info", "Terhubung ke %s (%s)." % [id, j.ip(id)])]
 
 # Kunci SSH adalah berkas di filesystem lokal yang isinya memuat token node.
 static func _kunci_cocok(s: ShellSession, cfg: Dictionary) -> bool:

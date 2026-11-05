@@ -47,9 +47,17 @@ static func inspeksi(s: ShellSession, p: Dictionary) -> Array:
 
 static func _baris_log(s: ShellSession, e: Dictionary, t: int, awalan: String) -> Dictionary:
     var ke := String(e.get("ke", ""))
+    var dari := String(e.get("dari", ""))
     if t < 2:
         ke = ALAMAT_DISAMARKAN
-    return s.baris("info", "%s%s  %s -> %s  %dB" % [awalan, String(e.get("jam", "")), String(e.get("dari", "")), ke, int(e.get("bytes", 0))])
+    else:
+        ke = _alamat_tampil(s, ke)
+    dari = _alamat_tampil(s, dari)
+    return s.baris("info", "%s%s  %s -> %s  %dB" % [awalan, String(e.get("jam", "")), dari, ke, int(e.get("bytes", 0))])
+
+# Log menyimpan id node; tampilan tingkat 2 ke atas memakai IP node tersebut.
+static func _alamat_tampil(s: ShellSession, nilai: String) -> String:
+    return s.jaringan.ip(nilai) if s.jaringan.data.has(nilai) else nilai
 
 # trace <host>: menampilkan jalur koneksi dari node. Tingkat 1: satu hop, 2: dua hop, 3: seluruh jaringan.
 # Node yang tampil (dan tidak terkunci) menjadi terlihat di peta.
@@ -85,7 +93,7 @@ static func trace(s: ShellSession, p: Dictionary) -> Array:
             continue
         if not j.dikenal(hop):
             j.ditemukan.append(hop)
-        hasil.append(s.baris("info", "%s  %s (%s)" % [_label_hop(d), hop, String(j.data[hop].get("ip", ""))]))
+        hasil.append(s.baris("info", "%s  %s (%s)" % [_label_hop(d), hop, j.ip(hop)]))
     if tampil == 0:
         hasil.append(s.baris("info", "Tidak ada jalur lanjutan dari %s." % target))
     return hasil
