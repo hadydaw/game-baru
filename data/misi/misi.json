@@ -59,33 +59,33 @@
       },
       {
         "judul": "Tahap 6: Memindai Jaringan",
-        "pesan": "Jalankan 'wifi-scanner --scan' untuk menemukan jaringan laboratorium di sekitarmu. — Agensi",
+        "pesan": "Jalankan 'wifi-scanner --scan' untuk menemukan jaringan laboratorium di sekitarmu. Hasil pemindaian tampil di aplikasi Network Manager. Buka dari desktop. — Agensi",
         "judul_en": "Stage 6: Scanning the Network",
-        "pesan_en": "Run 'wifi-scanner --scan' to find the laboratory network around you. — Agency",
+        "pesan_en": "Run 'wifi-scanner --scan' to find the laboratory network around you. The scan results appear in the Network Manager app. Open it from the desktop. — Agency",
         "pengetahuan": "Pengintaian (reconnaissance) adalah tahap pertama dalam pengujian penetrasi. Satu nama jaringan bisa dipancarkan oleh beberapa titik akses, jadi BSSID adalah pembeda yang pasti. Sinyal kuat tidak berarti aman. Dunia nyata hanya menguji jaringan yang sudah diberi izin tertulis dari pemiliknya.",
         "pengetahuan_en": "Reconnaissance is the first phase of a penetration test. Several access points can broadcast the same network name, so the BSSID is the reliable identifier. A strong signal does not mean a secure network. In the real world, only networks with written permission from their owner are tested."
       },
       {
         "judul": "Tahap 7: Menganalisis Jaringan",
-        "pesan": "Pasang Network Analyzer. Pilih LAB-WIFI-01 dengan 'network inspect LAB-WIFI-01', lalu analisis dengan 'security analyze LAB-WIFI-01'. — Agensi",
+        "pesan": "Pasang Network Analyzer. Pilih LAB-WIFI-01 dengan 'network inspect LAB-WIFI-01', lalu analisis dengan 'security analyze LAB-WIFI-01'. Lihat detail dan hasil analisis jaringan di aplikasi Network Manager. — Agensi",
         "judul_en": "Stage 7: Analyzing the Network",
-        "pesan_en": "Install Network Analyzer. Select LAB-WIFI-01 with 'network inspect LAB-WIFI-01', then analyze it with 'security analyze LAB-WIFI-01'. — Agency",
+        "pesan_en": "Install Network Analyzer. Select LAB-WIFI-01 with 'network inspect LAB-WIFI-01', then analyze it with 'security analyze LAB-WIFI-01'. See the network details and analysis results in the Network Manager app. — Agency",
         "pengetahuan": "Jenis enkripsi menentukan seberapa kuat jaringan melindungi datanya. WEP sudah usang dan mudah ditembus. WPA2 adalah standar yang umum, dan mengandalkan handshake. WPA3 lebih kuat. Fitur seperti WPS yang aktif atau kata sandi yang pendek menambah risiko, dan itulah yang dicatat dalam analisis.",
         "pengetahuan_en": "The encryption type determines how well a network protects its data. WEP is obsolete and easily broken. WPA2 is the common standard and relies on a handshake. WPA3 is stronger. Features such as an active WPS or a short password add risk, and these are recorded in the analysis."
       },
       {
         "judul": "Tahap 8: Menguji Keamanan",
-        "pesan": "Pasang Password Auditor. Tangkap autentikasi dengan 'audit auth LAB-WIFI-01', lalu uji kata sandinya dengan 'audit run LAB-WIFI-01'. — Agensi",
+        "pesan": "Pasang Password Auditor. Tangkap autentikasi dengan 'audit auth LAB-WIFI-01', lalu uji kata sandinya dengan 'audit run LAB-WIFI-01'. Hasil audit dan status handshake tampil di aplikasi Network Manager. — Agensi",
         "judul_en": "Stage 8: Testing Security",
-        "pesan_en": "Install Password Auditor. Capture the authentication with 'audit auth LAB-WIFI-01', then test the password with 'audit run LAB-WIFI-01'. — Agency",
+        "pesan_en": "Install Password Auditor. Capture the authentication with 'audit auth LAB-WIFI-01', then test the password with 'audit run LAB-WIFI-01'. Audit results and handshake status appear in the Network Manager app. — Agency",
         "pengetahuan": "Saat perangkat terhubung ke jaringan WPA2, keduanya bertukar empat pesan (four-way handshake) untuk membuktikan kunci tanpa mengirim kata sandi. Tangkapan yang lemah, misalnya karena sinyal rendah, bisa tidak lengkap. Kata sandi yang panjang dan acak membuat pengujian kamus gagal, dan itulah pelajaran keamanan yang sebenarnya.",
         "pengetahuan_en": "When a device connects to a WPA2 network, both sides exchange four messages (the four-way handshake) to prove the key without sending the password itself. A weak capture, for example due to a low signal, can be incomplete. A long, random password makes dictionary testing fail, and that is the real security lesson."
       },
       {
         "judul": "Tahap 9: Memverifikasi Akses",
-        "pesan": "Masukkan kata sandi yang ditemukan dengan 'security verify LAB-WIFI-01 <kata_sandi>'. Jika benar, jaringan laboratorium akan terbuka. — Agensi",
+        "pesan": "Masukkan kata sandi yang ditemukan dengan 'security verify LAB-WIFI-01 <kata_sandi>'. Jika benar, jaringan laboratorium akan terbuka. Status akses jaringan laboratorium tampil di aplikasi Network Manager. — Agensi",
         "judul_en": "Stage 9: Verifying Access",
-        "pesan_en": "Enter the password you found with 'security verify LAB-WIFI-01 <password>'. If it is correct, the laboratory network will open. — Agency",
+        "pesan_en": "Enter the password you found with 'security verify LAB-WIFI-01 <password>'. If it is correct, the laboratory network will open. The lab network access status appears in the Network Manager app. — Agency",
         "pengetahuan": "Setelah kata sandi ditemukan dalam lingkup izin, verifikasi hanya dilakukan untuk membuktikan temuan. Pentester tidak menyalahgunakan akses. Temuan harus dicatat dengan bukti, lalu disertai rekomendasi, seperti mengganti kata sandi, memakai WPA3, dan menonaktifkan WPS.",
         "pengetahuan_en": "Once a password is found within the scope of permission, verification is done only to prove the finding. A pentester does not misuse access. Findings must be recorded with evidence and followed by recommendations, such as changing the password, using WPA3, and disabling WPS."
       },
