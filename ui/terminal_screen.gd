@@ -29,6 +29,22 @@ var _ctrl: bool = false
 var _tombol_ctrl: Button
 var _teks_terakhir: String = ""
 
+# Animasi pemrosesan perintah. Hasil sudah dihitung; yang dianimasikan hanya tampilannya.
+var _timer: Timer
+var _status: Label
+var _busy: bool = false
+var _antrean: Array = []
+var _langkah: Array = []
+var _ketik_teks: String = ""
+var _ketik_tipe: String = "info"
+var _ketik_pos: int = 0
+var _ketik_aktif: bool = false
+var _ketik_jeda: int = 0
+var _status_teks: String = ""
+var _status_gaya: String = "spinner"
+var _status_bar: int = 0
+var _status_mulai: int = 0
+
 func _ready() -> void:
     set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     _font = _muat_font()
@@ -73,7 +89,18 @@ func _ready() -> void:
     _masukan.text_submitted.connect(_kirim)
     _masukan.text_changed.connect(_teks_berubah)
     baris.add_child(_masukan)
+    _status = Label.new()
+    _status.add_theme_font_override("font", _font)
+    _status.add_theme_font_size_override("font_size", UKURAN_FONT - 4)
+    _status.add_theme_color_override("font_color", Color(WARNA_JALUR))
+    _status.visible = false
+    kolom.add_child(_status)
     kolom.add_child(baris)
+
+    _timer = Timer.new()
+    _timer.one_shot = true
+    _timer.timeout.connect(_lanjut)
+    add_child(_timer)
 
     kolom.add_child(_buat_baris_tombol())
 
@@ -173,6 +200,7 @@ func _gaya_tombol(bg: Color) -> StyleBoxFlat:
     return s
 
 func _process(_delta: float) -> void:
+    _perbarui_status()
     # Saat keyboard HP muncul, area terminal dinaikkan agar output dan baris input tidak tertutup.
     var tinggi := float(DisplayServer.virtual_keyboard_get_height())
     if is_equal_approx(tinggi, _tinggi_keyboard):
@@ -251,6 +279,10 @@ func _ubah_masukan(ubah: Callable) -> void:
         _teks_berubah(_masukan.text)
 
 func _jalankan_aksi(a: String) -> void:
+    if _busy and a == "batal":
+        # Ctrl+C saat animasi berjalan: tampilkan sisa output sekarang juga.
+        _selesaikan_cepat()
+        return
     match a:
         "batal":
             _tampil_perintah(_masukan.text + "^C")
@@ -270,14 +302,105 @@ func _kirim(teks: String) -> void:
     if _sesi == null:
         _tampil([{"tipe": "error", "teks": "Sesi shell belum siap, perintah tidak dijalankan."}])
         return
+    if _busy:
+        # Perintah yang dikirim saat animasi berjalan menunggu giliran, agar output tidak bercampur.
+        if not t.is_empty():
+            _antrean.append(t)
+        return
     if t.is_empty():
         _tampil_perintah("")
         return
+    _mulai(t)
+
+func _mulai(t: String) -> void:
     _tampil_perintah(t)
-    _tampil(_sesi.jalankan(t))
+    var hasil := _sesi.jalankan(t)
     _riwayat_idx = _sesi.riwayat.size()
-    _perbarui_prompt()
     _simpan()
+    _langkah = Animasi.rencana(t, hasil)
+    _busy = true
+    _timer.start(0.02)
+
+# Dipanggil Timer: menjalankan satu langkah animasi (status, pengetikan baris, atau jeda).
+func _lanjut() -> void:
+    if _ketik_aktif:
+        var sisa := _ketik_teks.length() - _ketik_pos
+        var n := clampi(ceili(sisa / 10.0), 2, 8)
+        _keluaran.append_text(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos, n)))
+        _ketik_pos += n
+        if _ketik_pos >= _ketik_teks.length():
+            _keluaran.append_text("\n")
+            _ketik_aktif = false
+            _timer.start(maxf(_ketik_jeda, 10) / 1000.0)
+        else:
+            _timer.start(0.02)
+        return
+    if _langkah.is_empty():
+        _akhiri()
+        return
+    var s: Dictionary = _langkah.pop_front()
+    match String(s["tipe"]):
+        "status":
+            _tampil_status(s)
+            _timer.start(maxf(int(s["durasi"]), 10) / 1000.0)
+        "baris":
+            _ketik_teks = String(s["teks"])
+            _ketik_tipe = String(s["tipe_baris"])
+            _ketik_pos = 0
+            _ketik_aktif = true
+            _ketik_jeda = int(s["jeda"])
+            _timer.start(0.01)
+        "clear":
+            _keluaran.clear()
+            _timer.start(0.01)
+
+func _akhiri() -> void:
+    _busy = false
+    _status.visible = false
+    _perbarui_prompt()
+    if not _antrean.is_empty():
+        _mulai(String(_antrean.pop_front()))
+
+# Menyelesaikan semua animasi sekarang juga (dipakai Ctrl+C dan oleh tes).
+func _selesaikan_cepat() -> void:
+    while _busy:
+        if _ketik_aktif:
+            _keluaran.append_text(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos)) + "\n")
+            _ketik_aktif = false
+        elif not _langkah.is_empty():
+            var s: Dictionary = _langkah.pop_front()
+            if String(s["tipe"]) == "baris":
+                _keluaran.append_text(_warna_baris(String(s["tipe_baris"]), String(s["teks"])) + "\n")
+            elif String(s["tipe"]) == "clear":
+                _keluaran.clear()
+        else:
+            _akhiri()
+    _timer.stop()
+
+func _tampil_status(s: Dictionary) -> void:
+    _status_teks = String(s["teks"])
+    _status_gaya = String(s["gaya"])
+    _status_bar = int(s["bar"])
+    _status_mulai = Time.get_ticks_msec()
+    _status.visible = true
+
+# Animasi status: spinner, titik bergerak, atau bilah progres. Hanya tampilan, tidak mengubah data.
+func _perbarui_status() -> void:
+    if not _status.visible:
+        return
+    var frame := int((Time.get_ticks_msec() - _status_mulai) / 120.0)
+    match _status_gaya:
+        "spinner":
+            _status.text = "%s %s" % ["|/-\\"[frame % 4], _status_teks]
+        "titik":
+            _status.text = "%s%s" % [_status_teks.rstrip("."), ".".repeat(frame % 4)]
+        "bar":
+            var n := clampi(_status_bar, 0, 10)
+            _status.text = "[%s%s] %s" % ["•".repeat(n), " ".repeat(10 - n), _status_teks]
+
+func _warna_baris(tipe: String, teks: String) -> String:
+    var warna := WARNA_ERROR if tipe == "error" else WARNA_TEKS
+    return "[color=%s]%s[/color]" % [warna, _aman(teks)]
 
 func _riwayat(arah: int) -> void:
     if _sesi == null:
