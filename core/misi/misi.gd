@@ -87,3 +87,33 @@ static func _kirim(s: ShellSession, id: String, dari: String, pesan: Dictionary)
 		"isi": ganti_ip(s, String(pesan.get("isi", ""))),
 		"dilaporkan": false,
 	})
+
+# Kategori misi untuk tampilan Misi Tersedia. Urutan di sini adalah urutan tampil di layar.
+const KATEGORI := [
+	{"kunci": "tutorial", "judul": "misi.kat.tutorial", "ikon": "tutorial"},
+	{"kunci": "tutorial_lanjutan", "judul": "misi.kat.tutorial_lanjutan", "ikon": "tutorial_lanjutan"},
+	{"kunci": "harian", "judul": "misi.kat.harian", "ikon": "harian"},
+	{"kunci": "hacktivism", "judul": "misi.kat.hacktivism", "ikon": "hacktivism"},
+	{"kunci": "rekayasa_sosial", "judul": "misi.kat.rekayasa_sosial", "ikon": "rekayasa_sosial"},
+	{"kunci": "peretasan_perusahaan", "judul": "misi.kat.peretasan_perusahaan", "ikon": "peretasan_perusahaan"},
+	{"kunci": "peretasan_industri", "judul": "misi.kat.peretasan_industri", "ikon": "peretasan_industri"},
+	{"kunci": "peretasan_bank", "judul": "misi.kat.peretasan_bank", "ikon": "peretasan_bank"},
+	{"kunci": "perang_maya", "judul": "misi.kat.perang_maya", "ikon": "perang_maya"},
+]
+
+static func kategori_misi(m: Dictionary) -> String:
+	return String(m.get("kategori", "tutorial"))
+
+static func daftar_kategori(kunci: String, sumber: Array = []) -> Array:
+	var data := sumber if not sumber.is_empty() else daftar()
+	var hasil: Array = []
+	for m in data:
+		if kategori_misi(m) == kunci:
+			hasil.append(m)
+	return hasil
+
+static func ikon_kategori(kunci: String) -> String:
+	for k in KATEGORI:
+		if String(k["kunci"]) == kunci:
+			return "res://assets/ikon/misi/%s.png" % String(k["ikon"])
+	return ""

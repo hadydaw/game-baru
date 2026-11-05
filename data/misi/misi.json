@@ -1,6 +1,7 @@
 [
   {
     "id": "misi_1",
+    "kategori": "tutorial",
     "urutan": 1,
     "judul": "Pesan dari Arsip",
     "pengirim": "Mira",

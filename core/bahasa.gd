@@ -14,6 +14,23 @@ const BENDERA := {"id": "res://assets/bendera/bendera_id.png", "en": "res://asse
 static var kode := KODE_AWAL
 
 const KAMUS := {
+	"misi.judul_tersedia": {"id": "MISI TERSEDIA", "en": "AVAILABLE MISSIONS"},
+	"misi.kat.tutorial": {"id": "Tutorial", "en": "Tutorial"},
+	"misi.kat.tutorial_lanjutan": {"id": "Tutorial Lanjutan", "en": "Advanced Tutorial"},
+	"misi.kat.harian": {"id": "Misi Harian", "en": "Daily Missions"},
+	"misi.kat.hacktivism": {"id": "Hacktivism", "en": "Hacktivism"},
+	"misi.kat.rekayasa_sosial": {"id": "Rekayasa Sosial", "en": "Social Engineering"},
+	"misi.kat.peretasan_perusahaan": {"id": "Peretasan Perusahaan", "en": "Corporate Breach"},
+	"misi.kat.peretasan_industri": {"id": "Peretasan Industri", "en": "Industrial Breach"},
+	"misi.kat.peretasan_bank": {"id": "Peretasan Bank", "en": "Bank Breach"},
+	"misi.kat.perang_maya": {"id": "Perang Maya", "en": "Cyber War"},
+	"misi.jumlah": {"id": "%d misi", "en": "%d missions"},
+	"misi.belum_ada_kategori": {"id": "Belum ada misi.", "en": "No missions yet."},
+	"misi.pilih_kategori": {"id": "Pilih kategori misi terlebih dahulu.", "en": "Select a mission category first."},
+	"misi.kategori_kosong": {"id": "Belum ada misi di kategori ini.", "en": "No missions in this category yet."},
+	"misi.tombol_keluar": {"id": "KELUAR", "en": "EXIT"},
+	"misi.tombol_pilih": {"id": "PILIH", "en": "SELECT"},
+	"misi.kembali_kategori": {"id": "Kembali ke kategori", "en": "Back to categories"},
 	"app.email": {"id": "E-Mail", "en": "E-Mail"},
 	"email.judul": {"id": "E-Mail", "en": "E-Mail"},
 	"email.tab_masuk": {"id": "MASUK", "en": "INBOX"},
