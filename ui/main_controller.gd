@@ -273,7 +273,9 @@ func _buka_aplikasi(id: String) -> void:
 func _buat_konten(id: String) -> Control:
     match id:
         "terminal":
-            return TerminalScreen.new()
+            var terminal := TerminalScreen.new()
+            terminal.minta_aplikasi.connect(_buka_aplikasi)
+            return terminal
         "peta":
             return NetworkMap.new()
         "pasar":

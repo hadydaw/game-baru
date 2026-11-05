@@ -4,6 +4,14 @@ extends RefCounted
 # Tab: melengkapi nama perintah (kata pertama) atau nama berkas/direktori (kata berikutnya).
 # Mengembalikan {teks: teks baru, pilihan: daftar kecocokan bila lebih dari satu}.
 
+# Subperintah alat dan perintah jaringan: Tab melengkapi kata kedua dari daftar ini.
+const SUBPERINTAH := {
+    "wifi-scanner": ["--scan"],
+    "network": ["list", "inspect"],
+    "security": ["analyze", "verify"],
+    "audit": ["auth", "run"],
+}
+
 static func lengkapi(s: ShellSession, teks: String) -> Dictionary:
     var awal := ""
     var dir_teks := ""
@@ -13,6 +21,10 @@ static func lengkapi(s: ShellSession, teks: String) -> Dictionary:
         for nama in Teks.MAN.keys():
             if String(nama).begins_with(teks):
                 kandidat.append(String(nama))
+        # Alat yang sudah dipasang juga perintah: "wifi-scanner" dari Tools Repository.
+        for id in Repositori.semua_id():
+            if s.repositori.punya(String(id)) and String(id).begins_with(teks) and not kandidat.has(String(id)):
+                kandidat.append(String(id))
         kandidat.sort()
     else:
         var sp := teks.rfind(" ")
@@ -21,6 +33,13 @@ static func lengkapi(s: ShellSession, teks: String) -> Dictionary:
         var garis := token.rfind("/")
         dir_teks = token.substr(0, garis + 1) if garis >= 0 else ""
         prefix = token.substr(garis + 1)
+        var perintah := awal.strip_edges()
+        if not perintah.contains(" ") and SUBPERINTAH.has(perintah) and dir_teks == "":
+            for sub in SUBPERINTAH[perintah]:
+                if String(sub).begins_with(prefix):
+                    kandidat.append(String(sub))
+            if not kandidat.is_empty():
+                return _hasil_kandidat(teks, awal, "", prefix, kandidat)
         var abs := Vfs.normalisasi(s.cwd, dir_teks if dir_teks != "" else ".", s.home)
         var node := s.fs.ambil(abs)
         if node.is_empty() or String(node.get("tipe", "")) != "dir":
@@ -35,6 +54,9 @@ static func lengkapi(s: ShellSession, teks: String) -> Dictionary:
             if n.begins_with(prefix):
                 var anak: Dictionary = isi[nama]
                 kandidat.append(n + ("/" if String(anak.get("tipe", "")) == "dir" else ""))
+    return _hasil_kandidat(teks, awal, dir_teks, prefix, kandidat)
+
+static func _hasil_kandidat(teks: String, awal: String, dir_teks: String, prefix: String, kandidat: Array) -> Dictionary:
     if kandidat.is_empty():
         return {"teks": teks, "pilihan": []}
     if kandidat.size() == 1:

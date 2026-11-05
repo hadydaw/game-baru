@@ -49,3 +49,58 @@ func terapkan(d: Dictionary) -> void:
 	handshake = Dictionary(d.get("handshake", {})).duplicate()
 	kata_sandi_ditemukan = Dictionary(d.get("kata_sandi_ditemukan", {})).duplicate()
 	terakses = Dictionary(d.get("terakses", {})).duplicate()
+
+# Frekuensi dari nomor kanal: kanal 1-14 berada di 2.4 GHz, selebihnya 5 GHz.
+static func frekuensi(j: Dictionary) -> String:
+	return "2.4 GHz" if int(j["kanal"]) <= 14 else "5 GHz"
+
+# Batang sinyal 0-4 dari dBm, sama seperti yang dilihat pemain di aplikasi Wi-Fi sungguhan.
+static func batang_sinyal(dbm: int) -> int:
+	if dbm >= -50:
+		return 4
+	if dbm >= -60:
+		return 3
+	if dbm >= -70:
+		return 2
+	return 1
+
+static func bar(dbm: int) -> String:
+	var n := batang_sinyal(dbm)
+	return "[" + "#".repeat(n) + "-".repeat(4 - n) + "]"
+
+# Kelemahan jaringan dengan tingkat dan teks dua bahasa, dibaca dari data/wifi/lab.json.
+static func kelemahan(ssid: String) -> Array:
+	var hasil: Array = []
+	var katalog := Dictionary(data().get("kelemahan", {}))
+	for k in Array(jaringan(ssid).get("kelemahan", [])):
+		var info := Dictionary(katalog.get(String(k), {}))
+		if info.is_empty():
+			continue
+		var rek := Dictionary(info.get("rekomendasi", {}))
+		hasil.append({"kunci": String(k), "tingkat": String(info["tingkat"]), "id": String(info["id"]), "en": String(info["en"]), "rek_id": String(rek.get("id", "")), "rek_en": String(rek.get("en", ""))})
+	return hasil
+
+# Tingkat risiko keseluruhan: tertinggi dari kelemahan yang ditemukan.
+static func tingkat_risiko(ssid: String) -> String:
+	var urut := {"rendah": 0, "sedang": 1, "tinggi": 2}
+	var hasil := "rendah"
+	for k in kelemahan(ssid):
+		if int(urut.get(String(k["tingkat"]), 0)) > int(urut.get(hasil, 0)):
+			hasil = String(k["tingkat"])
+	return hasil
+
+static func ambang_handshake() -> int:
+	return int(data().get("ambang_handshake_dbm", -65))
+
+# Adapter dengan chipset yang mendukung monitor mode dibutuhkan untuk menangkap handshake.
+static func mendukung_monitor(chipset: String) -> bool:
+	return bool(Dictionary(data().get("monitor_mode", {})).get(chipset, false))
+
+# Label tingkat risiko dalam dua bahasa: [id, en].
+static func tingkat_pair(tingkat: String) -> Array:
+	match tingkat:
+		"tinggi":
+			return ["TINGGI", "HIGH"]
+		"sedang":
+			return ["SEDANG", "MEDIUM"]
+	return ["RENDAH", "LOW"]

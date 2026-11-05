@@ -33,6 +33,7 @@ var perangkat: Perangkat = Perangkat.new()   # perangkat keras: komponen, peraki
 var repositori: Repositori = Repositori.new() # Tools Repository: software yang terpasang
 var wifi: WifiLab = WifiLab.new()             # keadaan pengujian Wi-Fi laboratorium
 var xp: int = 0                               # pengalaman dari misi
+var permintaan_aplikasi: String = ""             # aplikasi yang diminta dibuka setelah perintah (tidak disimpan)
 var misi_tahap: Dictionary = {}               # id misi -> Array nomor tahap yang sudah diberi umpan balik
 
 func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) -> void:
@@ -264,3 +265,25 @@ func _tulis_berkas(tujuan: String, isi: String, tambah: bool) -> Array:
     var baru := {"tipe": "file", "pemilik": user, "grup": user, "izin": "rw-r-----", "isi": isi, "ukuran": isi.length()}
     fs.tambah(induk_path, nama, baru)
     return []
+
+# Menulis berkas di sistem berkas pemain (log, laporan). Direktori induk dibuat bila belum ada.
+func tulis_berkas(abs_path: String, isi: String, tambah: bool = false) -> void:
+    var induk := fs.induk(abs_path)
+    _pastikan_direktori(induk)
+    var node := fs.ambil(abs_path)
+    if node.is_empty():
+        fs.tambah(induk, fs.nama_terakhir(abs_path), {"tipe": "file", "pemilik": user, "grup": user, "izin": "rw-r-----", "isi": isi, "ukuran": isi.length()})
+        return
+    var lama := String(node.get("isi", ""))
+    var gabung := (lama + "\n" + isi) if tambah and not lama.is_empty() else isi
+    node["isi"] = gabung
+    node["ukuran"] = gabung.length()
+
+func _pastikan_direktori(abs_path: String) -> void:
+    var sekarang := ""
+    for bagian in abs_path.split("/", false):
+        var induk := sekarang if sekarang != "" else "/"
+        sekarang += "/" + bagian
+        if not fs.ada(sekarang):
+            fs.tambah(induk, bagian, {"tipe": "dir", "pemilik": user, "grup": user, "izin": "rwxr-x---", "isi": {}})
+

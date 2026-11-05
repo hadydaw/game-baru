@@ -142,6 +142,8 @@ func _pindai() -> void:
 # Menjalankan perintah lewat sesi yang sama dengan Terminal, lalu menyimpan dan memperbarui misi.
 func _jalankan(perintah: String) -> void:
 	_baris_terakhir = _sesi.jalankan(perintah)
+	# Aplikasi ini sudah terbuka, jadi tidak perlu meminta jendela lain.
+	_sesi.permintaan_aplikasi = ""
 	Misi.perbarui(_sesi)
 	Penyimpanan.simpan_sesi(_sesi)
 	_segarkan()

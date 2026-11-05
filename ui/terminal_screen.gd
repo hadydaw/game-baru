@@ -149,7 +149,7 @@ func _simpan_entri(e: Dictionary) -> void:
 func _teks_entri(e: Dictionary) -> String:
     var kunci := String(e.get("kunci", ""))
     if kunci == "":
-        return String(e.get("teks", ""))
+        return Bahasa.pilih(String(e.get("teks", "")))
     var args: Array = e.get("args", [])
     var teks := Bahasa.t(kunci) % args if not args.is_empty() else Bahasa.t(kunci)
     if String(e.get("perintah", "")) != "":
@@ -406,6 +406,8 @@ func _kirim(teks: String) -> void:
         return
     _mulai(t)
 
+signal minta_aplikasi(id: String)
+
 func _mulai(t: String) -> void:
     _tampil_perintah(t)
     var hasil := _sesi.jalankan(t)
@@ -414,6 +416,11 @@ func _mulai(t: String) -> void:
     _langkah = Animasi.rencana(t, hasil)
     _busy = true
     _timer.start(0.02)
+    # Perintah yang meminta aplikasi dibuka (misalnya scan Wi-Fi) membuka jendelanya setelah keluaran tampil.
+    if _sesi.permintaan_aplikasi != "":
+        var id := _sesi.permintaan_aplikasi
+        _sesi.permintaan_aplikasi = ""
+        minta_aplikasi.emit(id)
 
 # Dipanggil Timer: menjalankan satu langkah animasi (status, pengetikan baris, atau jeda).
 func _lanjut() -> void:

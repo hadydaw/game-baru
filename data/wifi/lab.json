@@ -1,8 +1,90 @@
 {
   "jaringan": {
-    "LAB-WIFI-01": {"bssid": "02:4A:1C:00:01:01", "kanal": 6, "sinyal": -48, "enkripsi": "WPA2", "kata_sandi": "senja1234"},
-    "LAB-WIFI-02": {"bssid": "02:4A:1C:00:02:02", "kanal": 11, "sinyal": -63, "enkripsi": "WEP", "kata_sandi": "0102030405"},
-    "LAB-WIFI-03": {"bssid": "02:4A:1C:00:03:03", "kanal": 1, "sinyal": -71, "enkripsi": "WPA2", "kata_sandi": "Kh7#pQ2v!m"}
+    "LAB-WIFI-01": {
+      "bssid": "02:4A:1C:00:01:01",
+      "kanal": 6,
+      "sinyal": -48,
+      "enkripsi": "WPA2",
+      "kata_sandi": "senja1234",
+      "vendor": "Senja Networks",
+      "model": "SN-R200",
+      "lebar_kanal": 20,
+      "wps": true,
+      "klien": 2,
+      "kelemahan": [
+        "wps_aktif",
+        "kata_sandi_lemah"
+      ]
+    },
+    "LAB-WIFI-02": {
+      "bssid": "02:4A:1C:00:02:02",
+      "kanal": 11,
+      "sinyal": -63,
+      "enkripsi": "WEP",
+      "kata_sandi": "0102030405",
+      "vendor": "Kabut Labs",
+      "model": "KL-G11",
+      "lebar_kanal": 20,
+      "wps": false,
+      "klien": 1,
+      "kelemahan": [
+        "enkripsi_lama"
+      ]
+    },
+    "LAB-WIFI-03": {
+      "bssid": "02:4A:1C:00:03:03",
+      "kanal": 1,
+      "sinyal": -71,
+      "enkripsi": "WPA2",
+      "kata_sandi": "Kh7#pQ2v!m",
+      "vendor": "Nusa Router Co.",
+      "model": "NR-AX3",
+      "lebar_kanal": 40,
+      "wps": false,
+      "klien": 4,
+      "kelemahan": []
+    }
   },
-  "kamus_audit": ["password", "12345678", "jtn2026", "senja1234", "0102030405", "qwerty123"]
+  "kelemahan": {
+    "enkripsi_lama": {
+      "tingkat": "tinggi",
+      "id": "Enkripsi WEP sudah usang dan mudah dibobol.",
+      "en": "WEP encryption is obsolete and easy to break.",
+      "rekomendasi": {
+        "id": "Ganti ke WPA2 atau WPA3 dan nonaktifkan WEP sepenuhnya.",
+        "en": "Switch to WPA2 or WPA3 and disable WEP completely."
+      }
+    },
+    "wps_aktif": {
+      "tingkat": "sedang",
+      "id": "WPS aktif dan rentan terhadap tebakan PIN.",
+      "en": "WPS is enabled and vulnerable to PIN guessing.",
+      "rekomendasi": {
+        "id": "Nonaktifkan WPS di pengaturan router.",
+        "en": "Disable WPS in the router settings."
+      }
+    },
+    "kata_sandi_lemah": {
+      "tingkat": "tinggi",
+      "id": "Kata sandi termasuk daftar umum di kamus audit.",
+      "en": "The password appears in the common audit dictionary.",
+      "rekomendasi": {
+        "id": "Gunakan kata sandi panjang dan acak yang tidak ada dalam daftar umum.",
+        "en": "Use a long, random password that is not in common lists."
+      }
+    }
+  },
+  "monitor_mode": {
+    "ar9271": true,
+    "rt5370": false
+  },
+  "ambang_handshake_dbm": -65,
+  "kamus_audit": [
+    "password",
+    "12345678",
+    "jtn2026",
+    "senja1234",
+    "0102030405",
+    "qwerty123"
+  ]
 }
