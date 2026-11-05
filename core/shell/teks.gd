@@ -45,6 +45,7 @@ const MAN := {
     "help": "help: tampilkan daftar perintah.",
     "ping": "ping [-c N] <host>: uji konektivitas ke node jaringan. -c menentukan jumlah paket (1-10).",
     "nmap": "nmap [-p port,...] <host>: periksa port dan layanan pada node jaringan.",
+    "scan": "scan <IP>: identifikasi perangkat di alamat IP tersebut: nama, IP, dan status.",
     "ssh": "ssh [user@]<host>: masuk ke node jarak jauh jika akses tersedia. Ketik exit untuk keluar.",
     "exit": "exit: keluar dari sesi SSH dan kembali ke terminal lokal.",
     "decode": "decode <berkas>: buka berkas terenkripsi. Membutuhkan Crypt Decoder.",

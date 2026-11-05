@@ -50,10 +50,28 @@ func aktif(id: String) -> bool:
     return String(data[id].get("status", "")) == "aktif"
 
 # Node yang berhasil dijangkau memperlihatkan tetangganya ke pemain.
+# Node bertanda "penemuan": "scan" tidak ikut terbuka; hanya perintah scan yang bisa menemukannya.
 func jelajahi(id: String) -> void:
     for t in data[id].get("tetangga", []):
-        if not ditemukan.has(String(t)):
-            ditemukan.append(String(t))
+        var tid := String(t)
+        if not ditemukan.has(tid) and not butuh_scan(tid):
+            ditemukan.append(tid)
+
+# Node yang hanya bisa ditemukan lewat perintah scan.
+func butuh_scan(id: String) -> bool:
+    return data.has(id) and String(data[id].get("penemuan", "")) == "scan"
+
+# Menandai node sebagai diketahui. Dipakai oleh perintah scan.
+func tandai_ditemukan(id: String) -> void:
+    if not ditemukan.has(id):
+        ditemukan.append(id)
+
+# Mencari node berdasarkan alamat IP saja. Mengembalikan id, atau "" bila tidak ada.
+func cari_ip(ip: String) -> String:
+    for id in data:
+        if String(data[id].get("ip", "")) == ip:
+            return String(id)
+    return ""
 
 func tandai_dipindai(id: String) -> void:
     if not dipindai.has(id):

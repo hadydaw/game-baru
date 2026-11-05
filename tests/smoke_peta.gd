@@ -27,7 +27,8 @@ func _initialize() -> void:
 	var sesi := SesiUtama.ambil()
 	sesi.jalankan("ping -c 1 gerbang")
 	await process_frame
-	_cek(peta.jumlah_node_terlihat() >= 3, "tetangga gerbang muncul di peta setelah ping dari Terminal")
+	_cek(peta.jumlah_node_terlihat() == 2, "gerbang dan relay tampil, arsip (node scan) belum tampil di peta")
+	sesi.jalankan("scan 10.7.0.8")
 	sesi.jalankan("ping -c 1 arsip")
 	_cek(SesiUtama.ambil().jaringan.dikenal("server_kota"), "server_kota terlihat setelah arsip dijangkau")
 

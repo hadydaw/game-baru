@@ -84,7 +84,7 @@ func test_animasi_belum_selesai_diselesaikan_saat_layar_dilepas() -> void:
 func test_sesi_ssh_bertahan_saat_layar_dibuka_ulang() -> void:
 	var l1 := _buka()
 	_kirim_selesai(l1, "ping -c 1 gerbang")
-	_kirim_selesai(l1, "ping -c 1 arsip")
+	_kirim_selesai(l1, "scan 10.7.0.8")
 	_kirim_selesai(l1, "ssh operator@arsip")
 	assert_not_null(TerminalScreen._sesi_bersama.ssh_aktif, "ssh berhasil")
 	_tutup(l1)

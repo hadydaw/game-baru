@@ -108,19 +108,22 @@ func test_trace_tingkat_1_menampilkan_satu_hop_dan_menemukan_node() -> void:
 	s.inventory.miliki("signal_tracer", "awal", 1)
 	s.jalankan("ping -c 1 gerbang")
 	var t := _teks(s.jalankan("trace gerbang"))
-	assert_true(t.contains("arsip"))
-	assert_true(s.jaringan.dikenal("arsip"), "node satu hop menjadi terlihat")
+	assert_true(t.contains("relay"))
+	assert_true(s.jaringan.dikenal("relay"), "node satu hop biasa menjadi terlihat")
+	assert_false(t.contains("arsip"), "node khusus scan tidak tampil sebelum scan")
+	assert_false(s.jaringan.dikenal("arsip"), "node khusus scan tidak terbuka oleh trace")
 	assert_false(s.jaringan.dikenal("server_kota"), "dua hop belum terlihat di tingkat 1")
 
 func test_trace_tingkat_3_menampilkan_seluruh_jaringan_dan_menyamarkan_terkunci() -> void:
 	var s := _sesi()
 	s.inventory.miliki("signal_tracer", "awal", 3)
 	s.jalankan("ping -c 1 gerbang")
+	s.jalankan("scan 10.7.0.8")
 	var t := _teks(s.jalankan("trace gerbang"))
 	assert_true(t.contains("server_kota"))
 	assert_true(t.contains("terkunci"))
 	assert_false(s.jaringan.dikenal("server_kota"), "node terkunci tidak terungkap")
-	assert_true(s.jaringan.dikenal("arsip"))
+	assert_true(s.jaringan.dikenal("arsip"), "arsip terbuka setelah scan")
 
 func test_status_pemindaian_bertahan() -> void:
 	var s := _sesi()

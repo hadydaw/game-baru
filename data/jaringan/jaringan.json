@@ -76,7 +76,8 @@
     ]
   },
   "arsip": {
-    "ip": "10.7.0.8",
+    "penemuan": "scan",
+      "ip": "10.7.0.8",
     "status": "aktif",
     "syarat": [],
     "latensi": 34,

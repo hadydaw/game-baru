@@ -70,6 +70,8 @@ static func dari_dict(d: Dictionary) -> ShellSession:
     if typeof(d.get("misi")) == TYPE_DICTIONARY:
         s.misi = Dictionary(d["misi"]).duplicate()
     s.pesan_misi = Array(d.get("pesan_misi", [])).duplicate(true)
+    # Simpanan lama: node yang sudah terbuka lewat tetangga dianggap sudah dipindai.
+    PerintahScan.migrasi(s)
     # Simpanan lama belum punya status misi; Misi.perbarui memberi status sesuai flag yang sudah ada.
     Misi.perbarui(s)
     return s

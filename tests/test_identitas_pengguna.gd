@@ -73,7 +73,7 @@ func test_sesi_berjalan_mengikuti_ganti_nama() -> void:
 func test_ssh_tetap_memakai_akun_server_dan_kunci_lokal() -> void:
 	var s := ShellSession.new(Vfs.new(Vfs.ganti_pengguna(_fs_operator(), "operator", "irmod")), null, "irmod")
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("ping -c 1 arsip")
+	s.jalankan("scan 10.7.0.8")
 	s.jalankan("ssh operator@arsip")
 	assert_not_null(s.ssh_aktif, "ssh ke akun operator milik server tetap berhasil")
 	assert_eq(s.ssh_aktif.user, "operator", "akun di server tetap operator")

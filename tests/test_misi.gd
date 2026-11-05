@@ -31,7 +31,8 @@ func test_data_misi_valid() -> void:
 	var m: Dictionary = daftar[0]
 	assert_eq(String(m["id"]), "misi_1")
 	assert_eq(String(m["pengirim"]), "Mira")
-	assert_eq(m["tujuan"].size(), 2)
+	assert_eq(m["tujuan"].size(), 3, "urutan: pindai, ssh, baca")
+	assert_eq(String(m["tujuan"][0]["flag"]), "pindai:arsip", "tujuan pertama adalah scan")
 	assert_false(Hadiah.data().get("misi_1", {}).is_empty(), "hadiah misi 1 terdaftar")
 
 func test_misi_1_diterima_saat_sesi_dimulai() -> void:
@@ -61,7 +62,7 @@ func test_ssh_gagal_tidak_menyelesaikan_tujuan() -> void:
 func test_misi_selesai_setelah_tindakan_nyata_dan_hadiah_sekali() -> void:
 	var s := _baru()
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("ping -c 1 arsip")
+	s.jalankan("scan 10.7.0.8")
 	s.jalankan("ssh operator@arsip")
 	assert_true(s.jaringan.progres.has("ssh:arsip"), "login berhasil menandai tujuan")
 	assert_eq(String(s.misi["misi_1"]), "aktif", "belum selesai: catatan belum dibaca")
@@ -77,7 +78,7 @@ func test_misi_selesai_setelah_tindakan_nyata_dan_hadiah_sekali() -> void:
 func test_status_dan_hadiah_bertahan_setelah_muat_ulang() -> void:
 	var s := _baru()
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("ping -c 1 arsip")
+	s.jalankan("scan 10.7.0.8")
 	s.jalankan("ssh operator@arsip")
 	s.jalankan("cat catatan.txt")
 	assert_true(Penyimpanan.simpan_sesi(s, BERKAS))

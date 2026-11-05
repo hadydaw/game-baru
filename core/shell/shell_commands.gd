@@ -32,6 +32,7 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "find": return ShellSearch.find(s, p)
         "ping": return PerintahJaringan.ping(s, p)
         "nmap": return PerintahJaringan.nmap(s, p)
+        "scan": return PerintahScan.scan(s, p)
         "ssh": return PerintahJaringan.ssh(s, p)
         "exit": return [s.galat("exit", "tidak ada sesi SSH aktif")]
         "wallet": return _wallet(s)

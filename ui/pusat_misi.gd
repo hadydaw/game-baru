@@ -103,6 +103,8 @@ func _kartu_misi(m: Dictionary, selesai: bool) -> PanelContainer:
 	isi.add_child(_teks("Dari: %s" % m["pengirim"], Tema.TEKS_REDUP))
 	isi.add_child(_teks(String(m["latar"]), Tema.TEKS))
 	isi.add_child(_teks("Target: %s" % m["target"], Tema.TEKS))
+	if m.has("ip"):
+		isi.add_child(_teks("IP target: %s" % m["ip"], Tema.TEAL))
 	var petunjuk := Misi.petunjuk_ditemukan(_sesi, m)
 	isi.add_child(_teks("Petunjuk ditemukan: %d dari %d" % [petunjuk.size(), m.get("petunjuk", []).size()], Tema.TEKS_REDUP))
 	for t in petunjuk:

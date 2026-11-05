@@ -31,7 +31,7 @@ func test_pembelian_signal_tracer_membuka_trace() -> void:
 	assert_true(s.inventory.punya("signal_tracer"))
 	var hasil := s.jalankan("trace gerbang")
 	assert_false(_tidak_ditemukan(hasil), "setelah dibeli, trace harus dikenali")
-	assert_true(_teks(hasil).contains("arsip"))
+	assert_true(_teks(hasil).contains("relay"))
 
 func test_pembelian_packet_inspector_tidak_membuka_trace() -> void:
 	var s := _sesi()

@@ -101,7 +101,7 @@ func test_sesi_ssh_memakai_saldo_yang_sama() -> void:
 		"isi": {"home": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {"operator": operator}}}}
 	var s := ShellSession.new(Vfs.new(akar))
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("ping -c 1 arsip")
+	s.jalankan("scan 10.7.0.8")
 	s.jalankan("ssh operator@arsip")
 	assert_not_null(s.ssh_aktif, "ssh berhasil dengan kunci di filesystem uji")
 	s.ssh_aktif.economy.bayar(100)

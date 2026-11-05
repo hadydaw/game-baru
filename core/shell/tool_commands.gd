@@ -76,6 +76,9 @@ static func trace(s: ShellSession, p: Dictionary) -> Array:
         var d := int(kedalaman.get(hop, -1))
         if t < 3 and (d < 1 or d > t):
             continue
+        # Node yang butuh scan tidak tampil dan tidak terbuka sebelum ditemukan lewat perintah scan.
+        if j.butuh_scan(hop) and not j.dikenal(hop):
+            continue
         tampil += 1
         if j.terkunci(hop):
             hasil.append(s.baris("info", "%s  %s  terkunci" % [_label_hop(d), hop]))

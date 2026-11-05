@@ -35,6 +35,7 @@ func test_sambungan_hanya_node_terlihat() -> void:
 	j.ditemukan = ["gerbang"]
 	assert_eq(TataLetakPeta.sambungan(j).size(), 0, "gerbang belum punya tetangga terlihat")
 	j.jelajahi("gerbang")
+	j.tandai_ditemukan("arsip")  # arsip hanya terbuka lewat scan
 	var pasangan := TataLetakPeta.sambungan(j)
 	assert_eq(pasangan.size(), 2, "gerbang terhubung ke arsip dan relay")
 
@@ -48,6 +49,7 @@ func test_sidik_berubah_setelah_ping() -> void:
 func test_sidik_berubah_setelah_nmap() -> void:
 	var sesi := SesiUtama.ambil()
 	sesi.jalankan("ping -c 1 gerbang")
+	sesi.jalankan("scan 10.7.0.8")
 	var sebelum := TataLetakPeta.sidik(sesi.jaringan)
 	sesi.jalankan("nmap 10.7.0.8")
 	var sesudah := TataLetakPeta.sidik(sesi.jaringan)
@@ -68,4 +70,6 @@ func test_perubahan_terminal_terlihat_di_peta() -> void:
 	sesi.jalankan("ping -c 1 gerbang")
 	var sesudah := TataLetakPeta.sidik(SesiUtama.ambil().jaringan)
 	assert_ne(sebelum, sesudah)
-	assert_true(SesiUtama.ambil().jaringan.dikenal("arsip"), "arsip terlihat setelah gerbang dijangkau")
+	assert_false(SesiUtama.ambil().jaringan.dikenal("arsip"), "arsip belum terlihat: hanya lewat scan")
+	SesiUtama.ambil().jalankan("scan 10.7.0.8")
+	assert_true(SesiUtama.ambil().jaringan.dikenal("arsip"), "arsip terlihat setelah scan")
