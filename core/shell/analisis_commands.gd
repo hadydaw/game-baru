@@ -25,7 +25,7 @@ static func decode(s: ShellSession, p: Dictionary) -> Array:
     if p["argumen"].size() > 1:
         return [s.galat("decode", Teks.t("err.satu_berkas"))]
     var target := String(p["argumen"][0])
-    var abs := Vfs.normalisasi(s.cwd, target, ShellSession.HOME)
+    var abs := Vfs.normalisasi(s.cwd, target, s.home)
     var node := s.fs.ambil(abs)
     if node.is_empty():
         return [s.galat("decode", "%s: %s" % [target, Teks.t("err.tidak_ada")])]
@@ -33,7 +33,7 @@ static func decode(s: ShellSession, p: Dictionary) -> Array:
         return [s.galat("decode", "%s: %s" % [target, Teks.t("err.direktori")])]
     if not node.has("enkripsi"):
         return [s.galat("decode", "%s: %s" % [target, Teks.t("err.tidak_terenkripsi")])]
-    if not Permissions.boleh(node, ShellSession.USER, ShellSession.GRUP, "r"):
+    if not Permissions.boleh(node, s.user, s.grup, "r"):
         return [s.galat("decode", "%s: %s" % [target, Teks.t("err.izin")])]
     var pesan := tolak_cat(s, node)
     if pesan != "":
@@ -49,7 +49,7 @@ static func analyze(s: ShellSession, p: Dictionary) -> Array:
     if p["argumen"].is_empty():
         return [s.galat("analyze", Teks.t("err.butuh_argumen"))]
     var target := String(p["argumen"][0])
-    var abs := Vfs.normalisasi(s.cwd, target, ShellSession.HOME)
+    var abs := Vfs.normalisasi(s.cwd, target, s.home)
     var node := s.fs.ambil(abs)
     if node.is_empty():
         return [s.galat("analyze", "%s: %s" % [target, Teks.t("err.tidak_ada")])]

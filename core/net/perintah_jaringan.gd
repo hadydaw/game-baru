@@ -94,7 +94,7 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     if s.host != ShellSession.LOKAL:
         return [s.galat("ssh", "sudah berada di sesi jarak jauh. Ketik exit untuk keluar.")]
     var target := String(p["argumen"][0])
-    var user := ShellSession.USER
+    var user := s.user
     if target.contains("@"):
         var bagian := target.split("@")
         user = bagian[0]
@@ -120,7 +120,7 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     jauh.reputation = s.reputation
     jauh.inventory = s.inventory
     jauh.market = s.market
-    jauh.cwd = ShellSession.HOME
+    jauh.cwd = jauh.home
     jauh.fs.akar = j.fs_node[id]
     s.ssh_aktif = jauh
     return [s.baris("info", "Terhubung ke %s (%s)." % [id, String(j.data[id].get("ip", ""))])]
@@ -130,7 +130,9 @@ static func _kunci_cocok(s: ShellSession, cfg: Dictionary) -> bool:
     var token := String(cfg.get("token", ""))
     if token == "":
         return false
-    var berkas := s.fs.ambil(String(cfg.get("kunci_lokal", "")))
+    var jalur := String(cfg.get("kunci_lokal", ""))
+    jalur = ShellSession.pindah_home(jalur, "operator", s.user)
+    var berkas := s.fs.ambil(jalur)
     if berkas.is_empty() or String(berkas.get("tipe", "")) != "file":
         return false
     return ShellCommands.isi_berkas(berkas).contains(token)

@@ -477,7 +477,7 @@ func _perbarui_prompt() -> void:
 
 # Baris perintah yang sudah dikirim, dengan prompt berwarna seperti terminal Linux.
 func _tampil_perintah(teks: String) -> void:
-    var p := _sesi.prompt() if _sesi != null else "operator@jtn:~$"
+    var p := _sesi.prompt() if _sesi != null else "%s@jtn:~$" % ShellSession.nama_pengguna_aktif()
     var i := p.find(":")
     var user := p.substr(0, i)
     var jalur := p.substr(i + 1, p.length() - i - 2)

@@ -11,7 +11,7 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
     match nama:
         "pwd": return [s.baris("info", s.cwd)]
-        "whoami": return [s.baris("info", ShellSession.USER)]
+        "whoami": return [s.baris("info", s.user)]
         "echo": return [s.baris("info", " ".join(PackedStringArray(p["argumen"])))]
         "clear": return [s.baris("clear", "")]
         "history": return _history(s)
@@ -78,7 +78,7 @@ static func _ls(s: ShellSession, p: Dictionary) -> Array:
         targets = [s.cwd]
     var hasil: Array = []
     for t in targets:
-        var abs := Vfs.normalisasi(s.cwd, String(t), ShellSession.HOME)
+        var abs := Vfs.normalisasi(s.cwd, String(t), s.home)
         var node := s.fs.ambil(abs)
         if node.is_empty():
             hasil.append(s.galat("ls", "%s: %s" % [t, Teks.t("err.tidak_ada")]))
@@ -86,7 +86,7 @@ static func _ls(s: ShellSession, p: Dictionary) -> Array:
         if String(node["tipe"]) == "file":
             hasil.append(_baris_entri(s, String(t), node, rinci))
             continue
-        if not Permissions.boleh(node, ShellSession.USER, ShellSession.GRUP, "r"):
+        if not Permissions.boleh(node, s.user, s.grup, "r"):
             hasil.append(s.galat("ls", "%s: %s" % [t, Teks.t("err.izin")]))
             continue
         var isi: Dictionary = node.get("isi", {})
@@ -117,13 +117,13 @@ static func _cd(s: ShellSession, p: Dictionary) -> Array:
     var target := "~"
     if not p["argumen"].is_empty():
         target = String(p["argumen"][0])
-    var abs := Vfs.normalisasi(s.cwd, target, ShellSession.HOME)
+    var abs := Vfs.normalisasi(s.cwd, target, s.home)
     var node := s.fs.ambil(abs)
     if node.is_empty():
         return [s.galat("cd", "%s: %s" % [target, Teks.t("err.tidak_ada")])]
     if String(node["tipe"]) != "dir":
         return [s.galat("cd", "%s: %s" % [target, Teks.t("err.bukan_direktori")])]
-    if not Permissions.boleh(node, ShellSession.USER, ShellSession.GRUP, "x"):
+    if not Permissions.boleh(node, s.user, s.grup, "x"):
         return [s.galat("cd", "%s: %s" % [target, Teks.t("err.izin")])]
     s.cwd = abs
     return []
@@ -139,13 +139,13 @@ static func _cat(s: ShellSession, p: Dictionary) -> Array:
         return [s.galat("cat", Teks.t("err.butuh_argumen"))]
     var hasil: Array = []
     for t in p["argumen"]:
-        var abs := Vfs.normalisasi(s.cwd, String(t), ShellSession.HOME)
+        var abs := Vfs.normalisasi(s.cwd, String(t), s.home)
         var node := s.fs.ambil(abs)
         if node.is_empty():
             hasil.append(s.galat("cat", "%s: %s" % [t, Teks.t("err.tidak_ada")]))
         elif String(node["tipe"]) == "dir":
             hasil.append(s.galat("cat", "%s: %s" % [t, Teks.t("err.direktori")]))
-        elif not Permissions.boleh(node, ShellSession.USER, ShellSession.GRUP, "r"):
+        elif not Permissions.boleh(node, s.user, s.grup, "r"):
             hasil.append(s.galat("cat", "%s: %s" % [t, Teks.t("err.izin")]))
         elif AnalisisCommands.tolak_cat(s, node) != "":
             hasil.append(s.galat("cat", AnalisisCommands.tolak_cat(s, node)))
@@ -162,8 +162,8 @@ static func _cat(s: ShellSession, p: Dictionary) -> Array:
 
 # Membuat node baru di bawah HOME saja. Mengembalikan pesan galat, atau "" bila berhasil.
 static func _buat(s: ShellSession, perintah: String, arg: String, dengan_induk: bool, node_baru: Dictionary) -> Dictionary:
-    var abs := Vfs.normalisasi(s.cwd, arg, ShellSession.HOME)
-    if not abs.begins_with(ShellSession.HOME + "/") and abs != ShellSession.HOME:
+    var abs := Vfs.normalisasi(s.cwd, arg, s.home)
+    if not abs.begins_with(s.home + "/") and abs != s.home:
         return s.galat(perintah, "%s: %s" % [arg, Teks.t("err.hanya_home")])
     if s.fs.ada(abs):
         if perintah == "mkdir" and dengan_induk:
@@ -173,21 +173,21 @@ static func _buat(s: ShellSession, perintah: String, arg: String, dengan_induk: 
     if not s.fs.ada(induk):
         if not dengan_induk:
             return s.galat(perintah, "%s: %s" % [arg, Teks.t("err.tidak_ada_induk")])
-        var sekarang := ShellSession.HOME
-        for bagian in abs.substr(ShellSession.HOME.length()).split("/", false):
+        var sekarang := s.home
+        for bagian in abs.substr(s.home.length()).split("/", false):
             var anak := sekarang + "/" + bagian
             if not s.fs.ada(anak):
-                s.fs.tambah(sekarang, bagian, _dir_baru())
+                s.fs.tambah(sekarang, bagian, _dir_baru(s.user))
             sekarang = anak
         return {}
     var parent := s.fs.ambil(induk)
-    if not Permissions.boleh(parent, ShellSession.USER, ShellSession.GRUP, "w"):
+    if not Permissions.boleh(parent, s.user, s.grup, "w"):
         return s.galat(perintah, "%s: %s" % [arg, Teks.t("err.izin")])
     s.fs.tambah(induk, s.fs.nama_terakhir(abs), node_baru)
     return {}
 
-static func _dir_baru() -> Dictionary:
-    return {"tipe": "dir", "pemilik": ShellSession.USER, "grup": "operator", "izin": "rwxr-x---", "isi": {}}
+static func _dir_baru(pemilik: String) -> Dictionary:
+    return {"tipe": "dir", "pemilik": pemilik, "grup": pemilik, "izin": "rwxr-x---", "isi": {}}
 
 static func _mkdir(s: ShellSession, p: Dictionary) -> Array:
     if p["argumen"].is_empty():
@@ -195,7 +195,7 @@ static func _mkdir(s: ShellSession, p: Dictionary) -> Array:
     var dengan_induk := ShellParser.punya_huruf(p["opsi"], "p")
     var hasil: Array = []
     for arg in p["argumen"]:
-        var g := _buat(s, "mkdir", String(arg), dengan_induk, _dir_baru())
+        var g := _buat(s, "mkdir", String(arg), dengan_induk, _dir_baru(s.user))
         if not g.is_empty():
             hasil.append(g)
     return hasil
@@ -205,10 +205,10 @@ static func _touch(s: ShellSession, p: Dictionary) -> Array:
         return [s.galat("touch", Teks.t("err.butuh_argumen"))]
     var hasil: Array = []
     for arg in p["argumen"]:
-        var abs := Vfs.normalisasi(s.cwd, String(arg), ShellSession.HOME)
+        var abs := Vfs.normalisasi(s.cwd, String(arg), s.home)
         if s.fs.ada(abs):
             continue
-        var file := {"tipe": "file", "pemilik": ShellSession.USER, "grup": "operator", "izin": "rw-r-----", "isi": "", "ukuran": 0}
+        var file := {"tipe": "file", "pemilik": s.user, "grup": s.user, "izin": "rw-r-----", "isi": "", "ukuran": 0}
         var g := _buat(s, "touch", String(arg), false, file)
         if not g.is_empty():
             hasil.append(g)

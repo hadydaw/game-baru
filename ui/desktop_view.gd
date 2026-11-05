@@ -125,7 +125,7 @@ func _buat_taskbar() -> Control:
     var baris := HBoxContainer.new()
     baris.add_theme_constant_override("separation", 10)
     baris.add_child(_ikon_kecil(IKON_USER, 30))
-    var operator := Tema.label("operator@jtn", Tema.TEKS_REDUP, 22)
+    var operator := Tema.label("%s@jtn" % ShellSession.nama_pengguna_aktif(), Tema.TEKS_REDUP, 22)
     operator.clip_text = true
     operator.custom_minimum_size = Vector2(0, 0)
     operator.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN

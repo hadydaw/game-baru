@@ -11,6 +11,10 @@ const GRUP := ["operator"]
 const LOKAL := "jtn"
 
 var fs: Vfs
+# Identitas pemain per sesi. Sesi jarak jauh memakai akun "operator" milik server tersebut.
+var user: String = USER
+var home: String = HOME
+var grup: Array = [USER]
 var cwd: String = HOME
 var riwayat: Array = []
 var host: String = LOKAL
@@ -22,8 +26,12 @@ var hadiah_diambil: Array = []  # flag misi yang hadiahnya sudah diberikan
 var reputation: Reputation
 var ssh_aktif: ShellSession = null
 
-func _init(p_fs: Vfs, p_jaringan: Jaringan = null) -> void:
+func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) -> void:
     fs = p_fs
+    user = p_pengguna
+    home = "/home/" + user
+    grup = [user]
+    cwd = home
     jaringan = p_jaringan if p_jaringan != null else Jaringan.muat()
     economy = Economy.baru()
     inventory = Inventory.baru()
@@ -32,15 +40,21 @@ func _init(p_fs: Vfs, p_jaringan: Jaringan = null) -> void:
 
 # Seluruh keadaan sesi lokal yang perlu disimpan: filesystem, direktori aktif, riwayat, dan jaringan.
 func to_dict() -> Dictionary:
-    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate()}
+    return {"pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate()}
 
 static func dari_dict(d: Dictionary) -> ShellSession:
     var j := Jaringan.muat()
     if typeof(d.get("jaringan")) == TYPE_DICTIONARY:
         j.terapkan(d["jaringan"])
-    var s := ShellSession.new(Vfs.new(d.get("fs", {})), j)
-    var cwd_tersimpan := String(d.get("cwd", HOME))
-    s.cwd = cwd_tersimpan if s.fs.ada(cwd_tersimpan) else HOME
+    var nama := nama_pengguna_aktif()
+    var lama := String(d.get("pengguna", USER))
+    var fs_dict: Dictionary = d.get("fs", {})
+    var cwd_tersimpan := String(d.get("cwd", "/home/" + lama))
+    if lama != nama:
+        fs_dict = Vfs.ganti_pengguna(fs_dict, lama, nama)
+        cwd_tersimpan = pindah_home(cwd_tersimpan, lama, nama)
+    var s := ShellSession.new(Vfs.new(fs_dict), j, nama)
+    s.cwd = cwd_tersimpan if s.fs.ada(cwd_tersimpan) else s.home
     s.riwayat = Array(d.get("riwayat", []))
     if typeof(d.get("ekonomi")) == TYPE_DICTIONARY:
         s.economy.terapkan(d["ekonomi"])
@@ -53,15 +67,37 @@ static func dari_dict(d: Dictionary) -> ShellSession:
     s.hadiah_diambil = Array(d.get("hadiah", []))
     return s
 
+# Nama pengguna aktif dari Login. Bila belum pernah diisi, memakai akun bawaan.
+static func nama_pengguna_aktif() -> String:
+    var n := Pengaturan.nama_profil()
+    return n if n != "" else USER
+
+# Memindahkan awalan home lama ke home baru pada sebuah jalur. Jalur di luar home tidak berubah.
+static func pindah_home(jalur: String, lama: String, baru: String) -> String:
+    var rumah_lama := "/home/" + lama
+    if jalur == rumah_lama or jalur.begins_with(rumah_lama + "/"):
+        return "/home/" + baru + jalur.substr(rumah_lama.length())
+    return jalur
+
+# Mengganti identitas sesi yang sudah berjalan, misalnya setelah nama di Login diubah.
+func sinkron_pengguna(nama: String) -> void:
+    if nama == "" or nama == user:
+        return
+    fs.akar = Vfs.ganti_pengguna(fs.akar, user, nama)
+    cwd = pindah_home(cwd, user, nama)
+    user = nama
+    home = "/home/" + nama
+    grup = [nama]
+
 func prompt() -> String:
     if ssh_aktif != null:
         return ssh_aktif.prompt()
     var tampil := cwd
-    if cwd == HOME:
+    if cwd == home:
         tampil = "~"
-    elif cwd.begins_with(HOME + "/"):
-        tampil = "~" + cwd.substr(HOME.length())
-    return "%s@%s:%s$" % [USER, host, tampil]
+    elif cwd.begins_with(home + "/"):
+        tampil = "~" + cwd.substr(home.length())
+    return "%s@%s:%s$" % [user, host, tampil]
 
 func jalankan(masukan: String) -> Array:
     if ssh_aktif != null:
@@ -124,19 +160,19 @@ func _jalankan_redirect(token: Array, idx: int, masukan: String) -> Array:
     return _tulis_berkas(tujuan, "\n".join(PackedStringArray(teks)), tambah)
 
 func _tulis_berkas(tujuan: String, isi: String, tambah: bool) -> Array:
-    var abs := Vfs.normalisasi(cwd, tujuan, HOME)
+    var abs := Vfs.normalisasi(cwd, tujuan, home)
     var nama := fs.nama_terakhir(abs)
     var induk_path := fs.induk(abs)
     var induk_node := fs.ambil(induk_path)
     if induk_node.is_empty() or String(induk_node.get("tipe", "")) != "dir":
         return [galat("bash", "%s: %s" % [tujuan, Teks.t("err.tidak_ada_induk")])]
-    if not Permissions.boleh(induk_node, USER, GRUP, "w"):
+    if not Permissions.boleh(induk_node, user, grup, "w"):
         return [galat("bash", "%s: %s" % [tujuan, Teks.t("err.izin")])]
     var ada := fs.ambil(abs)
     if not ada.is_empty():
         if String(ada.get("tipe", "")) == "dir":
             return [galat("bash", "%s: %s" % [tujuan, Teks.t("err.direktori")])]
-        if not Permissions.boleh(ada, USER, GRUP, "w"):
+        if not Permissions.boleh(ada, user, grup, "w"):
             return [galat("bash", "%s: %s" % [tujuan, Teks.t("err.izin")])]
         var lama := ShellCommands.isi_berkas(ada) if tambah else ""
         var gabung := isi
@@ -145,6 +181,6 @@ func _tulis_berkas(tujuan: String, isi: String, tambah: bool) -> Array:
         ada["isi"] = gabung
         ada["ukuran"] = gabung.length()
         return []
-    var baru := {"tipe": "file", "pemilik": USER, "grup": "operator", "izin": "rw-r-----", "isi": isi, "ukuran": isi.length()}
+    var baru := {"tipe": "file", "pemilik": user, "grup": user, "izin": "rw-r-----", "isi": isi, "ukuran": isi.length()}
     fs.tambah(induk_path, nama, baru)
     return []

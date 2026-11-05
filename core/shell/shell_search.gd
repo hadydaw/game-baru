@@ -17,7 +17,7 @@ static func grep(s: ShellSession, p: Dictionary) -> Array:
     var multi := targets.size() > 1 or rekursif
     var hasil: Array = []
     for t in targets:
-        var abs := Vfs.normalisasi(s.cwd, String(t), ShellSession.HOME)
+        var abs := Vfs.normalisasi(s.cwd, String(t), s.home)
         var node := s.fs.ambil(abs)
         if node.is_empty():
             hasil.append(s.galat("grep", "%s: %s" % [t, Teks.t("err.tidak_ada")]))
@@ -31,7 +31,7 @@ static func grep(s: ShellSession, p: Dictionary) -> Array:
         else:
             berkas.append({"path": abs, "node": node})
         for b in berkas:
-            if not Permissions.boleh(b["node"], ShellSession.USER, ShellSession.GRUP, "r"):
+            if not Permissions.boleh(b["node"], s.user, s.grup, "r"):
                 hasil.append(s.galat("grep", "%s: %s" % [b["path"], Teks.t("err.izin")]))
                 continue
             var nomor := 0
@@ -79,7 +79,7 @@ static func find(s: ShellSession, p: Dictionary) -> Array:
         if not t.begins_with("-"):
             path = t
         i += 1
-    var abs := Vfs.normalisasi(s.cwd, path, ShellSession.HOME)
+    var abs := Vfs.normalisasi(s.cwd, path, s.home)
     var node := s.fs.ambil(abs)
     if node.is_empty():
         return [s.galat("find", "%s: %s" % [path, Teks.t("err.tidak_ada")])]
@@ -95,7 +95,7 @@ static func _telusuri(s: ShellSession, abs: String, node: Dictionary, pola: Stri
         out.append(s.baris("info", abs))
     if String(node["tipe"]) != "dir":
         return
-    if not Permissions.boleh(node, ShellSession.USER, ShellSession.GRUP, "r"):
+    if not Permissions.boleh(node, s.user, s.grup, "r"):
         out.append(s.galat("find", "%s: %s" % [abs, Teks.t("err.izin")]))
         return
     var isi: Dictionary = node.get("isi", {})

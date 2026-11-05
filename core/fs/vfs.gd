@@ -10,6 +10,30 @@ var akar: Dictionary = {}
 func _init(data: Dictionary = {}) -> void:
     akar = data.duplicate(true)
 
+# Mengganti nama pengguna pemain pada salinan pohon: folder /home/<lama> dipindah ke /home/<baru>,
+# dan setiap pemilik/grup yang bernilai <lama> ikut diganti. Isi berkas tidak berubah.
+static func ganti_pengguna(akar: Dictionary, lama: String, baru: String) -> Dictionary:
+    var hasil := akar.duplicate(true)
+    if lama == baru or lama.is_empty() or baru.is_empty():
+        return hasil
+    _ganti_kepemilikan(hasil, lama, baru)
+    var rumah = hasil.get("isi", {}).get("home", {}).get("isi", null)
+    if typeof(rumah) == TYPE_DICTIONARY and rumah.has(lama):
+        rumah[baru] = rumah[lama]
+        rumah.erase(lama)
+    return hasil
+
+static func _ganti_kepemilikan(node: Dictionary, lama: String, baru: String) -> void:
+    if String(node.get("pemilik", "")) == lama:
+        node["pemilik"] = baru
+    if String(node.get("grup", "")) == lama:
+        node["grup"] = baru
+    var isi = node.get("isi", null)
+    if typeof(isi) == TYPE_DICTIONARY and String(node.get("tipe", "")) == "dir":
+        for anak in isi.values():
+            if typeof(anak) == TYPE_DICTIONARY:
+                _ganti_kepemilikan(anak, lama, baru)
+
 static func normalisasi(cwd: String, path: String, home: String = "/home/operator") -> String:
     var gabungan := path
     if path.begins_with("~"):

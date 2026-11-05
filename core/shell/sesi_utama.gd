@@ -12,6 +12,7 @@ static var pesan_muat := ""
 
 static func ambil() -> ShellSession:
     if sesi != null:
+        sesi.sinkron_pengguna(ShellSession.nama_pengguna_aktif())
         return sesi
     var muat := Penyimpanan.muat()
     status_muat = String(muat["status"])
@@ -20,7 +21,7 @@ static func ambil() -> ShellSession:
         "ok", "pulih_cadangan":
             sesi = ShellSession.dari_dict(muat["data"])
         _:
-            sesi = ShellSession.new(Vfs.new(_fs_awal()))
+            sesi = ShellSession.new(Vfs.new(_fs_awal()), null, ShellSession.nama_pengguna_aktif())
     Penyimpanan.simpan_sesi(sesi)
     return sesi
 
@@ -42,5 +43,5 @@ static func pesan_status() -> String:
 static func _fs_awal() -> Dictionary:
     var parser := JSON.new()
     if parser.parse(FileAccess.get_file_as_string(FS_AWAL)) == OK and typeof(parser.data) == TYPE_DICTIONARY and parser.data.has("/"):
-        return parser.data["/"]
+        return Vfs.ganti_pengguna(parser.data["/"], ShellSession.USER, ShellSession.nama_pengguna_aktif())
     return {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}

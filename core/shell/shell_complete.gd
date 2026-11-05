@@ -21,7 +21,7 @@ static func lengkapi(s: ShellSession, teks: String) -> Dictionary:
         var garis := token.rfind("/")
         dir_teks = token.substr(0, garis + 1) if garis >= 0 else ""
         prefix = token.substr(garis + 1)
-        var abs := Vfs.normalisasi(s.cwd, dir_teks if dir_teks != "" else ".", ShellSession.HOME)
+        var abs := Vfs.normalisasi(s.cwd, dir_teks if dir_teks != "" else ".", s.home)
         var node := s.fs.ambil(abs)
         if node.is_empty() or String(node.get("tipe", "")) != "dir":
             return {"teks": teks, "pilihan": []}
