@@ -34,7 +34,7 @@ const KAMUS := {
 	"misi.pembayaran": {"id": "Pembayaran : Kr %d", "en": "Payment : Kr %d"},
 	"misi.persyaratan": {"id": "Persyaratan : %s", "en": "Requirement : %s"},
 	"misi.tombol_terima": {"id": "MENERIMA", "en": "ACCEPT"},
-	"misi.pesan_di_email": {"id": "Pesan misi ada di aplikasi Email.", "en": "The mission message is in the Email app."},
+	"misi.diterima": {"id": "Misi diterima. Pesan ada di aplikasi Email.", "en": "Mission accepted. The message is in the Email app."},
 	"misi.tombol_rincian": {"id": "RINCIAN", "en": "DETAILS"},
 	"misi.tombol_hapus": {"id": "MENGHAPUS", "en": "DELETE"},
 	"misi.label_dari": {"id": "DARI : %s", "en": "FROM : %s"},

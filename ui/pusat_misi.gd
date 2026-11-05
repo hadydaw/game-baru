@@ -243,7 +243,7 @@ func _bangun_daftar() -> void:
 	var terlihat: Array = []
 	for m in misi_kat:
 		var st := String(_sesi.misi.get(String(m["id"]), ""))
-		if st == "aktif" or st == "selesai":
+		if st == "aktif" or st == "selesai" or Misi.tersedia(_sesi, m):
 			terlihat.append(m)
 	if not terlihat.has(_cari_misi(_misi_terpilih)):
 		_misi_terpilih = String(terlihat[0]["id"]) if not terlihat.is_empty() else ""
@@ -325,7 +325,8 @@ func _bangun_tombol() -> void:
 			_segarkan_semua())
 		_bawah.add_child(keluar)
 		var ada := _misi_terpilih != ""
-		var terima := _tombol_bawah(Bahasa.t("misi.tombol_terima"), Tema.TEAL, ada)
+		var bisa_terima := ada and Misi.tersedia(_sesi, _cari_misi(_misi_terpilih))
+		var terima := _tombol_bawah(Bahasa.t("misi.tombol_terima"), Tema.TEAL, bisa_terima)
 		terima.pressed.connect(_terima_misi)
 		_bawah.add_child(terima)
 		var rincian := _tombol_bawah(Bahasa.t("misi.tombol_rincian"), Tema.TEAL, ada)
@@ -349,9 +350,13 @@ func _bangun_tombol() -> void:
 		_segarkan_semua())
 	_bawah.add_child(pilih)
 
-# MENERIMA: misi sudah diterima otomatis, dan pesannya ada di aplikasi Email.
+# MENERIMA: misi diterima pemain, lalu pesan masuk ke aplikasi Email.
 func _terima_misi() -> void:
-	_hint.text = Bahasa.t("misi.pesan_di_email")
+	if _misi_terpilih == "" or not Misi.terima(_sesi, _misi_terpilih):
+		return
+	Penyimpanan.simpan_sesi(_sesi)
+	_segarkan_semua()
+	_hint.text = Bahasa.t("misi.diterima")
 
 func _tombol_bawah(teks: String, warna_batas: Color, aktif: bool) -> Button:
 	var b := Button.new()

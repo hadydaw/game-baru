@@ -3,7 +3,7 @@ extends RefCounted
 
 # Pusat Misi: data misi dibaca dari JSON. Status disimpan di sesi pemain:
 #   tidak ada di s.misi  = belum diterima
-#   "aktif"              = pesan sudah diterima, tujuan sedang dikerjakan
+#   "aktif"              = sudah diterima pemain lewat MENERIMA, tujuan sedang dikerjakan
 #   "selesai"            = semua tujuan terpenuhi; hadiah diberikan sekali lewat Hadiah.
 # Semua pemeriksaan memakai flag di Jaringan.progres, sehingga hasil tindakan pemain yang sebenarnya.
 
@@ -52,18 +52,27 @@ static func perbarui(s: ShellSession) -> void:
 		for m in daftar():
 			var id := String(m["id"])
 			var dari := String(m["pengirim"])
-			if not s.misi.has(id):
-				if _semua_ada(s, m.get("syarat_terima", [])):
-					s.misi[id] = "aktif"
-					_kirim(s, id, dari, _pesan_masuk_lengkap(m))
-					berubah = true
-			elif String(s.misi[id]) == "aktif" and _tujuan_selesai(s, m):
+			if String(s.misi.get(id, "")) == "aktif" and _tujuan_selesai(s, m):
 				s.misi[id] = "selesai"
 				_kirim(s, id, dari, m["pesan_selesai"])
 				Hadiah.selesaikan_misi(s, id)
 				berubah = true
-			elif String(s.misi[id]) == "aktif" and _cek_tahap(s, m):
+			elif String(s.misi.get(id, "")) == "aktif" and _cek_tahap(s, m):
 				berubah = true
+
+# Misi tersedia: syarat terpenuhi, tetapi belum diterima pemain.
+static func tersedia(s: ShellSession, m: Dictionary) -> bool:
+	return not s.misi.has(String(m["id"])) and _semua_ada(s, m.get("syarat_terima", []))
+
+# Pemain menerima misi lewat tombol MENERIMA. Pesan masuk dikirim ke Email sekali di sini.
+static func terima(s: ShellSession, id: String) -> bool:
+	var m := temukan(id)
+	if m.is_empty() or not tersedia(s, m):
+		return false
+	s.misi[id] = "aktif"
+	_kirim(s, id, String(m["pengirim"]), _pesan_masuk_lengkap(m))
+	perbarui(s)
+	return true
 
 # Mengganti penanda {ip:id} dengan IP node sesi ini. IP tidak pernah ditulis permanen di data misi.
 static func ganti_ip(s: ShellSession, teks: String) -> String:

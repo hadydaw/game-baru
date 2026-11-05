@@ -15,6 +15,7 @@ func _fs_awal() -> Dictionary:
 func _baru() -> ShellSession:
 	var s := ShellSession.new(Vfs.new(_fs_awal()), Jaringan.muat(), "operator")
 	Misi.perbarui(s)
+	Misi.terima(s, "misi_1")
 	return s
 
 func before_each() -> void:
@@ -77,7 +78,9 @@ func test_misi_selesai_setelah_tindakan_nyata_dan_hadiah_sekali() -> void:
 	assert_eq(s.economy.saldo, 500 + 150, "hadiah kredit diberikan")
 	assert_eq(s.reputation.get_nilai("kolektif_senja"), 5, "hadiah reputasi diberikan")
 	Misi.perbarui(s)
+	Misi.terima(s, "misi_1")
 	Misi.perbarui(s)
+	Misi.terima(s, "misi_1")
 	assert_eq(s.economy.saldo, 650, "hadiah tidak berulang")
 	assert_eq(s.pesan_misi.size(), 2, "pesan selesai hanya sekali")
 
@@ -93,19 +96,27 @@ func test_status_dan_hadiah_bertahan_setelah_muat_ulang() -> void:
 	assert_eq(pulih.pesan_misi.size(), 2)
 	assert_eq(pulih.economy.saldo, 650, "saldo tidak berubah saat dimuat")
 
-func test_simpanan_lama_tanpa_status_misi_menerima_pesan() -> void:
+func test_misi_tersedia_belum_diterima_sampai_menerima() -> void:
 	var data := {"fs": _fs_awal(), "cwd": "/home/operator", "riwayat": []}
 	var s := ShellSession.dari_dict(data)
+	assert_false(s.misi.has("misi_1"), "belum diterima otomatis")
+	assert_eq(s.pesan_misi.size(), 0, "belum ada email sebelum MENERIMA")
+	assert_true(Misi.tersedia(s, Misi.temukan("misi_1")))
+	assert_true(Misi.terima(s, "misi_1"))
 	assert_eq(String(s.misi.get("misi_1", "")), "aktif")
+	assert_eq(s.pesan_misi.size(), 1)
+	assert_false(Misi.terima(s, "misi_1"), "menerima dua kali tidak mengirim email lagi")
 	assert_eq(s.pesan_misi.size(), 1)
 
 func test_simpanan_lama_dengan_tindakan_selesai_diberi_hadiah_sekali() -> void:
 	var data := {"fs": _fs_awal(), "cwd": "/home/operator", "riwayat": [],
+		"misi": {"misi_1": "aktif"},
 		"jaringan": {"progres": ["ssh:arsip", "baca:arsip:catatan.txt"]}}
 	var s := ShellSession.dari_dict(data)
 	assert_eq(String(s.misi["misi_1"]), "selesai", "tindakan lama langsung dihitung")
 	assert_eq(s.economy.saldo, 650)
 	Misi.perbarui(s)
+	Misi.terima(s, "misi_1")
 	assert_eq(s.economy.saldo, 650, "tidak berulang")
 
 # Layar Pusat Misi harus bisa dibangun dari sesi yang sudah berisi misi aktif.

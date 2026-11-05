@@ -9,6 +9,7 @@ func before_each() -> void:
 func _sesi() -> ShellSession:
 	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
 	Misi.perbarui(s)
+	Misi.terima(s, "misi_1")
 	return s
 
 func _tujuan_help_selesai(s: ShellSession) -> bool:

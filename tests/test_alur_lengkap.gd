@@ -52,6 +52,7 @@ func test_tutorial_selesai_lalu_bertahan_setelah_dimuat_ulang() -> void:
 	for cmd in LANGKAH:
 		_jalankan(s, cmd)
 		Misi.perbarui(s)
+		Misi.terima(s, "misi_1")
 	assert_eq(String(s.misi.get("misi_1", "")), "selesai", "Tutorial 1 harus selesai")
 	assert_true(s.hadiah_diambil.has("misi_1"), "hadiah misi_1 diterima")
 	assert_true(s.wifi.terakses.has("LAB-WIFI-01"), "akses jaringan laboratorium terbuka")
@@ -82,6 +83,7 @@ func test_keluaran_bahasa_inggris_tidak_memuat_kata_indonesia() -> void:
 	for cmd in LANGKAH:
 		semua.append_array(_jalankan(s, cmd))
 		Misi.perbarui(s)
+		Misi.terima(s, "misi_1")
 	var kata := [" tidak ", " belum ", " sudah ", " dengan ", " untuk ", " dari ", " ditemukan", " dimiliki", " terkunci", " berkas", " Pilih", " tingkat ", "Tahap ", "Agensi", "Penjual", "Saldo", "Reputasi:", "Perangkat ", "Tidak ada", "butuh", "terbuka", "tanpa", "Umum", "Spesialis", "Kolektif", "Elite", "terhubung", "Antena", "dirakit", "dimiliki", "berhasil", "Dibeli", "belum", "Kanal", "sinyal", "terlihat", "dipilih", "dianalisis", "Komponen"]
 	var bocor: Array = []
 	for baris in semua:

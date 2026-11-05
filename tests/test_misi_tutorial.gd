@@ -7,6 +7,7 @@ extends GutTest
 func _sesi() -> ShellSession:
 	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
 	Misi.perbarui(s)
+	Misi.terima(s, "misi_1")
 	return s
 
 func _jalan(s: ShellSession, perintah: String) -> Array:
