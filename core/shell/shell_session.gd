@@ -1,40 +1,61 @@
 class_name ShellSession
 extends RefCounted
 
-# Sesi shell pemain: direktori kerja, pengguna, riwayat, dan filesystem aktif.
+# Sesi shell pemain: direktori kerja, pengguna, riwayat, filesystem aktif, dan jaringan.
 # Keluaran setiap perintah berupa Array of {tipe, teks}. Tipe: info, error, clear.
+# Saat SSH aktif, perintah diteruskan ke sesi jarak jauh (ssh_aktif) sampai pemain mengetik exit.
 
 const HOME := "/home/operator"
 const USER := "operator"
 const GRUP := ["operator"]
+const LOKAL := "jtn"
 
 var fs: Vfs
 var cwd: String = HOME
 var riwayat: Array = []
+var host: String = LOKAL
+var jaringan: Jaringan
+var ssh_aktif: ShellSession = null
 
-func _init(p_fs: Vfs) -> void:
+func _init(p_fs: Vfs, p_jaringan: Jaringan = null) -> void:
     fs = p_fs
+    jaringan = p_jaringan if p_jaringan != null else Jaringan.muat()
 
-# Seluruh keadaan sesi yang perlu disimpan: filesystem, direktori aktif, dan riwayat.
+# Seluruh keadaan sesi lokal yang perlu disimpan: filesystem, direktori aktif, riwayat, dan jaringan.
 func to_dict() -> Dictionary:
-    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat}
+    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict()}
 
 static func dari_dict(d: Dictionary) -> ShellSession:
-    var s := ShellSession.new(Vfs.new(d.get("fs", {})))
+    var j := Jaringan.muat()
+    if typeof(d.get("jaringan")) == TYPE_DICTIONARY:
+        j.terapkan(d["jaringan"])
+    var s := ShellSession.new(Vfs.new(d.get("fs", {})), j)
     var cwd_tersimpan := String(d.get("cwd", HOME))
     s.cwd = cwd_tersimpan if s.fs.ada(cwd_tersimpan) else HOME
     s.riwayat = Array(d.get("riwayat", []))
     return s
 
 func prompt() -> String:
+    if ssh_aktif != null:
+        return ssh_aktif.prompt()
     var tampil := cwd
     if cwd == HOME:
         tampil = "~"
     elif cwd.begins_with(HOME + "/"):
         tampil = "~" + cwd.substr(HOME.length())
-    return "%s@jtn:%s$" % [USER, tampil]
+    return "%s@%s:%s$" % [USER, host, tampil]
 
 func jalankan(masukan: String) -> Array:
+    if ssh_aktif != null:
+        var t := masukan.strip_edges()
+        if t == "exit":
+            riwayat.append(t)
+            var tutup := ssh_aktif.host
+            ssh_aktif = null
+            return [baris("info", "Koneksi ke %s ditutup." % tutup)]
+        if t != "":
+            riwayat.append(t)
+        return ssh_aktif.jalankan(masukan)
     var p := ShellParser.parse(masukan)
     if bool(p["kosong"]):
         return []
@@ -44,6 +65,12 @@ func jalankan(masukan: String) -> Array:
     if idx == -1:
         return ShellCommands.jalankan(self, p)
     return _jalankan_redirect(token, idx, masukan)
+
+func baris(tipe: String, teks: String) -> Dictionary:
+    return {"tipe": tipe, "teks": teks}
+
+func galat(perintah: String, pesan: String) -> Dictionary:
+    return baris("error", "bash: %s: %s" % [perintah, pesan])
 
 # Mengembalikan indeks token yang berisi operator > atau >>, atau -1.
 func _cari_redirect(token: Array) -> int:
@@ -103,9 +130,3 @@ func _tulis_berkas(tujuan: String, isi: String, tambah: bool) -> Array:
     var baru := {"tipe": "file", "pemilik": USER, "grup": "operator", "izin": "rw-r-----", "isi": isi, "ukuran": isi.length()}
     fs.tambah(induk_path, nama, baru)
     return []
-
-func baris(tipe: String, teks: String) -> Dictionary:
-    return {"tipe": tipe, "teks": teks}
-
-func galat(perintah: String, pesan: String) -> Dictionary:
-    return baris("error", "bash: %s: %s" % [perintah, pesan])

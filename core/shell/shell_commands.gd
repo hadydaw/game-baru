@@ -21,6 +21,10 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "touch": return _touch(s, p)
         "grep": return ShellSearch.grep(s, p)
         "find": return ShellSearch.find(s, p)
+        "ping": return PerintahJaringan.ping(s, p)
+        "nmap": return PerintahJaringan.nmap(s, p)
+        "ssh": return PerintahJaringan.ssh(s, p)
+        "exit": return [s.galat("exit", "tidak ada sesi SSH aktif")]
         _: return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
 
 static func _history(s: ShellSession) -> Array:

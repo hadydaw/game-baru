@@ -1,0 +1,200 @@
+{
+  "gerbang": {
+    "ip": "10.7.0.1",
+    "status": "aktif",
+    "ditemukan_awal": true,
+    "syarat": [],
+    "latensi": 12,
+    "tetangga": [
+      "arsip",
+      "relay"
+    ],
+    "port": {
+      "22": {
+        "status": "tertutup",
+        "layanan": "ssh"
+      },
+      "80": {
+        "status": "terbuka",
+        "layanan": "http"
+      }
+    },
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {
+                "readme.txt": {
+                  "tipe": "file",
+                  "pemilik": "operator",
+                  "grup": "operator",
+                  "izin": "rw-r-----",
+                  "isi": "Gerbang JTN. Semua node dapat dijangkau dari sini.",
+                  "ukuran": 50
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "arsip": {
+    "ip": "10.7.0.8",
+    "status": "aktif",
+    "syarat": [],
+    "latensi": 34,
+    "tetangga": [
+      "server_kota"
+    ],
+    "port": {
+      "22": {
+        "status": "terbuka",
+        "layanan": "ssh"
+      },
+      "80": {
+        "status": "tertutup",
+        "layanan": "http"
+      }
+    },
+    "ssh": {
+      "user": "operator",
+      "kunci_lokal": "/home/operator/dokumen/kunci_arsip.txt",
+      "token": "arsip:TK-7731"
+    },
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {
+                "catatan.txt": {
+                  "tipe": "file",
+                  "pemilik": "operator",
+                  "grup": "operator",
+                  "izin": "rw-r-----",
+                  "isi": "Arsip Nusantara. Berkas dipindahkan ke server kota.",
+                  "ukuran": 51
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "relay": {
+    "ip": "10.7.0.4",
+    "status": "tidak_aktif",
+    "syarat": [
+      "misi_relay"
+    ],
+    "latensi": 0,
+    "tetangga": [],
+    "port": {
+      "22": {
+        "status": "tertutup",
+        "layanan": "ssh"
+      },
+      "80": {
+        "status": "tertutup",
+        "layanan": "http"
+      }
+    },
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "server_kota": {
+    "ip": "10.7.1.2",
+    "status": "aktif",
+    "syarat": [
+      "misi_relay"
+    ],
+    "latensi": 58,
+    "tetangga": [],
+    "port": {
+      "22": {
+        "status": "terbuka",
+        "layanan": "ssh"
+      },
+      "443": {
+        "status": "terbuka",
+        "layanan": "https"
+      }
+    },
+    "ssh": {
+      "user": "admin",
+      "kunci_lokal": "/home/operator/dokumen/kunci_kota.txt",
+      "token": "kota:RAHASIA"
+    },
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}
