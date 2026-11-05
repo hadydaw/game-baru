@@ -23,6 +23,9 @@ const KOLOM := 4
 const WALL_POTRET := "res://assets/wallpaper/wp_potret.png"
 const WALL_LANSKAP := "res://assets/wallpaper/wp_lanskap.png"
 const JARAK_BINGKAI := 14
+# Tinggi panel atas dan taskbar. Jendela aplikasi mengisi ruang di antara keduanya.
+const TINGGI_PANEL := 64
+const TINGGI_TASKBAR := 80
 
 # Nilai awal. Saldo dan koneksi akan diganti saat sistem ekonomi dan jaringan dibuat.
 const SALDO_AWAL := 500
@@ -35,6 +38,12 @@ static func nama_aplikasi(id: String) -> String:
         if a["id"] == id:
             return a["nama"]
     return id
+
+static func ikon_aplikasi(id: String) -> String:
+    for a in APLIKASI:
+        if a["id"] == id:
+            return a["ikon"]
+    return ""
 
 var _wallpaper: TextureRect
 var _margin: MarginContainer

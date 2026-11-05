@@ -9,7 +9,7 @@ const LATAR := Color("0d1117")
 const LOGO := "res://assets/logo/logo_jtn.png"
 
 var _desktop: DesktopView
-var _frame: AppFrame
+var _jendela: ManajerJendela
 var _konfirmasi: KonfirmasiPanel
 var _aman := Vector4.ZERO  # kiri, atas, kanan, bawah dalam satuan viewport
 
@@ -31,8 +31,7 @@ func _sesuaikan_ukuran() -> void:
             anak.size = vp
     if is_instance_valid(_desktop):
         _desktop.atur_aman(_aman)
-    if is_instance_valid(_frame):
-        _frame.atur_aman(_aman)
+    _atur_area_jendela()
     if is_instance_valid(_konfirmasi):
         _konfirmasi.atur_aman(_aman)
 
@@ -127,6 +126,26 @@ func _tampilkan_desktop() -> void:
     add_child(_desktop)
     _desktop.position = Vector2.ZERO
     _desktop.size = size
+    _jendela = ManajerJendela.new()
+    add_child(_jendela)
+    _jendela.position = Vector2.ZERO
+    _jendela.size = size
+    _atur_area_jendela()
+
+# Area kerja jendela: di antara panel atas dan taskbar, di dalam bingkai Desktop.
+# Area penuh (maximize) menutupi panel dan taskbar, tetapi tetap di dalam area aman.
+func _atur_area_jendela() -> void:
+    if not is_instance_valid(_jendela):
+        return
+    var vp := size
+    var tepi := DesktopView.JARAK_BINGKAI
+    var kiri := _aman.x + tepi
+    var kanan := vp.x - _aman.z - tepi
+    var atas := _aman.y + tepi
+    var bawah := vp.y - _aman.w - tepi
+    var kerja := Rect2(Vector2(kiri, atas + DesktopView.TINGGI_PANEL), Vector2(kanan - kiri, bawah - atas - DesktopView.TINGGI_PANEL - DesktopView.TINGGI_TASKBAR))
+    var penuh := Rect2(Vector2(kiri, atas), Vector2(kanan - kiri, bawah - atas))
+    _jendela.atur_area(kerja, penuh)
 
 # Kembali ke menu tidak menghapus apa pun: sesi disimpan dulu, lalu Desktop ditutup.
 # Pemain bisa memilih Lanjutkan di menu untuk meneruskan dari posisi yang sama.
@@ -144,29 +163,16 @@ func _kembali_ke_menu() -> void:
     if not Penyimpanan.simpan_sesi(SesiUtama.ambil()):
         push_warning("Sesi gagal disimpan; tetap di Desktop agar data tidak hilang.")
         return
-    if is_instance_valid(_frame):
-        _frame.queue_free()
-    _frame = null
+    if is_instance_valid(_jendela):
+        _jendela.queue_free()
+    _jendela = null
     if is_instance_valid(_desktop):
         _desktop.queue_free()
     _desktop = null
     _tampilkan_menu()
 
 func _buka_aplikasi(id: String) -> void:
-    _desktop.visible = false
-    _frame = AppFrame.new()
-    _frame.aman = _aman
-    add_child(_frame)
-    _frame.position = Vector2.ZERO
-    _frame.size = size
-    _frame.kembali.connect(_tutup_aplikasi)
-    _frame.setup(DesktopView.nama_aplikasi(id), _buat_konten(id))
-
-func _tutup_aplikasi() -> void:
-    if is_instance_valid(_frame):
-        _frame.queue_free()
-    _frame = null
-    _desktop.visible = true
+    _jendela.buka(id, DesktopView.nama_aplikasi(id), DesktopView.ikon_aplikasi(id), _buat_konten(id))
 
 func _buat_konten(id: String) -> Control:
     match id:
