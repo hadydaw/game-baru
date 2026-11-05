@@ -26,7 +26,7 @@ func _initialize() -> void:
     layar.call("_kirim", "ls")
     layar.call("_kirim", "xyz")
     var teks := keluaran.get_parsed_text()
-    if not teks.contains("Documents"):
+    if not teks.contains("dokumen"):
         gagal.append("ls tidak menampilkan isi home")
     if not teks.contains("bash: xyz: perintah tidak ditemukan"):
         gagal.append("galat perintah tidak tampil")

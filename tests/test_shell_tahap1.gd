@@ -4,7 +4,9 @@ extends GutTest
 
 func _sesi() -> ShellSession:
     var isi := FileAccess.get_file_as_string("res://data/fs/pemain.json")
-    return ShellSession.new(Vfs.new(JSON.parse_string(isi)))
+    # File JSON membungkus root di bawah kunci "/", sama seperti yang dibaca TerminalScreen.
+    var data: Dictionary = JSON.parse_string(isi)
+    return ShellSession.new(Vfs.new(data["/"]))
 
 func test_tokenisasi_kutip() -> void:
     var t := ShellParser.tokenkan("echo \"halo dunia\" 'a b'")

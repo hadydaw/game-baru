@@ -27,7 +27,7 @@ static func normalisasi(cwd: String, path: String, home: String = "/home/operato
         bagian.append(p)
     if bagian.is_empty():
         return "/"
-    return "/" + String(PackedStringArray(bagian).join("/"))
+    return "/" + "/".join(PackedStringArray(bagian))
 
 func ambil(abs_path: String) -> Dictionary:
     if abs_path == "/" or abs_path.is_empty():
@@ -58,7 +58,7 @@ func induk(abs_path: String) -> String:
     bagian.remove_at(bagian.size() - 1)
     if bagian.is_empty():
         return "/"
-    return "/" + String(PackedStringArray(bagian).join("/"))
+    return "/" + "/".join(PackedStringArray(bagian))
 
 func tambah(abs_induk: String, nama: String, node: Dictionary) -> bool:
     var dir := ambil(abs_induk)
