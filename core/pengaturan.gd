@@ -10,11 +10,14 @@ const UKURAN_AWAL := "sedang"
 const NAMA_MIN := 3
 const NAMA_MAKS := 16
 
+# Aplikasi yang bisa diatur posisinya di Desktop. Urutan ini adalah susunan awal.
+const SEMUA_APLIKASI := ["terminal", "peta", "berkas", "tools", "forum", "pasar", "misi", "log"]
+
 # Jalur berkas yang dipakai. Tes mengganti ini agar tidak menimpa pengaturan pemain.
 static var berkas_aktif: String = BERKAS
 
 static func muat() -> Dictionary:
-	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL}
+	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL, "susunan_desktop": []}
 	if not FileAccess.file_exists(berkas_aktif):
 		return hasil
 	var parser := JSON.new()
@@ -25,6 +28,18 @@ static func muat() -> Dictionary:
 		hasil["profil_nama"] = String(d["profil_nama"])
 	if UKURAN.has(String(d.get("ukuran_teks", ""))):
 		hasil["ukuran_teks"] = String(d["ukuran_teks"])
+	hasil["susunan_desktop"] = _bersihkan_susunan(d.get("susunan_desktop", []))
+	return hasil
+
+# Hanya id aplikasi yang dikenal, tanpa duplikat. Id asing diabaikan agar berkas rusak tidak merusak Desktop.
+static func _bersihkan_susunan(mentah: Variant) -> Array:
+	var hasil: Array = []
+	if typeof(mentah) != TYPE_ARRAY:
+		return hasil
+	for id in mentah:
+		var nama := String(id)
+		if SEMUA_APLIKASI.has(nama) and not hasil.has(nama):
+			hasil.append(nama)
 	return hasil
 
 static func simpan(d: Dictionary) -> bool:
@@ -66,3 +81,14 @@ static func set_nama_profil(nama: String) -> bool:
 	if not nama_valid(nama):
 		return false
 	return _ubah("profil_nama", nama)
+
+# Susunan ikon Desktop. Kosong berarti urutan awal. Disimpan di pengaturan perangkat, bukan di sesi:
+# ini preferensi tampilan dan tidak mengubah progres permainan.
+static func susunan_desktop() -> Array:
+	return muat()["susunan_desktop"]
+
+static func set_susunan_desktop(urutan: Array) -> bool:
+	return _ubah("susunan_desktop", _bersihkan_susunan(urutan))
+
+static func reset_susunan_desktop() -> bool:
+	return set_susunan_desktop([])

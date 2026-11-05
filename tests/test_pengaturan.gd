@@ -60,3 +60,32 @@ func test_berkas_rusak_memakai_nilai_awal() -> void:
 	f.close()
 	assert_eq(Pengaturan.ukuran_teks(), "sedang")
 	assert_eq(Pengaturan.nama_profil(), "")
+
+func test_susunan_desktop_awal_kosong() -> void:
+	assert_eq(Pengaturan.susunan_desktop(), [])
+
+func test_susunan_desktop_tersimpan_dan_dibaca_ulang() -> void:
+	assert_true(Pengaturan.set_susunan_desktop(["misi", "terminal"]))
+	assert_eq(Pengaturan.susunan_desktop(), ["misi", "terminal"])
+
+func test_susunan_desktop_membuang_id_asing_dan_duplikat() -> void:
+	Pengaturan.set_susunan_desktop(["misi", "xxx", "misi", "peta"])
+	assert_eq(Pengaturan.susunan_desktop(), ["misi", "peta"])
+
+func test_susunan_desktop_berkas_rusak_diabaikan() -> void:
+	var f := FileAccess.open(UJI, FileAccess.WRITE)
+	f.store_string('{"susunan_desktop": "bukan array"}')
+	f.close()
+	assert_eq(Pengaturan.susunan_desktop(), [])
+
+func test_reset_susunan_desktop() -> void:
+	Pengaturan.set_susunan_desktop(["misi"])
+	assert_true(Pengaturan.reset_susunan_desktop())
+	assert_eq(Pengaturan.susunan_desktop(), [])
+
+func test_susunan_tidak_menimpa_pengaturan_lain() -> void:
+	Pengaturan.set_nama_profil("agen_07")
+	Pengaturan.set_ukuran_teks("besar")
+	Pengaturan.set_susunan_desktop(["log"])
+	assert_eq(Pengaturan.nama_profil(), "agen_07")
+	assert_eq(Pengaturan.ukuran_teks(), "besar")

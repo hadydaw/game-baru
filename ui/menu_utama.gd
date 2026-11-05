@@ -162,9 +162,18 @@ func _bangun_panel_pengaturan() -> void:
 	_lbl_hint_pengaturan = Tema.label("Berlaku saat Terminal dibuka berikutnya.", Tema.TEKS_REDUP, 20)
 	_lbl_hint_pengaturan.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	kolom.add_child(_lbl_hint_pengaturan)
+	kolom.add_child(Tema.label("Susunan ikon Desktop", Tema.TEKS, 26))
+	var atur_ulang := _tombol_biasa("Atur ulang susunan ikon")
+	atur_ulang.pressed.connect(_aksi_atur_ulang_ikon)
+	kolom.add_child(atur_ulang)
 	var kembali := _tombol_biasa("Kembali")
 	kembali.pressed.connect(_tutup_panel)
 	kolom.add_child(kembali)
+
+# Mengembalikan urutan ikon Desktop ke susunan awal. Progres permainan tidak ikut berubah.
+func _aksi_atur_ulang_ikon() -> void:
+	if Pengaturan.reset_susunan_desktop():
+		_set_status("Susunan ikon Desktop dikembalikan ke awal.")
 
 func _bangun_panel_login() -> void:
 	_panel_login = _bangun_panel("Login")

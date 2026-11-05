@@ -48,6 +48,26 @@ var _panel: PanelAtas
 var _hotbar: HotBar
 var _jendela: ManajerJendela
 var _wallpaper_terpasang: String = ""
+# Pindah ikon: tekan-tahan TAHAN_DETIK memulai mode pindah; geser untuk memilih posisi; lepas untuk menaruh.
+const TAHAN_DETIK := 0.4
+var _tahan_timer: Timer
+var _tahan_id := ""
+var _tahan_terpicu := false
+var _pindah_id := ""
+
+# Urutan ikon: susunan tersimpan lebih dulu, lalu aplikasi baru yang belum ada di susunan itu.
+static func urutan_id() -> Array:
+    var urut: Array = Pengaturan.susunan_desktop().duplicate()
+    for a in APLIKASI:
+        if not urut.has(a["id"]):
+            urut.append(a["id"])
+    return urut
+
+static func _data_aplikasi(id: String) -> Dictionary:
+    for a in APLIKASI:
+        if a["id"] == id:
+            return a
+    return {}
 
 func _ready() -> void:
     set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -78,8 +98,8 @@ func _ready() -> void:
     _grid.columns = KOLOM
     _grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     kolom.add_child(_grid)
-    for a in APLIKASI:
-        _grid.add_child(_buat_sel_ikon(a))
+    for id in urutan_id():
+        _grid.add_child(_buat_sel_ikon(_data_aplikasi(id)))
     kolom.add_child(_spasi())
     _hotbar = HotBar.new()
     _hotbar.home_diminta.connect(func(): menu_aplikasi_diminta.emit())
@@ -93,6 +113,12 @@ func _ready() -> void:
     add_child(jam)
     jam.start()
     _perbarui_jam()
+
+    _tahan_timer = Timer.new()
+    _tahan_timer.one_shot = true
+    _tahan_timer.wait_time = TAHAN_DETIK
+    _tahan_timer.timeout.connect(_mulai_pindah)
+    add_child(_tahan_timer)
 
     get_viewport().size_changed.connect(_susun)
     _susun()
@@ -159,9 +185,87 @@ func _buat_sel_ikon(a: Dictionary) -> Button:
     label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     kolom.add_child(label)
     var id: String = a["id"]
-    tombol.pressed.connect(func(): buka_aplikasi.emit(id))
+    tombol.set_meta("id", id)
+    tombol.gui_input.connect(_saat_input_sel.bind(tombol))
+    tombol.pressed.connect(_ketuk_sel.bind(id))
     _sel.append({"tombol": tombol, "gambar": gambar, "label": label})
     return tombol
+
+func _ketuk_sel(id: String) -> void:
+    if _tahan_terpicu:
+        return
+    buka_aplikasi.emit(id)
+
+func _saat_input_sel(e: InputEvent, tombol: Button) -> void:
+    var id := String(tombol.get_meta("id"))
+    if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
+        if e.pressed:
+            _tahan_id = id
+            _tahan_terpicu = false
+            _tahan_timer.start(TAHAN_DETIK)
+        else:
+            _tahan_timer.stop()
+            if _pindah_id != "":
+                _selesai_pindah(e.global_position)
+    elif e is InputEventMouseMotion and _pindah_id != "":
+        _sorot_tujuan(e.global_position)
+
+# Dipanggil setelah tekan-tahan. Ikon yang dipilih tampil redup selama digeser.
+func _mulai_pindah() -> void:
+    if _tahan_id == "":
+        return
+    _tahan_terpicu = true
+    _pindah_id = _tahan_id
+    _tombol_id(_pindah_id).modulate = Color(1, 1, 1, 0.5)
+
+func _tombol_id(id: String) -> Button:
+    for s in _sel:
+        if String(s["tombol"].get_meta("id")) == id:
+            return s["tombol"]
+    return null
+
+# Indeks sel di bawah posisi pointer, atau -1.
+func _indeks_di_bawah(pos: Vector2) -> int:
+    for i in range(_grid.get_child_count()):
+        var c := _grid.get_child(i) as Control
+        if c != null and c.get_global_rect().has_point(pos):
+            return i
+    return -1
+
+func _sorot_tujuan(pos: Vector2) -> void:
+    var tujuan := _indeks_di_bawah(pos)
+    for s in _sel:
+        var t: Button = s["tombol"]
+        if String(t.get_meta("id")) == _pindah_id:
+            t.modulate = Color(1, 1, 1, 0.5)
+        elif tujuan >= 0 and _grid.get_child(tujuan) == t:
+            t.modulate = Color(0.45, 1.0, 0.85)
+        else:
+            t.modulate = Color(1, 1, 1)
+
+func _selesai_pindah(pos: Vector2) -> void:
+    var tujuan := _indeks_di_bawah(pos)
+    var id := _pindah_id
+    _pindah_id = ""
+    _tahan_id = ""
+    for s in _sel:
+        s["tombol"].modulate = Color(1, 1, 1)
+    if tujuan >= 0:
+        _pindahkan_ikon(id, tujuan)
+
+# Memindahkan ikon ke indeks grid dan menyimpan susunan baru. Mengembalikan false jika id tidak dikenal.
+func _pindahkan_ikon(id: String, indeks: int) -> bool:
+    var t := _tombol_id(id)
+    if t == null:
+        return false
+    _grid.move_child(t, clampi(indeks, 0, _grid.get_child_count() - 1))
+    return _simpan_susunan()
+
+func _simpan_susunan() -> bool:
+    var urut: Array = []
+    for c in _grid.get_children():
+        urut.append(String(c.get_meta("id")))
+    return Pengaturan.set_susunan_desktop(urut)
 
 # Menyesuaikan wallpaper dan ukuran ikon dengan orientasi dan ukuran layar saat ini.
 func _susun() -> void:
