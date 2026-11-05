@@ -81,11 +81,18 @@ func _ready() -> void:
     _tampil(_sesi.jalankan("pwd"))
 
 # Membuat sesi shell. Bila gagal, galat ditampilkan di layar agar tidak diam-diam.
+# Sesi disimpan di luar layar agar filesystem dan direktori kerja tetap ada saat pindah aplikasi.
+static var _sesi_bersama: ShellSession
+
 func _buat_sesi() -> ShellSession:
+    if _sesi_bersama != null:
+        return _sesi_bersama
     var sesi := ShellSession.new(Vfs.new(_baca_fs()))
     if sesi == null:
         push_error("TerminalScreen: ShellSession gagal dibuat")
         _tampil([{"tipe": "error", "teks": "Sesi shell gagal dibuat. Lihat log Godot untuk detail."}])
+        return null
+    _sesi_bersama = sesi
     return sesi
 
 func _muat_font() -> Font:

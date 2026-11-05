@@ -37,6 +37,10 @@ static func parse(masukan: String) -> Dictionary:
     var token := tokenkan(masukan)
     if token.is_empty():
         return {"kosong": true, "nama": "", "opsi": [], "argumen": [], "mentah": masukan}
+    return dari_token(token, masukan)
+
+# Membentuk hasil parse dari daftar token yang sudah dipisah (dipakai juga untuk perintah ber-redirect).
+static func dari_token(token: Array, mentah: String) -> Dictionary:
     var opsi: Array = []
     var argumen: Array = []
     for i in range(1, token.size()):
@@ -50,7 +54,7 @@ static func parse(masukan: String) -> Dictionary:
         "nama": String(token[0]),
         "opsi": opsi,
         "argumen": argumen,
-        "mentah": masukan.strip_edges(),
+        "mentah": mentah.strip_edges(),
     }
 
 # Mengecek apakah opsi pendek gabungan (misal "-la") memuat huruf tertentu.
