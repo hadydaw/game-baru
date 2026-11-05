@@ -15,8 +15,6 @@ const WARNA_TEKS := "#e6f7f5"
 const WARNA_ERROR := "#ff7b72"
 const LATAR := Color("#0d1117")
 const TOMBOL := ["/", "-", "_", "|", ".", "~", "Tab", "Ctrl", "Enter", "Backspace", "↑", "↓"]
-# Daftar perintah untuk melengkapi dengan Tab. Harus sama dengan perintah di shell_commands.gd.
-const PERINTAH := ["pwd", "whoami", "echo", "clear", "history", "help", "man", "ls", "cd", "cat", "mkdir", "touch", "grep", "find"]
 
 var _sesi: ShellSession
 var _keluaran: RichTextLabel
@@ -207,20 +205,16 @@ func _riwayat(arah: int) -> void:
     _masukan.text = String(r[_riwayat_idx]) if _riwayat_idx < r.size() else ""
     _masukan.caret_column = _masukan.text.length()
 
-# Melengkapi nama perintah saja (kata pertama), jika hanya ada satu yang cocok.
+# Tab: melengkapi perintah atau nama berkas/direktori. Bila banyak kecocokan, daftarnya ditampilkan.
 func _lengkapi() -> void:
-    var teks := _masukan.text
-    if teks.contains(" "):
+    if _sesi == null:
         return
-    var cocok: Array = []
-    for p in PERINTAH:
-        if p.begins_with(teks):
-            cocok.append(p)
-    if cocok.size() == 1:
-        _masukan.text = String(cocok[0]) + " "
-        _masukan.caret_column = _masukan.text.length()
-    elif cocok.size() > 1:
-        _tampil([{"tipe": "info", "teks": " ".join(PackedStringArray(cocok))}])
+    var hasil := ShellComplete.lengkapi(_sesi, _masukan.text)
+    _masukan.text = String(hasil["teks"])
+    _masukan.caret_column = _masukan.text.length()
+    var pilihan: Array = hasil["pilihan"]
+    if pilihan.size() > 1:
+        _tampil([{"tipe": "info", "teks": "  ".join(PackedStringArray(pilihan))}])
 
 func _perbarui_prompt() -> void:
     if _sesi == null:
