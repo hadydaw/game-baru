@@ -11,7 +11,7 @@ const NAMA_MIN := 3
 const NAMA_MAKS := 16
 
 # Aplikasi yang bisa diatur posisinya di Desktop. Urutan ini adalah susunan awal.
-const SEMUA_APLIKASI := ["terminal", "peta", "berkas", "tools", "forum", "pasar", "misi", "log"]
+const SEMUA_APLIKASI := ["terminal", "peta", "berkas", "tools", "forum", "pasar", "misi", "log", "email"]
 # Ukuran grid ikon Desktop (kolom x baris). Harus sama dengan DesktopView.KOLOM dan BARIS.
 const KOLOM_DESKTOP := 4
 const BARIS_DESKTOP := 3

@@ -160,6 +160,24 @@ func _simpan_lokasi_awal(kode_negara: String, kode_kota: String) -> void:
         if anak.name == "PilihLokasi":
             anak.queue_free()
     _tampilkan_desktop()
+    _tawarkan_sambutan_email()
+
+# Sesi baru: di Desktop muncul pemberitahuan email baru sekali. Tombol OK membuka aplikasi E-Mail.
+func _tawarkan_sambutan_email() -> void:
+    var sesi := SesiUtama.ambil()
+    if Email.sambutan_sudah_tampil(sesi):
+        return
+    var popup := PopupSambutanEmail.new()
+    popup.name = "PopupSambutan"
+    popup.atur_aman(_aman)
+    popup.diterima.connect(func():
+        Email.tandai_sambutan(sesi)
+        Penyimpanan.simpan_sesi(sesi)
+        popup.queue_free()
+        _buka_aplikasi("email"))
+    add_child(popup)
+    popup.position = Vector2.ZERO
+    popup.size = size
 
 func _transisi_masuk(node: Control) -> void:
     node.modulate.a = 0.0
@@ -262,6 +280,8 @@ func _buat_konten(id: String) -> Control:
             return PasarScreen.new()
         "misi":
             return PusatMisi.new()
+        "email":
+            return EmailApp.new()
         _:
             return _konten_segera_hadir(DesktopView.nama_aplikasi(id))
 

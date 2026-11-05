@@ -22,7 +22,7 @@ func test_pindah_kategori_menampilkan_aplikasinya() -> void:
 	m._pilih_kategori("pasar")
 	assert_eq(m.daftar_terlihat(), ["pasar", "misi"])
 	m._pilih_kategori("komunitas")
-	assert_eq(m.daftar_terlihat(), ["forum"])
+	assert_eq(m.daftar_terlihat(), ["forum", "email"])
 
 func test_semua_aplikasi_punya_kategori() -> void:
 	var semua := []

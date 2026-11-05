@@ -12,7 +12,7 @@ const KATEGORI := [
     {"kunci": "sistem", "teks": "kategori.sistem", "apl": ["terminal", "berkas", "log"]},
     {"kunci": "jaringan", "teks": "kategori.jaringan", "apl": ["peta", "tools"]},
     {"kunci": "pasar", "teks": "kategori.pasar", "apl": ["pasar", "misi"]},
-    {"kunci": "komunitas", "teks": "kategori.komunitas", "apl": ["forum"]},
+    {"kunci": "komunitas", "teks": "kategori.komunitas", "apl": ["forum", "email"]},
 ]
 const IKON_CARI := "res://assets/ikon/menu/menu_cari.png"
 const IKON_KELUAR := "res://assets/ikon/menu/menu_keluar.png"

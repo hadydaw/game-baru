@@ -54,16 +54,16 @@ func test_ikon_diletakkan_di_sel_kosong_dan_tetap_di_sana() -> void:
 	_buang(x)
 
 func test_sel_terisi_dicari_sel_kosong_terdekat() -> void:
-	# Baris 0 dan 1 penuh; sel kosong pertama adalah baris 2. Terdekat dari (0,0) adalah (0,2).
+	# Baris 0 dan 1 penuh, dan (0,2) ditempati E-Mail. Sel kosong terdekat dari (0,0) adalah (1,2).
 	d._pindahkan_ke("log", Vector2i(0, 0))
-	assert_eq(d._posisi["log"], Vector2i(0, 2))
+	assert_eq(d._posisi["log"], Vector2i(1, 2))
 	assert_eq(d._posisi["terminal"], Vector2i(0, 0), "ikon yang sudah ada tidak berpindah")
 
 func test_lepas_di_luar_grid_masuk_sel_tepi_terdekat() -> void:
 	var sel := d._sel_di_bawah(Vector2(-500, -500))
 	assert_eq(sel, Vector2i(0, 0))
 	d._pindahkan_ke("log", sel)
-	assert_eq(d._posisi["log"], Vector2i(0, 2), "tidak kembali ke posisi lama")
+	assert_eq(d._posisi["log"], Vector2i(1, 2), "tidak kembali ke posisi lama")
 
 func test_reset_mengembalikan_posisi_awal() -> void:
 	d._pindahkan_ke("log", Vector2i(3, 2))
