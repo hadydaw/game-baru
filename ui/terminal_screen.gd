@@ -112,7 +112,7 @@ func _ready() -> void:
     _riwayat_idx = _sesi.riwayat.size()
     if _buffer_bersama.is_empty():
         _tampil([{"tipe": "info", "teks": "Terminal siap. Ketik \"help\" untuk daftar perintah."}])
-        _tampil(_sesi.jalankan("pwd"))
+        _tampil(_sesi.jalankan("pwd") + _sesi.notifikasi_misi())
     else:
         # Layar dibuka lagi: tampilkan kembali seluruh riwayat, tanpa banner dan tanpa pwd baru.
         _keluaran.append_text(_buffer_bersama)
@@ -363,6 +363,8 @@ func _kirim(teks: String) -> void:
 func _mulai(t: String) -> void:
     _tampil_perintah(t)
     var hasil := _sesi.jalankan(t)
+    # Pesan misi baru ditampilkan sekali, setelah keluaran perintah.
+    hasil.append_array(_sesi.notifikasi_misi())
     _riwayat_idx = _sesi.riwayat.size()
     _simpan()
     _langkah = Animasi.rencana(t, hasil)

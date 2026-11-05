@@ -123,6 +123,8 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     jauh.cwd = jauh.home
     jauh.fs.akar = j.fs_node[id]
     s.ssh_aktif = jauh
+    # Tanda bahwa login ke node ini berhasil; dipakai tujuan misi.
+    s.jaringan.buka("ssh:" + id)
     return [s.baris("info", "Terhubung ke %s (%s)." % [id, String(j.data[id].get("ip", ""))])]
 
 # Kunci SSH adalah berkas di filesystem lokal yang isinya memuat token node.

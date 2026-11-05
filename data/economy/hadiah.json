@@ -1,9 +1,22 @@
 {
   "misi_relay": {
     "kredit": 300,
-    "reputasi": {"kolektif_senja": 10},
+    "reputasi": {
+      "kolektif_senja": 10
+    },
     "pulihkan_pasar": true,
-    "kontak": ["makelar"],
-    "tool": {"id": "network_scanner", "tingkat": 2}
+    "kontak": [
+      "makelar"
+    ],
+    "tool": {
+      "id": "network_scanner",
+      "tingkat": 2
+    }
+  },
+  "misi_1": {
+    "kredit": 150,
+    "reputasi": {
+      "kolektif_senja": 5
+    }
   }
 }

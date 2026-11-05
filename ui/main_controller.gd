@@ -176,6 +176,8 @@ func _buat_konten(id: String) -> Control:
             return NetworkMap.new()
         "pasar":
             return PasarScreen.new()
+        "misi":
+            return PusatMisi.new()
         _:
             return _konten_segera_hadir(DesktopView.nama_aplikasi(id))
 

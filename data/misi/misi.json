@@ -1,0 +1,27 @@
+[
+  {
+    "id": "misi_1",
+    "urutan": 1,
+    "judul": "Pesan dari Arsip",
+    "pengirim": "Mira",
+    "syarat_terima": [],
+    "pesan_masuk": {
+      "subjek": "Berkas arsip hilang dari jadwal",
+      "isi": "Halo, aku butuh satu orang yang bisa melihat jejak arsip. Mulai dari server arsip (10.7.0.8). Kunci aksesnya sudah ada di dokumenmu. Jangan lewat jalur umum. — Mira"
+    },
+    "latar": "Arsip Kota Lama memindahkan datanya tanpa catatan resmi. Mira, kontak lama pemain, ingin tahu ke mana berkas itu pergi.",
+    "target": "arsip (10.7.0.8)",
+    "petunjuk": [
+      {"teks": "Kunci akses ke server arsip tersimpan di dokumenmu.", "flag": "baca:jtn:kunci_arsip.txt"},
+      {"teks": "Catatan di server arsip menyebut berkas yang dipindahkan.", "flag": "baca:arsip:catatan.txt"}
+    ],
+    "tujuan": [
+      {"teks": "Masuk ke server arsip lewat SSH", "flag": "ssh:arsip"},
+      {"teks": "Baca catatan.txt di server arsip", "flag": "baca:arsip:catatan.txt"}
+    ],
+    "pesan_selesai": {
+      "subjek": "Terima kasih",
+      "isi": "Catatan itu cocok dengan yang kucari. Berkas arsip memang dipindahkan ke server kota. Aku akan kabari jalur berikutnya. — Mira"
+    }
+  }
+]

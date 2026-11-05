@@ -25,6 +25,8 @@ var market: BlackMarket
 var hadiah_diambil: Array = []  # flag misi yang hadiahnya sudah diberikan
 var reputation: Reputation
 var ssh_aktif: ShellSession = null
+var misi: Dictionary = {}       # id misi -> "aktif" | "selesai" (tidak ada = belum diterima)
+var pesan_misi: Array = []      # pesan masuk dari pengirim misi, urutan kedatangan
 
 func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) -> void:
     fs = p_fs
@@ -40,7 +42,7 @@ func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) ->
 
 # Seluruh keadaan sesi lokal yang perlu disimpan: filesystem, direktori aktif, riwayat, dan jaringan.
 func to_dict() -> Dictionary:
-    return {"pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate()}
+    return {"misi": misi.duplicate(), "pesan_misi": pesan_misi.duplicate(true), "pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate()}
 
 static func dari_dict(d: Dictionary) -> ShellSession:
     var j := Jaringan.muat()
@@ -65,6 +67,11 @@ static func dari_dict(d: Dictionary) -> ShellSession:
     if typeof(d.get("pasar")) == TYPE_DICTIONARY:
         s.market.terapkan(d["pasar"])
     s.hadiah_diambil = Array(d.get("hadiah", []))
+    if typeof(d.get("misi")) == TYPE_DICTIONARY:
+        s.misi = Dictionary(d["misi"]).duplicate()
+    s.pesan_misi = Array(d.get("pesan_misi", [])).duplicate(true)
+    # Simpanan lama belum punya status misi; Misi.perbarui memberi status sesuai flag yang sudah ada.
+    Misi.perbarui(s)
     return s
 
 # Nama pengguna aktif dari Login. Bila belum pernah diisi, memakai akun bawaan.
@@ -99,7 +106,27 @@ func prompt() -> String:
         tampil = "~" + cwd.substr(home.length())
     return "%s@%s:%s$" % [user, host, tampil]
 
+# Menjalankan perintah lalu memperbarui misi bila ada flag baru. Keluaran perintah tidak diubah;
+# pesan misi baru ditampilkan Terminal lewat notifikasi_misi(). Remote (SSH) tidak memperbarui misi.
 func jalankan(masukan: String) -> Array:
+    var sebelum := jaringan.progres.size()
+    var keluaran := _jalankan_dasar(masukan)
+    if host != LOKAL:
+        return keluaran
+    if jaringan.progres.size() != sebelum:
+        Misi.perbarui(self)
+    return keluaran
+
+# Pesan misi yang belum pernah ditampilkan di Terminal. Setiap pesan hanya dilaporkan sekali.
+func notifikasi_misi() -> Array:
+    var hasil: Array = []
+    for p in pesan_misi:
+        if not bool(p["dilaporkan"]):
+            p["dilaporkan"] = true
+            hasil.append(baris("info", "[Pusat Misi] Pesan baru dari %s: %s. Buka aplikasi Misi untuk membaca." % [p["dari"], p["subjek"]]))
+    return hasil
+
+func _jalankan_dasar(masukan: String) -> Array:
     if ssh_aktif != null:
         var t := masukan.strip_edges()
         if t == "exit":

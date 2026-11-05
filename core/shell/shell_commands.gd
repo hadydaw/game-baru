@@ -154,6 +154,8 @@ static func _cat(s: ShellSession, p: Dictionary) -> Array:
             if not isi_teks.is_empty():
                 for baris_teks in isi_teks.split("\n"):
                     hasil.append(s.baris("info", baris_teks))
+            # Membaca berkas dicatat sebagai "baca:<host>:<nama>" (host lokal = jtn). Dipakai tujuan misi.
+            s.jaringan.buka("baca:%s:%s" % [s.host, s.fs.nama_terakhir(abs)])
             # Berkas penemuan menandai flag saat dibaca, lalu unlock dievaluasi ulang.
             if node.has("penemuan"):
                 s.jaringan.buka("temu:" + String(node["penemuan"]))

@@ -118,3 +118,14 @@ jobs:
             exit 1
           fi
           exit $code
+
+      - name: Jalankan smoke test Pusat Misi
+        run: |
+          "$GODOT_BIN" --headless -s tests/smoke_misi.gd > misi.log 2>&1
+          code=$?
+          cat misi.log
+          if grep -q "SCRIPT ERROR\|Parse Error" misi.log; then
+            echo "Ada error skrip di smoke test misi"
+            exit 1
+          fi
+          exit $code

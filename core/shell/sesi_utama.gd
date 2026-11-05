@@ -22,6 +22,7 @@ static func ambil() -> ShellSession:
             sesi = ShellSession.dari_dict(muat["data"])
         _:
             sesi = ShellSession.new(Vfs.new(_fs_awal()), null, ShellSession.nama_pengguna_aktif())
+    Misi.perbarui(sesi)
     Penyimpanan.simpan_sesi(sesi)
     return sesi
 
