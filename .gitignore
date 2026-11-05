@@ -6,3 +6,6 @@ build/
 *.aab
 .import/
 export_credentials.cfg
+
+# Addon GUT diunduh saat CI (test-kode.yml), tidak disimpan di repo
+addons/
