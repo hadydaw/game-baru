@@ -37,9 +37,9 @@ static func reset() -> void:
 static func pesan_status() -> String:
     match status_muat:
         "pulih_cadangan":
-            return "Penyimpanan utama rusak. Data dipulihkan dari cadangan. Berkas rusak disimpan di: %s" % pesan_muat
+            return Bahasa.dua("Penyimpanan utama rusak. Data dipulihkan dari cadangan. Berkas rusak disimpan di: %s", "Main save was damaged. Data restored from backup. Damaged file kept at: %s", [pesan_muat])
         "rusak":
-            return "Penyimpanan rusak dan tidak ada cadangan. Mulai dari filesystem awal. Berkas rusak disimpan di: %s" % pesan_muat
+            return Bahasa.dua("Penyimpanan rusak dan tidak ada cadangan. Mulai dari filesystem awal. Berkas rusak disimpan di: %s", "Save was damaged and no backup exists. Starting from the initial filesystem. Damaged file kept at: %s", [pesan_muat])
     return ""
 
 static func _fs_awal() -> Dictionary:

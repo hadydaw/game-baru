@@ -11,14 +11,14 @@ func _status(rencana: Array) -> Array:
     var hasil: Array = []
     for s in rencana:
         if String(s["tipe"]) == "status":
-            hasil.append(String(s["teks"]))
+            hasil.append(Bahasa.pilih(Bahasa.pilih(String(s["teks"]))))
     return hasil
 
 func _baris(rencana: Array) -> Array:
     var hasil: Array = []
     for s in rencana:
         if String(s["tipe"]) == "baris":
-            hasil.append(String(s["teks"]))
+            hasil.append(Bahasa.pilih(Bahasa.pilih(String(s["teks"]))))
     return hasil
 
 func _kirim(s: ShellSession, perintah: String) -> Array:
@@ -27,7 +27,7 @@ func _kirim(s: ShellSession, perintah: String) -> Array:
 func _teks_hasil(hasil: Array) -> Array:
     var t: Array = []
     for b in hasil:
-        t.append(String(b["teks"]))
+        t.append(Bahasa.pilih(Bahasa.pilih(String(b["teks"]))))
     return t
 
 # --- Keaslian output ---

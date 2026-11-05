@@ -29,6 +29,11 @@ var misi: Dictionary = {}       # id misi -> "aktif" | "selesai" (tidak ada = be
 var pesan_misi: Array = []      # pesan masuk dari pengirim misi, urutan kedatangan
 var lokasi: Dictionary = {}     # lokasi pemain di peta dunia: {"negara": kode, "kota": kode}
 var email: Dictionary = {}      # status E-Mail: status pesan, dibaca, dan sambutan sudah tampil
+var perangkat: Perangkat = Perangkat.new()   # perangkat keras: komponen, perakitan, koneksi
+var repositori: Repositori = Repositori.new() # Tools Repository: software yang terpasang
+var wifi: WifiLab = WifiLab.new()             # keadaan pengujian Wi-Fi laboratorium
+var xp: int = 0                               # pengalaman dari misi
+var misi_tahap: Dictionary = {}               # id misi -> Array nomor tahap yang sudah diberi umpan balik
 
 func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) -> void:
     fs = p_fs
@@ -44,7 +49,7 @@ func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) ->
 
 # Seluruh keadaan sesi lokal yang perlu disimpan: filesystem, direktori aktif, riwayat, dan jaringan.
 func to_dict() -> Dictionary:
-    return {"misi": misi.duplicate(), "pesan_misi": pesan_misi.duplicate(true), "pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate(), "lokasi": lokasi.duplicate(), "email": email.duplicate(true)}
+    return {"misi": misi.duplicate(), "pesan_misi": pesan_misi.duplicate(true), "pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate(), "lokasi": lokasi.duplicate(), "email": email.duplicate(true), "perangkat": perangkat.to_dict(), "repositori": repositori.to_dict(), "wifi": wifi.to_dict(), "xp": xp, "misi_tahap": misi_tahap.duplicate(true)}
 
 static func dari_dict(d: Dictionary) -> ShellSession:
     var j := Jaringan.muat()
@@ -76,6 +81,15 @@ static func dari_dict(d: Dictionary) -> ShellSession:
         s.email = Dictionary(d["email"]).duplicate(true)
     if typeof(d.get("lokasi")) == TYPE_DICTIONARY:
         s.lokasi = Dictionary(d["lokasi"]).duplicate()
+    if typeof(d.get("perangkat")) == TYPE_DICTIONARY:
+        s.perangkat.terapkan(d["perangkat"])
+    if typeof(d.get("repositori")) == TYPE_DICTIONARY:
+        s.repositori.terapkan(d["repositori"])
+    if typeof(d.get("wifi")) == TYPE_DICTIONARY:
+        s.wifi.terapkan(d["wifi"])
+    s.xp = int(d.get("xp", 0))
+    if typeof(d.get("misi_tahap")) == TYPE_DICTIONARY:
+        s.misi_tahap = Dictionary(d["misi_tahap"]).duplicate(true)
     # Simpanan lama: node yang sudah terbuka lewat tetangga dianggap sudah dipindai.
     PerintahScan.migrasi(s)
     # Simpanan lama belum punya status misi; Misi.perbarui memberi status sesuai flag yang sudah ada.
@@ -121,6 +135,10 @@ func jalankan(masukan: String) -> Array:
     var keluaran := _jalankan_dasar(masukan)
     if host != LOKAL:
         return keluaran
+    # Setiap perintah yang dijalankan di terminal lokal tercatat sebagai flag (dipakai misi tutorial).
+    var t := ShellParser.tokenkan(masukan)
+    if not t.is_empty():
+        jaringan.buka("cmd:" + String(t[0]))
     if jaringan.progres.size() != sebelum:
         Misi.perbarui(self)
     return keluaran
@@ -131,7 +149,7 @@ func notifikasi_misi() -> Array:
     for p in pesan_misi:
         if not bool(p["dilaporkan"]):
             p["dilaporkan"] = true
-            hasil.append(baris("info", "[Pusat Misi] Pesan baru dari %s: %s. Buka aplikasi Misi untuk membaca." % [p["dari"], p["subjek"]]))
+            hasil.append(baris("info", Bahasa.dua("[Pusat Misi] Pesan baru dari %s: %s. Buka aplikasi Misi untuk membaca.", "[Mission Center] New message from %s: %s. Open the Missions app to read it.", [p["dari"], p["subjek"]])))
     return hasil
 
 func _jalankan_dasar(masukan: String) -> Array:
@@ -141,7 +159,7 @@ func _jalankan_dasar(masukan: String) -> Array:
             riwayat.append(t)
             var tutup := ssh_aktif.host
             ssh_aktif = null
-            return [baris("info", "Koneksi ke %s ditutup." % tutup)]
+            return [baris("info", Bahasa.dua("Koneksi ke %s ditutup.", "Connection to %s closed.", [tutup]))]
         if t != "":
             riwayat.append(t)
         return ssh_aktif.jalankan(masukan)
@@ -155,11 +173,38 @@ func _jalankan_dasar(masukan: String) -> Array:
         return ShellCommands.jalankan(self, p)
     return _jalankan_redirect(token, idx, masukan)
 
+# Teks satu baris untuk ditampilkan di luar Terminal: memakai kunci bahasa bila ada, lalu memilih bahasa aktif.
+static func teks_baris(b: Dictionary) -> String:
+    var kunci := String(b.get("kunci", ""))
+    var teks := String(b.get("teks", ""))
+    if kunci != "":
+        var args: Array = b.get("args", [])
+        teks = Bahasa.t(kunci) % args if not args.is_empty() else Bahasa.t(kunci)
+        if String(b.get("perintah", "")) != "":
+            teks = "bash: %s: %s" % [String(b["perintah"]), teks]
+    return Bahasa.pilih(teks)
+
 func baris(tipe: String, teks: String) -> Dictionary:
     return {"tipe": tipe, "teks": teks}
 
 func galat(perintah: String, pesan: String) -> Dictionary:
     return baris("error", "bash: %s: %s" % [perintah, pesan])
+
+# Baris yang teksnya diambil dari kunci bahasa. Terminal bisa merendernya ulang saat bahasa diganti.
+func baris_kunci(tipe: String, kunci: String, args: Array = []) -> Dictionary:
+    return {"tipe": tipe, "kunci": kunci, "args": args, "teks": Bahasa.t(kunci) % args if not args.is_empty() else Bahasa.t(kunci)}
+
+func galat_kunci(perintah: String, kunci: String, args: Array = []) -> Dictionary:
+    var b := baris_kunci("error", kunci, args)
+    b["teks"] = "bash: %s: %s" % [perintah, b["teks"]]
+    b["perintah"] = perintah
+    return b
+
+# Mengubah hasil {ok, kunci, args} dari perangkat atau repositori menjadi baris terminal.
+func hasil_ke_baris(perintah: String, h: Dictionary) -> Dictionary:
+    if bool(h.get("ok", false)):
+        return baris_kunci("info", String(h["kunci"]), Array(h.get("args", [])))
+    return galat_kunci(perintah, String(h["kunci"]), Array(h.get("args", [])))
 
 # Mengembalikan indeks token yang berisi operator > atau >>, atau -1.
 func _cari_redirect(token: Array) -> int:

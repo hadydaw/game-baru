@@ -17,10 +17,13 @@ const APLIKASI := [
     {"id": "misi", "nama": "app.misi", "ikon": "res://assets/ikon/aplikasi/app_misi.png"},
     {"id": "log", "nama": "app.log", "ikon": "res://assets/ikon/aplikasi/app_log.png"},
     {"id": "email", "nama": "app.email", "ikon": "res://assets/ikon/aplikasi/app_email.png"},
+    {"id": "perangkat", "nama": "app.perangkat", "ikon": "res://assets/ikon/ikon_wifi.png"},
+    {"id": "netmgr", "nama": "app.netmgr", "ikon": "res://assets/ikon/aplikasi/app_peta.png"},
+    {"id": "inventaris", "nama": "app.inventaris", "ikon": "res://assets/ikon/icon_tools.png"},
 ]
 # Grid ikon: kolom x baris. Harus sama dengan Pengaturan.KOLOM_DESKTOP dan BARIS_DESKTOP.
 const KOLOM := 4
-const BARIS := 3
+const BARIS := 4
 const WALL_POTRET := "res://assets/wallpaper/wp_potret.png"
 const WALL_LANSKAP := "res://assets/wallpaper/wp_lanskap.png"
 const JARAK_BINGKAI := 14

@@ -36,6 +36,9 @@ var _busy: bool = false
 var _antrean: Array = []
 var _langkah: Array = []
 var _ketik_teks: String = ""
+var _ketik_kunci: String = ""
+var _ketik_args: Array = []
+var _ketik_perintah: String = ""
 var _ketik_tipe: String = "info"
 var _ketik_pos: int = 0
 var _ketik_aktif: bool = false
@@ -107,11 +110,13 @@ func _ready() -> void:
     tree_exiting.connect(_saat_keluar)
     _sesi = _buat_sesi()
     _perbarui_prompt()
+    # Terminal ikut diperbarui saat bahasa diganti: seluruh riwayat dirender ulang dari catatan entri.
+    set_meta("bsegar", Callable(self, "_segarkan_bahasa"))
     if _sesi == null:
         return
     _riwayat_idx = _sesi.riwayat.size()
     if _buffer_bersama.is_empty():
-        _tampil([{"tipe": "info", "teks": "Terminal siap. Ketik \"help\" untuk daftar perintah."}])
+        _tampil([{"tipe": "info", "kunci": "term.siap"}])
         _tampil(_sesi.jalankan("pwd"))
     else:
         # Layar dibuka lagi: tampilkan kembali seluruh riwayat, tanpa banner dan tanpa pwd baru.
@@ -130,6 +135,46 @@ func _tulis(bb: String) -> void:
 func _kosongkan() -> void:
     _keluaran.clear()
     _buffer_bersama = ""
+    _entri_bersama.clear()
+
+# Catatan setiap baris yang sudah selesai. Baris berkunci dirender ulang dengan bahasa aktif.
+static var _entri_bersama: Array = []
+const BATAS_ENTRI := 800
+
+func _simpan_entri(e: Dictionary) -> void:
+    _entri_bersama.append(e)
+    if _entri_bersama.size() > BATAS_ENTRI:
+        _entri_bersama = _entri_bersama.slice(_entri_bersama.size() - BATAS_ENTRI)
+
+func _teks_entri(e: Dictionary) -> String:
+    var kunci := String(e.get("kunci", ""))
+    if kunci == "":
+        return String(e.get("teks", ""))
+    var args: Array = e.get("args", [])
+    var teks := Bahasa.t(kunci) % args if not args.is_empty() else Bahasa.t(kunci)
+    if String(e.get("perintah", "")) != "":
+        teks = "bash: %s: %s" % [String(e["perintah"]), teks]
+    return teks
+
+func _bb_entri(e: Dictionary) -> String:
+    if String(e.get("tipe", "")) == "prompt":
+        return _bb_perintah(String(e["teks"]), String(e["prompt"]))
+    return "[color=%s]%s[/color]\n" % [_warna_tipe(String(e.get("tipe", "info"))), _aman(_teks_entri(e))]
+
+func _warna_tipe(tipe: String) -> String:
+    return WARNA_ERROR if tipe == "error" else WARNA_TEKS
+
+# Dipanggil saat bahasa diganti: animasi dihentikan dulu, lalu seluruh riwayat ditulis ulang.
+func _segarkan_bahasa() -> void:
+    if not is_instance_valid(_keluaran):
+        return
+    if _busy:
+        _selesaikan_cepat()
+    _keluaran.clear()
+    _buffer_bersama = ""
+    for e in _entri_bersama:
+        _tulis(_bb_entri(e))
+    _perbarui_prompt()
 
 # Dipanggil saat layar dilepas (berpindah ke Desktop atau aplikasi lain).
 # Animasi yang belum selesai diselesaikan dulu agar buffer utuh, lalu posisi scroll dicatat.
@@ -166,6 +211,7 @@ func _ukuran_font() -> int:
 static func reset_sesi() -> void:
     _sesi_bersama = null
     _buffer_bersama = ""
+    _entri_bersama = []
     _scroll_bersama = 0.0
     _ikut_bawah_bersama = true
 # Buffer tampilan dan posisi scroll ikut bertahan saat layar Terminal ditutup lalu dibuka lagi.
@@ -379,6 +425,7 @@ func _lanjut() -> void:
         if _ketik_pos >= _ketik_teks.length():
             _tulis("\n")
             _ketik_aktif = false
+            _simpan_entri({"tipe": _ketik_tipe, "teks": _ketik_teks, "kunci": _ketik_kunci, "args": _ketik_args, "perintah": _ketik_perintah})
             _timer.start(maxf(_ketik_jeda, 10) / 1000.0)
         else:
             _timer.start(0.02)
@@ -394,6 +441,9 @@ func _lanjut() -> void:
         "baris":
             _ketik_teks = String(s["teks"])
             _ketik_tipe = String(s["tipe_baris"])
+            _ketik_kunci = String(s.get("kunci", ""))
+            _ketik_args = Array(s.get("args", []))
+            _ketik_perintah = String(s.get("perintah", ""))
             _ketik_pos = 0
             _ketik_aktif = true
             _ketik_jeda = int(s["jeda"])
@@ -415,10 +465,12 @@ func _selesaikan_cepat() -> void:
         if _ketik_aktif:
             _tulis(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos)) + "\n")
             _ketik_aktif = false
+            _simpan_entri({"tipe": _ketik_tipe, "teks": _ketik_teks, "kunci": _ketik_kunci, "args": _ketik_args, "perintah": _ketik_perintah})
         elif not _langkah.is_empty():
             var s: Dictionary = _langkah.pop_front()
             if String(s["tipe"]) == "baris":
-                _tulis(_warna_baris(String(s["tipe_baris"]), String(s["teks"])) + "\n")
+                _tulis(_warna_baris(String(s["tipe_baris"]), _teks_entri(s)) + "\n")
+                _simpan_entri({"tipe": String(s["tipe_baris"]), "teks": String(s["teks"]), "kunci": String(s.get("kunci", "")), "args": Array(s.get("args", [])), "perintah": String(s.get("perintah", ""))})
             elif String(s["tipe"]) == "clear":
                 _kosongkan()
         else:
@@ -439,12 +491,12 @@ func _perbarui_status() -> void:
     var frame := int((Time.get_ticks_msec() - _status_mulai) / 120.0)
     match _status_gaya:
         "spinner":
-            _status.text = "%s %s" % ["|/-\\"[frame % 4], _status_teks]
+            _status.text = "%s %s" % ["|/-\\"[frame % 4], Bahasa.pilih(_status_teks)]
         "titik":
-            _status.text = "%s%s" % [_status_teks.rstrip("."), ".".repeat(frame % 4)]
+            _status.text = "%s%s" % [Bahasa.pilih(_status_teks).rstrip("."), ".".repeat(frame % 4)]
         "bar":
             var n := clampi(_status_bar, 0, 10)
-            _status.text = "[%s%s] %s" % ["•".repeat(n), " ".repeat(10 - n), _status_teks]
+            _status.text = "[%s%s] %s" % ["•".repeat(n), " ".repeat(10 - n), Bahasa.pilih(_status_teks)]
 
 func _warna_baris(tipe: String, teks: String) -> String:
     var warna := WARNA_ERROR if tipe == "error" else WARNA_TEKS
@@ -478,19 +530,26 @@ func _perbarui_prompt() -> void:
 # Baris perintah yang sudah dikirim, dengan prompt berwarna seperti terminal Linux.
 func _tampil_perintah(teks: String) -> void:
     var p := _sesi.prompt() if _sesi != null else "%s@jtn:~$" % ShellSession.nama_pengguna_aktif()
+    _simpan_entri({"tipe": "prompt", "teks": teks, "prompt": p})
+    _tulis(_bb_perintah(teks, p))
+
+func _bb_perintah(teks: String, p: String) -> String:
     var i := p.find(":")
     var user := p.substr(0, i)
     var jalur := p.substr(i + 1, p.length() - i - 2)
-    var bb := "[color=%s]%s[/color]:[color=%s]%s[/color]$ %s" % [WARNA_USER, user, WARNA_JALUR, jalur, _aman(teks)]
-    _tulis(bb + "\n")
+    return "[color=%s]%s[/color]:[color=%s]%s[/color]$ %s\n" % [WARNA_USER, user, WARNA_JALUR, jalur, _aman(teks)]
 
 func _tampil(baris: Array) -> void:
     for b in baris:
         if String(b["tipe"]) == "clear":
             _kosongkan()
             continue
-        var warna := WARNA_ERROR if String(b["tipe"]) == "error" else WARNA_TEKS
-        _tulis("[color=%s]%s[/color]\n" % [warna, _aman(String(b["teks"]))])
+        var e := {"tipe": String(b["tipe"]), "teks": String(b.get("teks", ""))}
+        for k in ["kunci", "args", "perintah"]:
+            if b.has(k):
+                e[k] = b[k]
+        _simpan_entri(e)
+        _tulis(_bb_entri(e))
 
 func _aman(s: String) -> String:
-    return s.replace("[", "[lb]")
+    return Bahasa.pilih(s).replace("[", "[lb]")

@@ -10,6 +10,12 @@ static func pemilik(nama: String) -> String:
 			return String(id)
 	return ""
 
-static func tersedia(inv: Inventory, nama: String) -> bool:
+# Perintah tool memerlukan tool itu; perintah aplikasi repositori memerlukan aplikasi terpasang.
+static func tersedia(s: ShellSession, nama: String) -> bool:
 	var p := pemilik(nama)
-	return p == "" or inv.punya(p)
+	if p != "":
+		return s.inventory.punya(p)
+	var sw := Repositori.pemilik_perintah(nama)
+	if sw != "":
+		return s.repositori.punya(sw)
+	return true

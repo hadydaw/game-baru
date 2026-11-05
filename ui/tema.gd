@@ -34,7 +34,8 @@ static func header_bawah(bg: Color, batas: Color) -> StyleBoxFlat:
 
 static func label(teks: String, warna: Color = TEKS, ukuran: int = 22) -> Label:
     var l := Label.new()
-    l.text = teks
+    # Teks dua-bahasa (dari data misi atau terminal) dipilih sesuai bahasa aktif saat ditampilkan.
+    l.text = Bahasa.pilih(teks)
     l.add_theme_color_override("font_color", warna)
     l.add_theme_font_size_override("font_size", ukuran)
     l.mouse_filter = Control.MOUSE_FILTER_IGNORE

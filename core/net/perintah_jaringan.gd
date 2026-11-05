@@ -12,14 +12,14 @@ static func ping(s: ShellSession, p: Dictionary) -> Array:
         jumlah = int(String(args[0]))
         args.remove_at(0)
         if jumlah < 1 or jumlah > 10:
-            return [s.galat("ping", "jumlah paket harus antara 1 dan 10")]
+            return [s.galat("ping", Bahasa.dua("jumlah paket harus antara 1 dan 10", "packet count must be between 1 and 10"))]
     if args.is_empty():
         return [s.galat("ping", Teks.t("err.butuh_argumen"))]
     var target := String(args[0])
     var j := s.jaringan
     var id := j.cari(target)
     if id == "" or not j.dikenal(id):
-        return [s.galat("ping", "%s: Nama atau layanan tidak diketahui" % target)]
+        return [s.galat("ping", Bahasa.dua("%s: Nama atau layanan tidak diketahui", "%s: Name or service not known", [target]))]
     if j.terkunci(id):
         return [s.galat("ping", "%s: Destination Host Unreachable" % target)]
     var ip := j.ip(id)
@@ -58,17 +58,17 @@ static func nmap(s: ShellSession, p: Dictionary) -> Array:
     var j := s.jaringan
     var id := j.cari(target)
     if id == "" or not j.dikenal(id):
-        return [s.galat("nmap", "%s: Nama atau layanan tidak diketahui" % target)]
+        return [s.galat("nmap", Bahasa.dua("%s: Nama atau layanan tidak diketahui", "%s: Name or service not known", [target]))]
     if j.terkunci(id):
-        return [s.galat("nmap", "%s: Host tidak dapat dijangkau" % target)]
+        return [s.galat("nmap", Bahasa.dua("%s: Host tidak dapat dijangkau", "%s: Host unreachable", [target]))]
     var ip := j.ip(id)
-    var hasil: Array = [s.baris("info", "Memindai %s (%s)..." % [target, ip])]
+    var hasil: Array = [s.baris("info", Bahasa.dua("Memindai %s (%s)...", "Scanning %s (%s)...", [target, ip]))]
     if not j.aktif(id):
-        hasil.append(s.baris("info", "Host tampaknya tidak aktif (tidak ada respons)."))
+        hasil.append(s.baris("info", Bahasa.dua("Host tampaknya tidak aktif (tidak ada respons).", "Host appears to be down (no response).")))
         return hasil
     hasil.append(s.baris("info", "PORT       STATE    SERVICE" + ("      VERSI" if sv else "")))
     if tampil_firewall:
-        hasil.append(s.baris("info", "Firewall: tingkat %d" % int(j.data[id].get("firewall", 0))))
+        hasil.append(s.baris("info", Bahasa.dua("Firewall: tingkat %d", "Firewall: level %d", [int(j.data[id].get("firewall", 0))])))
     var port_dict: Dictionary = j.data[id].get("port", {})
     var nomor_list := port_dict.keys()
     nomor_list.sort()
@@ -85,14 +85,14 @@ static func nmap(s: ShellSession, p: Dictionary) -> Array:
         tampil += 1
     j.jelajahi(id)
     j.tandai_dipindai(id)
-    hasil.append(s.baris("info", "Pemindaian selesai: 1 host, %d port ditampilkan." % tampil))
+    hasil.append(s.baris("info", Bahasa.dua("Pemindaian selesai: 1 host, %d port ditampilkan.", "Scan complete: 1 host, %d ports shown.", [tampil])))
     return hasil
 
 static func ssh(s: ShellSession, p: Dictionary) -> Array:
     if p["argumen"].is_empty():
         return [s.galat("ssh", Teks.t("err.butuh_argumen"))]
     if s.host != ShellSession.LOKAL:
-        return [s.galat("ssh", "sudah berada di sesi jarak jauh. Ketik exit untuk keluar.")]
+        return [s.galat("ssh", Bahasa.dua("sudah berada di sesi jarak jauh. Ketik exit untuk keluar.", "already in a remote session. Type exit to leave."))]
     var target := String(p["argumen"][0])
     var user := s.user
     if target.contains("@"):
@@ -102,7 +102,7 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     var j := s.jaringan
     var id := j.cari(target)
     if id == "" or not j.dikenal(id):
-        return [s.galat("ssh", "Could not resolve hostname %s: Nama atau layanan tidak diketahui" % target)]
+        return [s.galat("ssh", Bahasa.dua("Could not resolve hostname %s: Nama atau layanan tidak diketahui", "Could not resolve hostname %s: Name or service not known", [target]))]
     if j.terkunci(id):
         return [s.galat("ssh", "connect to host %s port 22: Connection timed out" % target)]
     if not j.aktif(id):
@@ -125,7 +125,7 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
     s.ssh_aktif = jauh
     # Tanda bahwa login ke node ini berhasil; dipakai tujuan misi.
     s.jaringan.buka("ssh:" + id)
-    return [s.baris("info", "Terhubung ke %s (%s)." % [id, j.ip(id)])]
+    return [s.baris("info", Bahasa.dua("Terhubung ke %s (%s).", "Connected to %s (%s).", [id, j.ip(id)]))]
 
 # Kunci SSH adalah berkas di filesystem lokal yang isinya memuat token node.
 static func _kunci_cocok(s: ShellSession, cfg: Dictionary) -> bool:

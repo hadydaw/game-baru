@@ -282,6 +282,14 @@ func _buat_konten(id: String) -> Control:
             return PusatMisi.new()
         "email":
             return EmailApp.new()
+        "perangkat":
+            return DeviceManager.new()
+        "netmgr":
+            return NetworkManager.new()
+        "inventaris":
+            return InventarisApp.new()
+        "tools":
+            return ToolsRepository.new()
         _:
             return _konten_segera_hadir(DesktopView.nama_aplikasi(id))
 

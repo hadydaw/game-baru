@@ -12,7 +12,7 @@ func _sesi() -> ShellSession:
 func _teks(hasil: Array) -> String:
 	var baris: Array = []
 	for b in hasil:
-		baris.append(String(b["teks"]))
+		baris.append(Bahasa.pilih(String(b["teks"])))
 	return "\n".join(PackedStringArray(baris))
 
 func _galat(hasil: Array) -> bool:

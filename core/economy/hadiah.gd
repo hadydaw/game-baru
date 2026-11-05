@@ -24,6 +24,12 @@ static func selesaikan_misi(s: ShellSession, flag: String) -> Dictionary:
 		hasil["hadiah"] = true
 		s.hadiah_diambil.append(flag)
 		s.economy.tambah(int(h.get("kredit", 0)))
+		s.xp += int(h.get("xp", 0))
+		for pid in h.get("perangkat", []):
+			if String(pid) == Perangkat.ID_KIT:
+				s.perangkat.terima_kit()
+			else:
+				s.perangkat.tambah(String(pid))
 		var rep: Dictionary = h.get("reputasi", {})
 		for g in rep:
 			s.reputation.ubah(String(g), int(rep[g]))

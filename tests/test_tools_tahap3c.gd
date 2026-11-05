@@ -21,7 +21,7 @@ func _sesi() -> ShellSession:
 func _teks(hasil: Array) -> String:
 	var t := ""
 	for b in hasil:
-		t += String(b["teks"]) + "\n"
+		t += Bahasa.pilih(String(b["teks"])) + "\n"
 	return t
 
 func _galat(hasil: Array) -> bool:

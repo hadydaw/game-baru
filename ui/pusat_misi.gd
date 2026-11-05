@@ -1,22 +1,32 @@
 class_name PusatMisi
 extends Control
 
-# Aplikasi Misi. Tampilan awal berupa "Misi Tersedia": kisi kategori dengan ikon.
-# Memilih kategori lalu PILIH membuka daftar misi di kategori itu: pesan masuk, misi aktif, dan misi selesai.
+# Aplikasi Misi. Tiga tampilan:
+#   1. Misi Tersedia: kisi kategori dengan ikon.
+#   2. Daftar kategori: baris misi di atas, panel Deskripsi di bawah (Tujuan, Pembayaran, Persyaratan).
+#      RINCIAN membuka detail lengkap; MENERIMA membuka pesan misi itu.
+#   3. Pembaca pesan: kepala DARI dan JUDUL, isi pesan, lalu KELUAR atau MENGHAPUS.
 # Membaca sesi yang sama dengan Terminal. Misi yang belum diterima tidak ditampilkan.
 
-const WARNA_SELESAI := Color(0.55, 0.62, 0.6)
 const LATAR_KARTU := Color(0.04, 0.07, 0.09, 1.0)
+const LATAR_BARIS := Color(0.05, 0.1, 0.12, 1.0)
+const IKON_PESAN := "res://assets/ikon/aplikasi/app_email.png"
 
 var _sesi: ShellSession
-var _terpilih := ""              # kunci kategori yang sedang dipilih di kisi
-var _tampil_daftar := ""         # kunci kategori yang daftarnya sedang tampil; "" = kisi kategori
+var _terpilih := ""              # kunci kategori yang disorot di kisi
+var _tampil_daftar := ""         # kunci kategori yang daftarnya tampil; "" = kisi kategori
+var _misi_terpilih := ""         # id misi yang sedang disorot di daftar
+var _rincian := false            # panel Deskripsi menampilkan detail lengkap
+var _pesan_idx := -1             # indeks pesan di sesi.pesan_misi yang sedang dibaca; -1 = tidak ada
 var _judul: Label
 var _kisi_wrap: VBoxContainer
 var _grid: GridContainer
 var _tombol_kategori: Dictionary = {}
 var _daftar_wrap: VBoxContainer
-var _kolom: VBoxContainer
+var _kolom_misi: VBoxContainer
+var _isi_deskripsi: VBoxContainer
+var _pesan_wrap: VBoxContainer
+var _isi_pesan: VBoxContainer
 var _hint: Label
 var _bawah: HBoxContainer
 
@@ -56,40 +66,91 @@ func _ready() -> void:
 	_grid.add_theme_constant_override("v_separation", 14)
 	gulir.add_child(_grid)
 
-	# Daftar misi dalam satu kategori.
+	# Daftar misi: atas berisi baris misi, bawah berisi panel Deskripsi.
 	_daftar_wrap = VBoxContainer.new()
 	_daftar_wrap.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_daftar_wrap.add_theme_constant_override("separation", 12)
 	_daftar_wrap.visible = false
 	root.add_child(_daftar_wrap)
 	var gulir_daftar := ScrollContainer.new()
 	gulir_daftar.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gulir_daftar.size_flags_stretch_ratio = 1.0
 	gulir_daftar.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_daftar_wrap.add_child(gulir_daftar)
-	_kolom = VBoxContainer.new()
-	_kolom.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_kolom.add_theme_constant_override("separation", 14)
-	gulir_daftar.add_child(_kolom)
+	_kolom_misi = VBoxContainer.new()
+	_kolom_misi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_kolom_misi.add_theme_constant_override("separation", 10)
+	gulir_daftar.add_child(_kolom_misi)
+	var kartu_deskripsi := PanelContainer.new()
+	kartu_deskripsi.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	kartu_deskripsi.size_flags_stretch_ratio = 1.6
+	kartu_deskripsi.add_theme_stylebox_override("panel", Tema.kotak(LATAR_KARTU, Tema.TEAL, 2, 14))
+	_daftar_wrap.add_child(kartu_deskripsi)
+	var gulir_deskripsi := ScrollContainer.new()
+	gulir_deskripsi.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	kartu_deskripsi.add_child(gulir_deskripsi)
+	var pad_deskripsi := MarginContainer.new()
+	pad_deskripsi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	Tema.margin_seragam(pad_deskripsi, 18)
+	gulir_deskripsi.add_child(pad_deskripsi)
+	_isi_deskripsi = VBoxContainer.new()
+	_isi_deskripsi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_isi_deskripsi.add_theme_constant_override("separation", 14)
+	pad_deskripsi.add_child(_isi_deskripsi)
+
+	# Pembaca pesan: kepala pengirim dan judul, lalu isi pesan yang bisa digulir.
+	_pesan_wrap = VBoxContainer.new()
+	_pesan_wrap.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_pesan_wrap.add_theme_constant_override("separation", 14)
+	_pesan_wrap.visible = false
+	root.add_child(_pesan_wrap)
+	var gulir_pesan := ScrollContainer.new()
+	gulir_pesan.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gulir_pesan.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	var kartu_pesan := PanelContainer.new()
+	kartu_pesan.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	kartu_pesan.add_theme_stylebox_override("panel", Tema.kotak(LATAR_KARTU, Tema.TEAL, 2, 14))
+	_pesan_wrap.add_child(kartu_pesan)
+	kartu_pesan.add_child(gulir_pesan)
+	var pad_pesan := MarginContainer.new()
+	pad_pesan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	Tema.margin_seragam(pad_pesan, 18)
+	gulir_pesan.add_child(pad_pesan)
+	_isi_pesan = VBoxContainer.new()
+	_isi_pesan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_isi_pesan.add_theme_constant_override("separation", 16)
+	pad_pesan.add_child(_isi_pesan)
 
 	_hint = Tema.label("", Tema.AMBER, 22)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(_hint)
 
-	# Tombol bawah: KELUAR dan PILIH, sama seperti pola tombol di layar lain.
 	_bawah = HBoxContainer.new()
 	_bawah.add_theme_constant_override("separation", 14)
 	root.add_child(_bawah)
 
 	Bahasa.daftar_penyegar(self, _segarkan_semua)
 
+# Semua tampilan dibangun ulang dari data sesi dan bahasa aktif, sehingga selalu sesuai.
 func _segarkan_semua() -> void:
-	_judul.text = Bahasa.t("misi.judul_tersedia") if _tampil_daftar == "" else Bahasa.t(_judul_kategori(_tampil_daftar))
-	_bangun_kisi()
-	_bangun_daftar()
-	_bangun_tombol()
-	_kisi_wrap.visible = _tampil_daftar == ""
-	_daftar_wrap.visible = _tampil_daftar != ""
+	if _pesan_idx >= _sesi.pesan_misi.size():
+		_pesan_idx = -1
 	if _tampil_daftar == "":
+		_misi_terpilih = ""
+		_rincian = false
+	_judul.text = Bahasa.t("misi.judul_tersedia") if _tampil_daftar == "" else Bahasa.t(_judul_kategori(_tampil_daftar))
+	_kisi_wrap.visible = _tampil_daftar == "" and _pesan_idx < 0
+	_daftar_wrap.visible = _tampil_daftar != "" and _pesan_idx < 0
+	_pesan_wrap.visible = _pesan_idx >= 0
+	if _kisi_wrap.visible:
+		_bangun_kisi()
+	if _daftar_wrap.visible:
+		_bangun_daftar()
+	if _pesan_wrap.visible:
+		_bangun_pesan()
+	_bangun_tombol()
+	if _pesan_idx < 0:
 		_hint.text = ""
 
 func _judul_kategori(kunci: String) -> String:
@@ -135,19 +196,17 @@ func _bangun_kisi() -> void:
 		ikon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		isi.add_child(ikon)
 
-		var nama := Tema.label("", Tema.TEKS, 24)
+		var nama := Tema.label(Bahasa.t(String(k["judul"])), Tema.TEKS, 24)
 		nama.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		nama.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		nama.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		isi.add_child(nama)
-		Bahasa.isi(nama, String(k["judul"]))
 
-		var jumlah := Tema.label("", Tema.TEKS_REDUP, 20)
-		jumlah.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		isi.add_child(jumlah)
 		var banyak := Misi.daftar_kategori(kunci).size()
-		Bahasa.daftar_penyegar(jumlah, func():
-			if is_instance_valid(jumlah):
-				jumlah.text = Bahasa.t("misi.jumlah") % banyak if banyak > 0 else Bahasa.t("misi.belum_ada_kategori"))
+		var jumlah := Tema.label(Bahasa.t("misi.jumlah") % banyak if banyak > 0 else Bahasa.t("misi.belum_ada_kategori"), Tema.TEKS_REDUP, 20)
+		jumlah.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		jumlah.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		isi.add_child(jumlah)
 
 		tombol.pressed.connect(_pilih_kategori.bind(kunci))
 		_grid.add_child(tombol)
@@ -159,78 +218,231 @@ func _pilih_kategori(kunci: String) -> void:
 	_bangun_kisi()
 	_bangun_tombol()
 
-# Daftar misi kategori terpilih: pesan masuk, misi aktif, lalu misi selesai.
-func _bangun_daftar() -> void:
-	for c in _kolom.get_children():
-		c.queue_free()
-	if _tampil_daftar == "":
-		return
-	var misi_kat := Misi.daftar_kategori(_tampil_daftar)
+# Baris tampilan dengan ikon di kiri, judul, dan keterangan.
+func _baris(ikon_path: String, judul: String, keterangan: String, dipilih: bool) -> Button:
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_NONE
+	b.custom_minimum_size = Vector2(0, 124)
+	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var batas := Tema.AMBER if dipilih else Tema.TEAL
+	b.add_theme_stylebox_override("normal", Tema.kotak(LATAR_BARIS, batas, 3 if dipilih else 2, 14))
+	b.add_theme_stylebox_override("hover", Tema.kotak(LATAR_BARIS, Tema.AMBER, 3, 14))
+	b.add_theme_stylebox_override("pressed", Tema.kotak(LATAR_BARIS, Tema.AMBER, 3, 14))
+	b.add_theme_stylebox_override("focus", Tema.kotak(LATAR_BARIS, Tema.AMBER, 3, 14))
+	var pad := MarginContainer.new()
+	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pad.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	Tema.margin_seragam(pad, 12)
+	b.add_child(pad)
+	var hb := HBoxContainer.new()
+	hb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hb.add_theme_constant_override("separation", 16)
+	pad.add_child(hb)
+	var ikon := TextureRect.new()
+	ikon.texture = load(ikon_path) as Texture2D
+	ikon.custom_minimum_size = Vector2(96, 96)
+	ikon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ikon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	ikon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hb.add_child(ikon)
+	var kolom := VBoxContainer.new()
+	kolom.alignment = BoxContainer.ALIGNMENT_CENTER
+	kolom.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	kolom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hb.add_child(kolom)
+	var l_judul := Tema.label(judul, Tema.AMBER if dipilih else Tema.TEKS, 28)
+	l_judul.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l_judul.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	kolom.add_child(l_judul)
+	if keterangan != "":
+		var l_ket := Tema.label(keterangan, Tema.TEKS_REDUP, 20)
+		l_ket.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l_ket.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		kolom.add_child(l_ket)
+	return b
+
+func _pesan_kategori() -> Array:
 	var id_kat := {}
-	for m in misi_kat:
+	for m in Misi.daftar_kategori(_tampil_daftar):
 		id_kat[String(m["id"])] = true
+	var hasil: Array = []
+	for i in range(_sesi.pesan_misi.size()):
+		if id_kat.has(String(_sesi.pesan_misi[i].get("misi", ""))):
+			hasil.append(i)
+	hasil.reverse()
+	return hasil
+
+# Daftar: baris pesan masuk dan misi, lalu panel Deskripsi untuk misi yang disorot.
+func _bangun_daftar() -> void:
+	for c in _kolom_misi.get_children():
+		c.queue_free()
+	for c in _isi_deskripsi.get_children():
+		c.queue_free()
+	var misi_kat := Misi.daftar_kategori(_tampil_daftar)
 	if misi_kat.is_empty():
-		_kolom.add_child(_teks_kunci("misi.kategori_kosong", Tema.TEKS_REDUP))
+		_kolom_misi.add_child(_teks(Bahasa.t("misi.kategori_kosong"), Tema.TEKS_REDUP, 22))
+		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.tidak_aktif"), Tema.TEKS_REDUP, 22))
 		return
-	var pesan_kat: Array = []
-	for p in _sesi.pesan_misi:
-		if id_kat.has(String(p.get("misi", ""))):
-			pesan_kat.append(p)
-	pesan_kat.reverse()
-	if not pesan_kat.is_empty():
-		_kolom.add_child(_teks_kunci("misi.pesan_masuk", Tema.AMBER, true))
-		for p in pesan_kat:
-			_kartu_pesan(p)
-	var aktif: Array = []
-	var selesai: Array = []
+
+	for i in _pesan_kategori():
+		var p: Dictionary = _sesi.pesan_misi[i]
+		var b := _baris(IKON_PESAN, String(p["subjek"]), Bahasa.t("misi.label_dari") % String(p["dari"]), false)
+		b.pressed.connect(_buka_pesan.bind(i))
+		_kolom_misi.add_child(b)
+
+	var terlihat: Array = []
 	for m in misi_kat:
 		var st := String(_sesi.misi.get(String(m["id"]), ""))
-		if st == "aktif":
-			aktif.append(m)
-		elif st == "selesai":
-			selesai.append(m)
-	_kolom.add_child(_teks_kunci("misi.aktif", Tema.AMBER, true))
-	if aktif.is_empty():
-		_kolom.add_child(_teks_kunci("misi.tidak_aktif", Tema.TEKS_REDUP))
-	for m in aktif:
-		_kartu_misi(m, false)
-	_kolom.add_child(_teks_kunci("misi.selesai", Tema.AMBER, true))
-	if selesai.is_empty():
-		_kolom.add_child(_teks_kunci("misi.belum_selesai", Tema.TEKS_REDUP))
-	for m in selesai:
-		_kartu_misi(m, true)
+		if st == "aktif" or st == "selesai":
+			terlihat.append(m)
+	if not terlihat.has(_cari_misi(_misi_terpilih)):
+		_misi_terpilih = String(terlihat[0]["id"]) if not terlihat.is_empty() else ""
 
-# Tombol bawah. Di kisi: KELUAR membatalkan pilihan, PILIH membuka kategori terpilih.
-# Di daftar: KELUAR kembali ke kisi.
+	for m in terlihat:
+		var id := String(m["id"])
+		var selesai := String(_sesi.misi.get(id, "")) == "selesai"
+		var ket := Bahasa.t("misi.tag_selesai").strip_edges() if selesai else ""
+		var b := _baris(Misi.ikon_kategori(String(m.get("kategori", _tampil_daftar))), String(m["judul"]), ket, id == _misi_terpilih)
+		b.pressed.connect(_pilih_misi.bind(id))
+		_kolom_misi.add_child(b)
+
+	if _misi_terpilih == "":
+		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.tidak_aktif"), Tema.TEKS_REDUP, 22))
+		return
+	_isi_panel_deskripsi(_cari_misi(_misi_terpilih))
+
+# Isi panel Deskripsi. Mode ringkas: Tujuan, Pembayaran, Persyaratan. Mode RINCIAN: detail lengkap.
+func _isi_panel_deskripsi(m: Dictionary) -> void:
+	_isi_deskripsi.add_child(_teks(Bahasa.t("misi.deskripsi"), Tema.AMBER, 34, HORIZONTAL_ALIGNMENT_CENTER))
+	if not _rincian:
+		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.tujuan_ringkas") % String(m.get("tujuan_ringkas", "")), Tema.TEKS, 26, HORIZONTAL_ALIGNMENT_CENTER))
+		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.pembayaran") % _kredit_hadiah(String(m["id"])), Tema.TEKS, 26, HORIZONTAL_ALIGNMENT_CENTER))
+		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.persyaratan") % String(m.get("persyaratan", "-")), Tema.TEKS, 26, HORIZONTAL_ALIGNMENT_CENTER))
+		return
+	_isi_deskripsi.add_child(_teks(String(m["latar"]), Tema.TEKS, 22))
+	_isi_deskripsi.add_child(_teks(Bahasa.t("misi.target") % Misi.ganti_ip(_sesi, String(m["target"])), Tema.TEKS, 22))
+	if m.has("node"):
+		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.ip_target") % _sesi.jaringan.ip(String(m["node"])), Tema.TEAL, 22))
+	var petunjuk := Misi.petunjuk_ditemukan(_sesi, m)
+	_isi_deskripsi.add_child(_teks(Bahasa.t("misi.petunjuk") % [petunjuk.size(), m.get("petunjuk", []).size()], Tema.TEKS_REDUP, 22))
+	for t in petunjuk:
+		_isi_deskripsi.add_child(_teks("· " + String(t), Tema.TEKS, 22))
+	if m.has("tahap"):
+		for tahap in Misi.tahap_progres(_sesi, m):
+			var selesai := bool(tahap["selesai"])
+			_isi_deskripsi.add_child(_teks(("[x] " if selesai else "[ ] ") + String(tahap["judul"]), Tema.AMBER if selesai else Tema.TEKS, 24))
+			for t in tahap["tujuan"]:
+				var tanda := "    [x] " if bool(t["selesai"]) else "    [ ] "
+				_isi_deskripsi.add_child(_teks(tanda + String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS_REDUP, 21))
+	else:
+		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.tujuan"), Tema.TEKS, 22))
+		for t in Misi.status_tujuan(_sesi, m):
+			var tanda := "[x] " if bool(t["selesai"]) else "[ ] "
+			_isi_deskripsi.add_child(_teks(tanda + String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS, 22))
+	_isi_deskripsi.add_child(_teks(_teks_hadiah(String(m["id"])), Tema.TEKS_REDUP, 22))
+
+func _pilih_misi(id: String) -> void:
+	_misi_terpilih = id
+	_rincian = false
+	_segarkan_semua()
+
+func _buka_pesan(idx: int) -> void:
+	_pesan_idx = idx
+	_hint.text = ""
+	_segarkan_semua()
+
+# Pembaca pesan: DARI dan JUDUL di kepala, isi di bawahnya.
+func _bangun_pesan() -> void:
+	for c in _isi_pesan.get_children():
+		c.queue_free()
+	var p: Dictionary = _sesi.pesan_misi[_pesan_idx]
+	var kepala := HBoxContainer.new()
+	kepala.add_theme_constant_override("separation", 18)
+	_isi_pesan.add_child(kepala)
+	var ikon := TextureRect.new()
+	ikon.texture = load(IKON_PESAN) as Texture2D
+	ikon.custom_minimum_size = Vector2(96, 96)
+	ikon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ikon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	kepala.add_child(ikon)
+	var kolom := VBoxContainer.new()
+	kolom.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	kolom.alignment = BoxContainer.ALIGNMENT_CENTER
+	kepala.add_child(kolom)
+	kolom.add_child(_teks(Bahasa.t("misi.label_dari") % String(p["dari"]), Tema.TEKS, 26))
+	kolom.add_child(_teks(Bahasa.t("misi.label_judul") % String(p["subjek"]), Tema.TEKS, 26))
+	_isi_pesan.add_child(_teks(String(p["isi"]), Tema.TEKS, 24))
+
+# Tombol bawah per tampilan.
 func _bangun_tombol() -> void:
 	for c in _bawah.get_children():
 		c.queue_free()
-	if _tampil_daftar != "":
-		var kembali := _tombol_bawah("misi.tombol_keluar", Tema.TEKS_REDUP)
+	if _pesan_idx >= 0:
+		var kembali := _tombol_bawah(Bahasa.t("misi.tombol_keluar"), Tema.TEKS_REDUP, true)
 		kembali.pressed.connect(func():
-			_tampil_daftar = ""
+			_pesan_idx = -1
 			_segarkan_semua())
 		_bawah.add_child(kembali)
+		var hapus := _tombol_bawah(Bahasa.t("misi.tombol_hapus"), Tema.AMBER, true)
+		hapus.pressed.connect(_hapus_pesan)
+		_bawah.add_child(hapus)
 		return
-	var keluar := _tombol_bawah("misi.tombol_keluar", Tema.TEKS_REDUP)
-	keluar.pressed.connect(func():
+	if _tampil_daftar != "":
+		var keluar := _tombol_bawah(Bahasa.t("misi.tombol_keluar"), Tema.TEKS_REDUP, true)
+		keluar.pressed.connect(func():
+			_tampil_daftar = ""
+			_misi_terpilih = ""
+			_rincian = false
+			_segarkan_semua())
+		_bawah.add_child(keluar)
+		var ada := _misi_terpilih != ""
+		var terima := _tombol_bawah(Bahasa.t("misi.tombol_terima"), Tema.TEAL, ada)
+		terima.pressed.connect(_terima_misi)
+		_bawah.add_child(terima)
+		var rincian := _tombol_bawah(Bahasa.t("misi.tombol_rincian"), Tema.TEAL, ada)
+		rincian.pressed.connect(func():
+			_rincian = not _rincian
+			_segarkan_semua())
+		_bawah.add_child(rincian)
+		return
+	var keluar_kisi := _tombol_bawah(Bahasa.t("misi.tombol_keluar"), Tema.TEKS_REDUP, true)
+	keluar_kisi.pressed.connect(func():
 		_terpilih = ""
 		_hint.text = ""
 		_bangun_kisi())
-	_bawah.add_child(keluar)
-	var pilih := _tombol_bawah("misi.tombol_pilih", Tema.TEAL)
-	pilih.disabled = _terpilih == ""
+	_bawah.add_child(keluar_kisi)
+	var pilih := _tombol_bawah(Bahasa.t("misi.tombol_pilih"), Tema.TEAL, _terpilih != "")
 	pilih.pressed.connect(func():
 		if _terpilih == "":
-			Bahasa.isi(_hint, "misi.pilih_kategori")
+			_hint.text = Bahasa.t("misi.pilih_kategori")
 			return
 		_tampil_daftar = _terpilih
 		_segarkan_semua())
 	_bawah.add_child(pilih)
 
-func _tombol_bawah(kunci: String, warna_batas: Color) -> Button:
+# MENERIMA membuka pesan dari misi yang disorot. Misi diterima otomatis saat pesannya tiba.
+func _terima_misi() -> void:
+	for i in range(_sesi.pesan_misi.size()):
+		if String(_sesi.pesan_misi[i].get("misi", "")) == _misi_terpilih:
+			_buka_pesan(i)
+			return
+	_hint.text = Bahasa.t("misi.pesan_belum_ada")
+
+func _hapus_pesan() -> void:
+	if _pesan_idx < 0 or _pesan_idx >= _sesi.pesan_misi.size():
+		_pesan_idx = -1
+		_segarkan_semua()
+		return
+	_sesi.pesan_misi.remove_at(_pesan_idx)
+	_pesan_idx = -1
+	Penyimpanan.simpan_sesi(_sesi)
+	_segarkan_semua()
+
+func _tombol_bawah(teks: String, warna_batas: Color, aktif: bool) -> Button:
 	var b := Button.new()
+	b.text = Bahasa.pilih(teks)
 	b.focus_mode = Control.FOCUS_NONE
+	b.disabled = not aktif
 	b.custom_minimum_size = Vector2(0, 96)
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.add_theme_font_size_override("font_size", 30)
@@ -240,76 +452,19 @@ func _tombol_bawah(kunci: String, warna_batas: Color) -> Button:
 	b.add_theme_stylebox_override("hover", Tema.kotak(Color(0.08, 0.18, 0.2), warna_batas, 2, 16))
 	b.add_theme_stylebox_override("pressed", Tema.kotak(Color(0.08, 0.18, 0.2), warna_batas, 2, 16))
 	b.add_theme_stylebox_override("disabled", Tema.kotak(Color(0.05, 0.06, 0.07), Color(0.25, 0.3, 0.3), 2, 16))
-	Bahasa.isi(b, kunci)
 	return b
 
-func _bagian(kunci: String) -> Label:
-	var l := Tema.label("", Tema.AMBER, 24)
+func _teks(isi: String, warna: Color, ukuran: int = 22, rata := HORIZONTAL_ALIGNMENT_LEFT) -> Label:
+	var l := Tema.label(isi, warna, ukuran)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	Bahasa.isi(l, kunci)
+	l.horizontal_alignment = rata
 	return l
 
-func _teks_kunci(kunci: String, warna: Color, bagian := false) -> Label:
-	var l := Tema.label("", warna, 22)
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	if bagian:
-		Bahasa.daftar_penyegar(l, func():
-			if is_instance_valid(l):
-				l.text = "— " + Bahasa.t(kunci))
-	else:
-		Bahasa.isi(l, kunci)
-	return l
+func _cari_misi(id: String) -> Dictionary:
+	return Misi.temukan(id) if id != "" else {}
 
-# Kartu berisi kolom vertikal. Kolom diambil dengan isi_kartu(kartu).
-func _kartu(warna_batas: Color) -> PanelContainer:
-	var kartu := PanelContainer.new()
-	kartu.add_theme_stylebox_override("panel", Tema.kotak(Tema.LATAR_PANEL, warna_batas, 2, 14))
-	kartu.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_kolom.add_child(kartu)
-	var m := MarginContainer.new()
-	Tema.margin_seragam(m, 16)
-	kartu.add_child(m)
-	var isi := VBoxContainer.new()
-	isi.add_theme_constant_override("separation", 8)
-	isi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	m.add_child(isi)
-	return kartu
-
-func isi_kartu(kartu: PanelContainer) -> VBoxContainer:
-	return kartu.get_child(0).get_child(0) as VBoxContainer
-
-func _kartu_pesan(p: Dictionary) -> PanelContainer:
-	var kartu := _kartu(Tema.TEKS_REDUP)
-	var isi := isi_kartu(kartu)
-	isi.add_child(Tema.label("%s  ·  %s" % [p["dari"], p["subjek"]], Tema.TEAL, 22))
-	isi.add_child(_teks(String(p["isi"]), Tema.TEKS))
-	return kartu
-
-func _kartu_misi(m: Dictionary, selesai: bool) -> PanelContainer:
-	var kartu := _kartu(Tema.TEAL if not selesai else Tema.TEKS_REDUP)
-	var isi := isi_kartu(kartu)
-	var judul := String(m["judul"])
-	isi.add_child(Tema.label((Bahasa.t("misi.tag_selesai") if selesai else "") + judul, WARNA_SELESAI if selesai else Tema.TEAL, 28))
-	isi.add_child(_teks(Bahasa.t("misi.dari") % m["pengirim"], Tema.TEKS_REDUP))
-	isi.add_child(_teks(String(m["latar"]), Tema.TEKS))
-	isi.add_child(_teks(Bahasa.t("misi.target") % Misi.ganti_ip(_sesi, String(m["target"])), Tema.TEKS))
-	if m.has("node"):
-		isi.add_child(_teks(Bahasa.t("misi.ip_target") % _sesi.jaringan.ip(String(m["node"])), Tema.TEAL))
-	var petunjuk := Misi.petunjuk_ditemukan(_sesi, m)
-	isi.add_child(_teks(Bahasa.t("misi.petunjuk") % [petunjuk.size(), m.get("petunjuk", []).size()], Tema.TEKS_REDUP))
-	for t in petunjuk:
-		isi.add_child(_teks("· " + String(t), Tema.TEKS))
-	isi.add_child(_teks(Bahasa.t("misi.tujuan"), Tema.TEKS))
-	for t in Misi.status_tujuan(_sesi, m):
-		var tanda := "[x] " if bool(t["selesai"]) else "[ ] "
-		isi.add_child(_teks(tanda + String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS))
-	isi.add_child(_teks(_teks_hadiah(String(m["id"])), Tema.TEKS_REDUP))
-	return kartu
-
-func _teks(isi: String, warna: Color) -> Label:
-	var l := Tema.label(isi, warna, 22)
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	return l
+func _kredit_hadiah(id: String) -> int:
+	return int(Hadiah.data().get(id, {}).get("kredit", 0))
 
 func _teks_hadiah(id: String) -> String:
 	var h: Dictionary = Hadiah.data().get(id, {})

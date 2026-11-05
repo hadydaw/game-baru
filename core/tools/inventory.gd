@@ -7,11 +7,10 @@ extends RefCounted
 
 var milik: Dictionary = {}  # id -> {"tingkat": int, "sumber": String}
 
-# Keadaan awal pemain: Network Scanner tingkat 1 agar nmap dasar tetap tersedia.
+# Keadaan awal pemain: tanpa alat. Perintah dasar (ping, nmap tanpa opsi) tetap tersedia
+# karena tidak dikunci oleh tool; alat didapat lewat misi dan pasar.
 static func baru() -> Inventory:
-	var inv := Inventory.new()
-	inv.miliki("network_scanner", "awal", 1)
-	return inv
+	return Inventory.new()
 
 func punya(id: String) -> bool:
 	return milik.has(id)

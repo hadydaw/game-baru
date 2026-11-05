@@ -58,9 +58,9 @@ static func analyze(s: ShellSession, p: Dictionary) -> Array:
     if not node.has("hash"):
         return [s.baris("info", Teks.t("analyze.tanpa_hash"))]
     var hash: Dictionary = node["hash"]
-    var hasil: Array = [s.baris("info", "Jenis hash: %s" % String(hash.get("algo", "tidak dikenal")))]
+    var hasil: Array = [s.baris("info", Bahasa.dua("Jenis hash: %s", "Hash type: %s", [String(hash.get("algo", "tidak dikenal"))]))]
     if bool(hash.get("salt", false)):
-        hasil.append(s.baris("info", "Salt: terdeteksi. Hash ini tidak dapat dianalisis lebih lanjut."))
+        hasil.append(s.baris("info", Bahasa.dua("Salt: terdeteksi. Hash ini tidak dapat dianalisis lebih lanjut.", "Salt: detected. This hash cannot be analyzed further.")))
     else:
-        hasil.append(s.baris("info", "Salt: tidak ada."))
+        hasil.append(s.baris("info", Bahasa.dua("Salt: tidak ada.", "Salt: none.")))
     return hasil

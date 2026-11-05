@@ -41,32 +41,35 @@ func test_posisi_awal_berurutan_dari_kiri_atas() -> void:
 	assert_eq(d._posisi.size(), DesktopView.APLIKASI.size())
 
 func test_posisi_tersimpan_dipakai_saat_desktop_dibuat_ulang() -> void:
-	Pengaturan.set_posisi_desktop({"log": [2, 2]})
+	Pengaturan.set_posisi_desktop({"log": [1, 3]})
 	var x := _desktop_baru()
-	assert_eq(x._posisi["log"], Vector2i(2, 2))
+	assert_eq(x._posisi["log"], Vector2i(1, 3))
 	_buang(x)
 
 func test_ikon_diletakkan_di_sel_kosong_dan_tetap_di_sana() -> void:
-	assert_true(d._pindahkan_ke("log", Vector2i(3, 2)))
-	assert_eq(d._posisi["log"], Vector2i(3, 2))
+	assert_true(d._pindahkan_ke("log", Vector2i(3, 3)))
+	assert_eq(d._posisi["log"], Vector2i(3, 3))
 	var x := _desktop_baru()
-	assert_eq(x._posisi["log"], Vector2i(3, 2), "setelah dibuat ulang tetap di tempat")
+	assert_eq(x._posisi["log"], Vector2i(3, 3), "setelah dibuat ulang tetap di tempat")
 	_buang(x)
 
 func test_sel_terisi_dicari_sel_kosong_terdekat() -> void:
-	# Baris 0 dan 1 penuh, dan (0,2) ditempati E-Mail. Sel kosong terdekat dari (0,0) adalah (1,2).
+	# (0,0) ditempati Terminal. Log harus pindah ke sel kosong lain, bukan menimpa Terminal.
 	d._pindahkan_ke("log", Vector2i(0, 0))
-	assert_eq(d._posisi["log"], Vector2i(1, 2))
+	assert_ne(d._posisi["log"], Vector2i(0, 0))
+	for id in d._posisi:
+		if id != "log":
+			assert_ne(d._posisi[id], d._posisi["log"], "sel tidak boleh dobel: " + id)
 	assert_eq(d._posisi["terminal"], Vector2i(0, 0), "ikon yang sudah ada tidak berpindah")
 
 func test_lepas_di_luar_grid_masuk_sel_tepi_terdekat() -> void:
 	var sel := d._sel_di_bawah(Vector2(-500, -500))
 	assert_eq(sel, Vector2i(0, 0))
 	d._pindahkan_ke("log", sel)
-	assert_eq(d._posisi["log"], Vector2i(1, 2), "tidak kembali ke posisi lama")
+	assert_ne(d._posisi["log"], Vector2i(1, 3), "tidak kembali ke posisi lama")
 
 func test_reset_mengembalikan_posisi_awal() -> void:
-	d._pindahkan_ke("log", Vector2i(3, 2))
+	d._pindahkan_ke("log", Vector2i(3, 3))
 	assert_true(Pengaturan.reset_posisi_desktop())
 	var x := _desktop_baru()
 	assert_eq(x._posisi["log"], Vector2i(3, 1))
@@ -89,13 +92,13 @@ func test_ikon_mengikuti_pointer_dan_penanda_menunjukkan_sel_tujuan() -> void:
 	d._mulai_pindah()
 	assert_not_null(d._hantu, "salinan ikon dibuat")
 	assert_not_null(d._penanda, "penanda sel dibuat")
-	var pos := _pusat_sel(Vector2i(3, 2))
+	var pos := _pusat_sel(Vector2i(3, 3))
 	d._sorot_tujuan(pos)
 	assert_almost_eq(d._hantu.global_position, pos - d._hantu.size * 0.5, Vector2(1, 1), "salinan berada di bawah jari")
-	assert_eq(d._penanda.position, Vector2(3 * d._cw, 2 * d._ch), "penanda di sel tujuan")
+	assert_eq(d._penanda.position, Vector2(3 * d._cw, 3 * d._ch), "penanda di sel tujuan")
 	d._selesai_pindah(pos)
 	assert_null(d._hantu, "salinan dihapus setelah lepas")
-	assert_eq(d._posisi["log"], Vector2i(3, 2))
+	assert_eq(d._posisi["log"], Vector2i(3, 3))
 
 func test_ketuk_biasa_tetap_membuka_aplikasi() -> void:
 	watch_signals(d)

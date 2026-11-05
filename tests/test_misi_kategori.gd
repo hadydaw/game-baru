@@ -1,6 +1,6 @@
 extends GutTest
 
-# Misi Tersedia: delapan kategori dengan ikon, misi dikelompokkan per kategori, dan terjemahan lengkap.
+# Misi Tersedia: sembilan kategori dengan ikon, misi dikelompokkan per kategori, dan terjemahan lengkap.
 
 const FIXTURE_MISI := "res://tests/fixtures/misi_uji.json"
 
@@ -13,8 +13,8 @@ func after_all() -> void:
 func after_each() -> void:
 	Bahasa.kode = "id"
 
-func test_delapan_kategori_dengan_ikon() -> void:
-	assert_eq(Misi.KATEGORI.size(), 8)
+func test_sembilan_kategori_dengan_ikon() -> void:
+	assert_eq(Misi.KATEGORI.size(), 9)
 	for k in Misi.KATEGORI:
 		var path := Misi.ikon_kategori(String(k["kunci"]))
 		assert_true(ResourceLoader.exists(path), "ikon ada: %s" % path)
@@ -39,7 +39,7 @@ func test_judul_kategori_punya_dua_bahasa() -> void:
 		var b := Bahasa.t(String(k["judul"]))
 		assert_ne(a, String(k["judul"]))
 		assert_ne(b, String(k["judul"]))
-		if String(k["judul"]) != "misi.kat.hacktivism":
+		if String(k["judul"]) != "misi.kat.hacktivism" and String(k["judul"]) != "misi.kat.tutorial":
 			assert_ne(a, b, String(k["judul"]))
 
 func test_pusat_misi_tampilkan_kisi_lalu_daftar() -> void:

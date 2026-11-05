@@ -27,6 +27,11 @@ static func penjual_ids() -> Array:
 	ids.sort()
 	return ids
 
+# Nama penjual dalam dua bahasa, untuk ditampilkan di Terminal dan Pasar.
+static func nama_penjual(id: String) -> String:
+	var p := penjual(id)
+	return Bahasa.dua(String(p.get("nama", id)), String(p.get("nama_en", p.get("nama", id))))
+
 static func penjual(id: String) -> Dictionary:
 	return Dictionary(Dictionary(_data().get("penjual", {})).get(id, {}))
 
@@ -72,27 +77,27 @@ func status_item(id: String, inv: Inventory) -> String:
 func beli(id: String, s: ShellSession) -> Dictionary:
 	var it := item(id)
 	if it.is_empty():
-		return _gagal("Item tidak ditemukan: %s" % id)
+		return _gagal(Bahasa.dua("Item tidak ditemukan: %s", "Item not found: %s", [id]))
 	var pid := String(it["penjual"])
 	if not penjual_terbuka(pid, s.reputation):
 		var p := penjual(pid)
-		return _gagal("%s belum mau bertransaksi. Butuh reputasi %d (%s)." % [String(p.get("nama", pid)), int(p.get("syarat_rep", 0)), Reputation.nama_grup(String(p.get("syarat_grup", "")))])
+		return _gagal(Bahasa.dua("%s belum mau bertransaksi. Butuh reputasi %d (%s).", "%s is not trading yet. Requires reputation %d (%s).", [String(p.get("nama", pid)), int(p.get("syarat_rep", 0)), Reputation.nama_grup(String(p.get("syarat_grup", "")))]))
 	if sisa(id) <= 0:
 		return _gagal("Stok habis.")
 	var tool := String(it["tool"])
 	var tgt := int(it["tingkat"])
 	if s.inventory.tingkat(tool) >= tgt:
-		return _gagal("%s tingkat %d sudah dimiliki." % [ToolDefs.nama(tool), tgt])
+		return _gagal(Bahasa.dua("%s tingkat %d sudah dimiliki.", "%s level %d is already owned.", [ToolDefs.nama(tool), tgt]))
 	var harga := ToolDefs.harga(tool, tgt)
 	if not s.economy.bisa_bayar(harga):
-		return _gagal("Saldo tidak cukup. Harga %d Kr, saldo %d Kr." % [harga, s.economy.saldo])
+		return _gagal(Bahasa.dua("Saldo tidak cukup. Harga %d Kr, saldo %d Kr.", "Not enough balance. Price %d Kr, balance %d Kr.", [harga, s.economy.saldo]))
 	s.economy.bayar(harga)
 	if s.inventory.punya(tool):
 		s.inventory.setel_tingkat(tool, tgt)
 	else:
 		s.inventory.miliki(tool, "black_market", tgt)
 	stok[id] = sisa(id) - 1
-	return {"ok": true, "pesan": "Dibeli: %s tingkat %d seharga %d Kr." % [ToolDefs.nama(tool), tgt, harga]}
+	return {"ok": true, "pesan": Bahasa.dua("Dibeli: %s tingkat %d seharga %d Kr.", "Bought: %s level %d for %d Kr.", [ToolDefs.nama(tool), tgt, harga])}
 
 # Mengisi ulang stok item yang bergantung pada flag misi tertentu.
 func pulihkan_untuk_flag(flag: String) -> void:

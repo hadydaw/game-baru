@@ -1,1 +1,210 @@
-[]
+[
+  {
+    "id": "misi_1",
+    "kategori": "tutorial",
+    "urutan": 1,
+    "judul": "Tutorial Misi 1",
+    "pengirim": "Agensi",
+    "tujuan_ringkas": "Membangun perangkat hacking dari nol dan membuka jaringan laboratorium",
+    "persyaratan": "Tidak ada (tanpa alat)",
+    "syarat_terima": [],
+    "pesan_masuk": {
+      "subjek": "Tutorial Misi 1",
+      "isi": "Selamat datang di JTN. Kamu mulai tanpa alat apa pun. Perangkat, software, dan akses harus kamu bangun sendiri, satu tahap demi satu tahap. Mulailah dengan 'help' di terminal. — Agensi",
+      "subjek_en": "Tutorial Mission 1",
+      "isi_en": "Welcome to JTN. You start without any tools. Devices, software, and access must be built by you, one stage at a time. Begin with 'help' in the terminal. — Agency"
+    },
+    "latar": "Jaringan laboratorium tidak bisa diakses tanpa perangkat yang tepat. Agensi ingin melihat apakah kamu bisa membangunnya dari nol.",
+    "target": "Jaringan laboratorium LAB-WIFI-01",
+    "tahap": [
+      {
+        "judul": "Tahap 1: Mengenal Terminal",
+        "pesan": "Terminal adalah pusat kendalimu. Ketik 'help' untuk melihat daftar perintah, lalu periksa perangkatmu dengan 'device list'. — Agensi",
+        "judul_en": "Stage 1: Getting to Know the Terminal",
+        "pesan_en": "The terminal is your control center. Type 'help' to see the list of commands, then check your devices with 'device list'. — Agency"
+      },
+      {
+        "judul": "Tahap 2: Mendapatkan Hardware",
+        "pesan": "Belilah USB Wireless Adapter, Antena Eksternal, dan Kabel USB lewat 'toko' atau aplikasi Pasar. Perangkat ini harus kamu rakit sendiri. — Agensi",
+        "judul_en": "Stage 2: Getting Hardware",
+        "pesan_en": "Buy a USB Wireless Adapter, External Antenna, and USB Cable through 'toko' or the Market app. You must assemble this device yourself. — Agency"
+      },
+      {
+        "judul": "Tahap 3: Merakit Perangkat",
+        "pesan": "Gabungkan komponen dengan 'device rakit'. Chipset adapter menentukan driver yang bisa kamu pakai. — Agensi",
+        "judul_en": "Stage 3: Assembling the Device",
+        "pesan_en": "Combine the components with 'device rakit'. The adapter's chipset determines which driver you can use. — Agency"
+      },
+      {
+        "judul": "Tahap 4: Menginstal Driver",
+        "pesan": "Adapter membutuhkan driver. Cari dengan 'tools search driver', pasang dengan 'tools install driver-ar9271', lalu hubungkan perangkat dengan 'device hubungkan'. — Agensi",
+        "judul_en": "Stage 4: Installing the Driver",
+        "pesan_en": "The adapter needs a driver. Search with 'tools search driver', install with 'tools install driver-ar9271', then connect the device with 'device hubungkan'. — Agency"
+      },
+      {
+        "judul": "Tahap 5: Mendapatkan Software",
+        "pesan": "Pasang Wireless Scanner dari Tools Repository: 'tools install wifi-scanner'. — Agensi",
+        "judul_en": "Stage 5: Getting Software",
+        "pesan_en": "Install Wireless Scanner from the Tools Repository: 'tools install wifi-scanner'. — Agency"
+      },
+      {
+        "judul": "Tahap 6: Memindai Jaringan",
+        "pesan": "Jalankan 'wifi-scanner --scan' untuk menemukan jaringan laboratorium di sekitarmu. — Agensi",
+        "judul_en": "Stage 6: Scanning the Network",
+        "pesan_en": "Run 'wifi-scanner --scan' to find the laboratory network around you. — Agency"
+      },
+      {
+        "judul": "Tahap 7: Menganalisis Jaringan",
+        "pesan": "Pasang Network Analyzer. Pilih LAB-WIFI-01 dengan 'network inspect LAB-WIFI-01', lalu analisis dengan 'security analyze LAB-WIFI-01'. — Agensi",
+        "judul_en": "Stage 7: Analyzing the Network",
+        "pesan_en": "Install Network Analyzer. Select LAB-WIFI-01 with 'network inspect LAB-WIFI-01', then analyze it with 'security analyze LAB-WIFI-01'. — Agency"
+      },
+      {
+        "judul": "Tahap 8: Menguji Keamanan",
+        "pesan": "Pasang Password Auditor. Tangkap autentikasi dengan 'audit auth LAB-WIFI-01', lalu uji kata sandinya dengan 'audit run LAB-WIFI-01'. — Agensi",
+        "judul_en": "Stage 8: Testing Security",
+        "pesan_en": "Install Password Auditor. Capture the authentication with 'audit auth LAB-WIFI-01', then test the password with 'audit run LAB-WIFI-01'. — Agency"
+      },
+      {
+        "judul": "Tahap 9: Memverifikasi Akses",
+        "pesan": "Masukkan kata sandi yang ditemukan dengan 'security verify LAB-WIFI-01 <kata_sandi>'. Jika benar, jaringan laboratorium akan terbuka. — Agensi",
+        "judul_en": "Stage 9: Verifying Access",
+        "pesan_en": "Enter the password you found with 'security verify LAB-WIFI-01 <password>'. If it is correct, the laboratory network will open. — Agency"
+      },
+      {
+        "judul": "Tahap 10: Penyelesaian",
+        "pesan": "Kamu berhasil menembus jaringan laboratorium pertamamu. Hadiah sudah dikirim. — Agensi",
+        "judul_en": "Stage 10: Completion",
+        "pesan_en": "You have broken into your first laboratory network. The reward has been sent. — Agency"
+      }
+    ],
+    "petunjuk": [
+      {
+        "teks": "Adapter hanya bekerja dengan driver yang mendukung chipset-nya.",
+        "flag": "beli:usb_wireless_adapter",
+        "teks_en": "The adapter only works with a driver that supports its chipset."
+      },
+      {
+        "teks": "Jaringan WPA2 perlu handshake sebelum kata sandinya bisa diuji.",
+        "flag": "wifi:analisis:LAB-WIFI-01",
+        "teks_en": "A WPA2 network needs a handshake before its password can be tested."
+      }
+    ],
+    "tujuan": [
+      {
+        "teks": "Jalankan perintah help di terminal",
+        "flag": "cmd:help",
+        "tahap": 1,
+        "teks_en": "Run the help command in the terminal"
+      },
+      {
+        "teks": "Periksa perangkat dengan device list",
+        "flag": "cmd:device",
+        "tahap": 1,
+        "teks_en": "Check your devices with device list"
+      },
+      {
+        "teks": "Beli USB Wireless Adapter",
+        "flag": "beli:usb_wireless_adapter",
+        "tahap": 2,
+        "teks_en": "Buy a USB Wireless Adapter"
+      },
+      {
+        "teks": "Beli Antena Eksternal",
+        "flag": "beli:antena_eksternal",
+        "tahap": 2,
+        "teks_en": "Buy an External Antenna"
+      },
+      {
+        "teks": "Beli Kabel USB",
+        "flag": "beli:kabel_usb",
+        "tahap": 2,
+        "teks_en": "Buy a USB Cable"
+      },
+      {
+        "teks": "Rakit perangkat dengan device rakit",
+        "flag": "rakit:wifi_kit",
+        "tahap": 3,
+        "teks_en": "Assemble the device with device rakit"
+      },
+      {
+        "teks": "Pasang driver-ar9271 dari Tools Repository",
+        "flag": "pasang:driver-ar9271",
+        "tahap": 4,
+        "teks_en": "Install driver-ar9271 from the Tools Repository"
+      },
+      {
+        "teks": "Hubungkan perangkat dengan device hubungkan",
+        "flag": "device:terhubung",
+        "tahap": 4,
+        "teks_en": "Connect the device with device hubungkan"
+      },
+      {
+        "teks": "Pasang Wireless Scanner",
+        "flag": "pasang:wifi-scanner",
+        "tahap": 5,
+        "teks_en": "Install Wireless Scanner"
+      },
+      {
+        "teks": "Jalankan wifi-scanner --scan",
+        "flag": "wifi:scan",
+        "tahap": 6,
+        "teks_en": "Run wifi-scanner --scan"
+      },
+      {
+        "teks": "Pasang Network Analyzer",
+        "flag": "pasang:network-analyzer",
+        "tahap": 7,
+        "teks_en": "Install Network Analyzer"
+      },
+      {
+        "teks": "Pilih LAB-WIFI-01 dengan network inspect",
+        "flag": "wifi:pilih:LAB-WIFI-01",
+        "tahap": 7,
+        "teks_en": "Select LAB-WIFI-01 with network inspect"
+      },
+      {
+        "teks": "Analisis keamanan dengan security analyze",
+        "flag": "wifi:analisis:LAB-WIFI-01",
+        "tahap": 7,
+        "teks_en": "Analyze security with security analyze"
+      },
+      {
+        "teks": "Pasang Password Auditor",
+        "flag": "pasang:password-auditor",
+        "tahap": 8,
+        "teks_en": "Install Password Auditor"
+      },
+      {
+        "teks": "Tangkap autentikasi dengan audit auth",
+        "flag": "wifi:auth:LAB-WIFI-01",
+        "tahap": 8,
+        "teks_en": "Capture the authentication with audit auth"
+      },
+      {
+        "teks": "Temukan kata sandi dengan audit run",
+        "flag": "wifi:audit:LAB-WIFI-01",
+        "tahap": 8,
+        "teks_en": "Find the password with audit run"
+      },
+      {
+        "teks": "Verifikasi akses dengan security verify",
+        "flag": "wifi:akses:LAB-WIFI-01",
+        "tahap": 9,
+        "teks_en": "Verify access with security verify"
+      }
+    ],
+    "pesan_selesai": {
+      "subjek": "Terima kasih",
+      "isi": "Akses itu nyata, dan kamu yang membuatnya. Hadiahmu sudah dikirim. Kami akan mengabarimu untuk misi berikutnya. — Agensi",
+      "subjek_en": "Thank you",
+      "isi_en": "That access is real, and you built it. Your reward has been sent. We will contact you for the next mission. — Agency"
+    },
+    "judul_en": "Tutorial Mission 1",
+    "pengirim_en": "Agency",
+    "tujuan_ringkas_en": "Build a hacking device from scratch and open the laboratory network",
+    "persyaratan_en": "None (no tools)",
+    "latar_en": "The laboratory network cannot be reached without the right device. The Agency wants to see whether you can build one from nothing.",
+    "target_en": "Laboratory network LAB-WIFI-01"
+  }
+]

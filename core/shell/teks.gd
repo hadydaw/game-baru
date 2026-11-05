@@ -49,7 +49,14 @@ const EN := {
     "bash.sintaks": "syntax error near unexpected token '>'",
     "bash.redirect_banyak": "ambiguous redirect",
     "bash.kosong": "syntax error: missing command before '>'",
-}
+    "err.butuh_decoder": "Permission denied. Requires: Crypt Decoder.",
+    "err.butuh_decoder_tingkat": "Permission denied. Requires: Crypt Decoder level {tingkat}.",
+    "err.tidak_terenkripsi": "file is not encrypted",
+    "analyze.tanpa_hash": "No hash can be analyzed in this file.",
+    "err.tidak_dikenal_fs": "This environment is not ready yet",
+    "info.dibuat": "created",
+    "help.judul": "Available commands:",
+    "isi.kosong": "(content not available yet)",}
 
 const MAN := {
     "pwd": "pwd: cetak direktori kerja saat ini.",
@@ -73,16 +80,57 @@ const MAN := {
     "exit": "exit: keluar dari sesi SSH dan kembali ke terminal lokal.",
     "decode": "decode <berkas>: buka berkas terenkripsi. Membutuhkan Crypt Decoder.",
     "analyze": "analyze <berkas>: periksa jenis hash dan salt pada berkas. Membutuhkan Password Analyzer.",
+    "device": "device [list | detect | rakit [adapter] | hubungkan | putuskan | upgrade antena]: kelola perangkat nirkabel yang dirakit dari komponen.",
+    "toko": "toko [beli <id>]: lihat komponen perangkat keras, atau membelinya dengan saldo.",
     "bm": "bm [penjual | info <id> | beli <id>]: lihat penjual Black Market, katalog, detail item, atau membeli tool.",
     "wallet": "wallet: tampilkan saldo kredit dan reputasi per grup.",
-    "tools": "tools: tampilkan tool yang dimiliki, tingkat, dan sumbernya.",
+    "tools": "tools [search <kata> | info <id> | install <id> | update <id> | list]: tool yang dimiliki dan Tools Repository.",
     "inspeksi": "inspeksi <host>: baca log transfer node yang sudah dipindai nmap. Membutuhkan Packet Inspector.",
     "trace": "trace <host>: tampilkan jalur koneksi dari node. Membutuhkan Signal Tracer.",
 }
 
+const MAN_EN := {
+    "pwd": "pwd: print the current working directory.",
+    "ls": "ls [-a] [-l] [path]: list directory contents. -a shows hidden files, -l long format.",
+    "cd": "cd [path]: change directory. Without arguments goes to the home directory. cd .. goes up one level.",
+    "cat": "cat <file>...: show file contents.",
+    "mkdir": "mkdir [-p] <name>: create a directory. -p also creates parent directories.",
+    "touch": "touch <file>: create an empty file.",
+    "grep": "grep [-i] [-n] [-r] <pattern> <file...>: find matching lines. -i ignore case, -n line numbers, -r recursive.",
+    "find": "find <path> [-name <pattern>] [-type f|d]: search for files or directories.",
+    "echo": "echo <text>: print text.",
+    "clear": "clear: clear the screen. History is kept.",
+    "whoami": "whoami: print the user name.",
+    "history": "history: show command history.",
+    "man": "man <command>: show a short manual page.",
+    "help": "help: show the list of commands.",
+    "ping": "ping [-c N] <host>: test connectivity to a network node. -c sets the packet count (1-10).",
+    "nmap": "nmap [-p port,...] <host>: check ports and services on a network node.",
+    "scan": "scan <IP>: identify the device at that IP address: name, IP, and status.",
+    "ssh": "ssh [user@]<host>: log in to a remote node if access is available. Type exit to leave.",
+    "exit": "exit: leave the SSH session and return to the local terminal.",
+    "decode": "decode <file>: open an encrypted file. Requires Crypt Decoder.",
+    "analyze": "analyze <file>: check the hash type and salt in a file. Requires Password Analyzer.",
+    "device": "device [list | detect | rakit [adapter] | hubungkan | putuskan | upgrade antena]: manage wireless devices built from components.",
+    "toko": "toko [beli <id>]: view hardware components, or buy them with your balance.",
+    "bm": "bm [penjual | info <id> | beli <id>]: view Black Market sellers, catalog, item details, or buy tools.",
+    "wallet": "wallet: show credit balance and reputation per group.",
+    "tools": "tools [search <kata> | info <id> | install <id> | update <id> | list]: owned tools and the Tools Repository.",
+    "inspeksi": "inspeksi <host>: read the transfer log of a node scanned with nmap. Requires Packet Inspector.",
+    "trace": "trace <host>: show the connection path from a node. Requires Signal Tracer.",
+}
+
+static func man(nama: String) -> String:
+    var id := String(MAN.get(nama, ""))
+    var en := String(MAN_EN.get(nama, id))
+    return Bahasa.dua(id, en)
+
+
+
 static func t(kunci: String, parameter: Dictionary = {}) -> String:
-    var tabel := EN if Bahasa.kode == "en" and EN.has(kunci) else ID
-    var teks := String(tabel.get(kunci, kunci))
+    var id := String(ID.get(kunci, kunci))
+    var en := String(EN.get(kunci, id))
     for k in parameter:
-        teks = teks.replace("{" + String(k) + "}", str(parameter[k]))
-    return teks
+        id = id.replace("{" + String(k) + "}", str(parameter[k]))
+        en = en.replace("{" + String(k) + "}", str(parameter[k]))
+    return Bahasa.dua(id, en)

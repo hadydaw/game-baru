@@ -8,7 +8,7 @@ func _sesi() -> ShellSession:
 func _teks(hasil: Array) -> String:
 	var t := ""
 	for b in hasil:
-		t += String(b["teks"]) + "\n"
+		t += Bahasa.pilih(String(b["teks"])) + "\n"
 	return t
 
 func test_saldo_awal_500() -> void:
@@ -60,7 +60,7 @@ func test_reputasi_dibatasi_0_sampai_100() -> void:
 
 func test_reputasi_awal_nol_untuk_grup_data() -> void:
 	assert_eq(Reputation.baru().get_nilai("kolektif_senja"), 0)
-	assert_eq(Reputation.nama_grup("kolektif_senja"), "Kolektif Senja")
+	assert_eq(Bahasa.pilih(Reputation.nama_grup("kolektif_senja")), "Kolektif Senja")
 
 func test_wallet_menampilkan_saldo_dan_reputasi() -> void:
 	var s := _sesi()

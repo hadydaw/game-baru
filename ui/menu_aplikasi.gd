@@ -9,8 +9,8 @@ signal keluar_diminta
 signal tutup_diminta
 
 const KATEGORI := [
-    {"kunci": "sistem", "teks": "kategori.sistem", "apl": ["terminal", "berkas", "log"]},
-    {"kunci": "jaringan", "teks": "kategori.jaringan", "apl": ["peta", "tools"]},
+    {"kunci": "sistem", "teks": "kategori.sistem", "apl": ["terminal", "berkas", "log", "perangkat", "inventaris"]},
+    {"kunci": "jaringan", "teks": "kategori.jaringan", "apl": ["peta", "netmgr", "tools"]},
     {"kunci": "pasar", "teks": "kategori.pasar", "apl": ["pasar", "misi"]},
     {"kunci": "komunitas", "teks": "kategori.komunitas", "apl": ["forum", "email"]},
 ]

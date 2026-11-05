@@ -14,11 +14,11 @@ func after_each() -> void:
 	m.free()
 
 func test_kategori_sistem_default() -> void:
-	assert_eq(m.daftar_terlihat(), ["terminal", "berkas", "log"])
+	assert_eq(m.daftar_terlihat(), ["terminal", "berkas", "log", "perangkat", "inventaris"])
 
 func test_pindah_kategori_menampilkan_aplikasinya() -> void:
 	m._pilih_kategori("jaringan")
-	assert_eq(m.daftar_terlihat(), ["peta", "tools"])
+	assert_eq(m.daftar_terlihat(), ["peta", "netmgr", "tools"])
 	m._pilih_kategori("pasar")
 	assert_eq(m.daftar_terlihat(), ["pasar", "misi"])
 	m._pilih_kategori("komunitas")

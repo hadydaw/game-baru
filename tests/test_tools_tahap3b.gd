@@ -8,18 +8,17 @@ func _sesi() -> ShellSession:
 func _teks(hasil: Array) -> String:
 	var t := ""
 	for b in hasil:
-		t += String(b["teks"]) + "\n"
+		t += Bahasa.pilih(String(b["teks"])) + "\n"
 	return t
 
 func _galat(hasil: Array) -> bool:
 	return hasil.size() > 0 and String(hasil[0]["tipe"]) == "error"
 
-func test_inventaris_awal_hanya_network_scanner() -> void:
+func test_inventaris_awal_kosong() -> void:
 	var inv := Inventory.baru()
-	assert_true(inv.punya("network_scanner"))
-	assert_eq(inv.tingkat("network_scanner"), 1)
-	assert_eq(inv.sumber("network_scanner"), "awal")
+	assert_false(inv.punya("network_scanner"))
 	assert_false(inv.punya("packet_inspector"))
+	assert_eq(inv.milik.size(), 0)
 
 func test_tool_tidak_bisa_dimiliki_dua_kali() -> void:
 	var inv := Inventory.baru()
@@ -29,6 +28,7 @@ func test_tool_tidak_bisa_dimiliki_dua_kali() -> void:
 
 func test_naikkan_tingkat_dibatasi_maks() -> void:
 	var inv := Inventory.baru()
+	inv.miliki("network_scanner", "awal", 1)
 	assert_true(inv.naikkan("network_scanner"))
 	assert_true(inv.naikkan("network_scanner"))
 	assert_false(inv.naikkan("network_scanner"), "tingkat maksimal 3")
@@ -57,6 +57,7 @@ func test_help_menampilkan_perintah_tool_yang_dimiliki() -> void:
 
 func test_tools_menampilkan_daftar() -> void:
 	var s := _sesi()
+	s.inventory.miliki("network_scanner", "awal", 1)
 	assert_true(_teks(s.jalankan("tools")).contains("Network Scanner"))
 	var kosong := _sesi()
 	kosong.inventory = Inventory.new()
@@ -64,6 +65,7 @@ func test_tools_menampilkan_daftar() -> void:
 
 func test_nmap_sv_butuh_scanner_tingkat_2() -> void:
 	var s := _sesi()
+	s.inventory.miliki("network_scanner", "uji", 1)
 	s.jalankan("ping -c 1 gerbang")
 	assert_true(_galat(s.jalankan("nmap -sV gerbang")), "tingkat 1 tidak punya -sV")
 	s.inventory.naikkan("network_scanner")
@@ -73,6 +75,7 @@ func test_nmap_sv_butuh_scanner_tingkat_2() -> void:
 
 func test_nmap_firewall_hanya_tingkat_3() -> void:
 	var s := _sesi()
+	s.inventory.miliki("network_scanner", "uji", 1)
 	s.jalankan("ping -c 1 gerbang")
 	assert_false(_teks(s.jalankan("nmap gerbang")).contains("Firewall"))
 	s.inventory.naikkan("network_scanner")

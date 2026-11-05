@@ -1,0 +1,53 @@
+{
+  "komponen": {
+    "usb_wireless_adapter": {
+      "nama": "USB Wireless Adapter",
+      "tipe": "adapter",
+      "harga": 110,
+      "chipset": "ar9271",
+      "deskripsi_kunci": "hw.desk.usb_wireless_adapter"
+    },
+    "usb_wireless_adapter_rt": {
+      "nama": "USB Wireless Adapter RT",
+      "tipe": "adapter",
+      "harga": 70,
+      "chipset": "rt5370",
+      "deskripsi_kunci": "hw.desk.usb_wireless_adapter_rt"
+    },
+    "antena_eksternal": {
+      "nama": "Antena Eksternal",
+      "tipe": "antena",
+      "harga": 60,
+      "tingkat": 1,
+      "deskripsi_kunci": "hw.desk.antena_eksternal",
+      "nama_en": "External Antenna"
+    },
+    "antena_penguat": {
+      "nama": "Antena Penguat",
+      "tipe": "antena",
+      "harga": 150,
+      "tingkat": 2,
+      "deskripsi_kunci": "hw.desk.antena_penguat",
+      "nama_en": "Booster Antenna"
+    },
+    "kabel_usb": {
+      "nama": "Kabel USB",
+      "tipe": "kabel",
+      "harga": 15,
+      "deskripsi_kunci": "hw.desk.kabel_usb",
+      "nama_en": "USB Cable"
+    },
+    "wifi_hacking_kit": {
+      "nama": "Wi-Fi Hacking Kit",
+      "tipe": "kit",
+      "harga": 0,
+      "tidak_dijual": true,
+      "deskripsi_kunci": "hw.desk.wifi_hacking_kit"
+    }
+  },
+  "urutan_rakit": [
+    "adapter",
+    "antena",
+    "kabel"
+  ]
+}

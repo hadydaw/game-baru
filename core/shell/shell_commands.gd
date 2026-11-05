@@ -7,7 +7,7 @@ extends RefCounted
 static func jalankan(s: ShellSession, p: Dictionary) -> Array:
     var nama := String(p["nama"])
     # Perintah milik tool yang belum dimiliki diperlakukan seperti perintah yang tidak ada.
-    if not CommandRegistry.tersedia(s.inventory, nama):
+    if not CommandRegistry.tersedia(s, nama):
         return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
     match nama:
         "pwd": return [s.baris("info", s.cwd)]
@@ -16,7 +16,13 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "clear": return [s.baris("clear", "")]
         "history": return _history(s)
         "help": return _help(s)
-        "tools": return ToolCommands.tools(s)
+        "tools": return RepositoriCommands.tools(s, p)
+        "device": return PerangkatCommands.device(s, p)
+        "wifi-scanner": return WifiCommands.scan(s, p)
+        "network": return WifiCommands.network(s, p)
+        "security": return WifiCommands.security(s, p)
+        "audit": return WifiCommands.audit(s, p)
+        "toko": return PerangkatCommands.toko(s, p)
         "inspeksi": return ToolCommands.inspeksi(s, p)
         "trace": return ToolCommands.trace(s, p)
         "decode": return AnalisisCommands.decode(s, p)
@@ -34,20 +40,21 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "nmap": return PerintahJaringan.nmap(s, p)
         "scan": return PerintahScan.scan(s, p)
         "ssh": return PerintahJaringan.ssh(s, p)
-        "exit": return [s.galat("exit", "tidak ada sesi SSH aktif")]
+        "exit": return [s.galat("exit", Bahasa.dua("tidak ada sesi SSH aktif", "no active SSH session"))]
         "wallet": return _wallet(s)
         _: return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
 
 # Saldo dan reputasi pemain. Hanya membaca keadaan; perubahan dilakukan oleh sistem permainan.
 static func _wallet(s: ShellSession) -> Array:
-    var hasil: Array = [s.baris("info", "Saldo: %d %s" % [s.economy.saldo, String(Economy.data_ekonomi().get("mata_uang", "Kr"))])]
-    hasil.append(s.baris("info", "Reputasi:"))
+    var hasil: Array = [s.baris("info", Bahasa.dua("Saldo: %d %s", "Balance: %d %s", [s.economy.saldo, String(Economy.data_ekonomi().get("mata_uang", "Kr"))]))]
+    hasil.append(s.baris("info", "XP: %d" % s.xp))
+    hasil.append(s.baris("info", Bahasa.dua("Reputasi:", "Reputation:")))
     var grup: Dictionary = Economy.data_ekonomi().get("grup", {})
     var ids := grup.keys()
     ids.sort()
     for id in ids:
         var nilai := s.reputation.get_nilai(String(id))
-        hasil.append(s.baris("info", "  %s: %d (%s)" % [Reputation.nama_grup(String(id)), nilai, Reputation.tingkat(nilai)]))
+        hasil.append(s.baris("info", "  %s: %d (%s)" % [Reputation.nama_grup(String(id)), nilai, Reputation.tingkat_teks(nilai)]))
     return hasil
 
 static func _history(s: ShellSession) -> Array:
@@ -59,7 +66,7 @@ static func _history(s: ShellSession) -> Array:
 static func _help(s: ShellSession) -> Array:
     var hasil: Array = [{"tipe": "info", "teks": Teks.t("help.judul")}]
     for nama in Teks.MAN.keys():
-        if CommandRegistry.tersedia(s.inventory, String(nama)):
+        if CommandRegistry.tersedia(s, String(nama)):
             hasil.append({"tipe": "info", "teks": "  " + nama})
     return hasil
 
@@ -69,7 +76,7 @@ static func _man(s: ShellSession, p: Dictionary) -> Array:
     var nama := String(p["argumen"][0])
     if not Teks.MAN.has(nama):
         return [s.galat("man", "%s %s" % [Teks.t("man.tidak_ada"), nama])]
-    return [s.baris("info", String(Teks.MAN[nama]))]
+    return [s.baris("info", Teks.man(nama))]
 
 static func _ls(s: ShellSession, p: Dictionary) -> Array:
     var tampil_semua := ShellParser.punya_huruf(p["opsi"], "a")

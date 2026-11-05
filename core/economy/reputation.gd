@@ -17,8 +17,14 @@ static func baru() -> Reputation:
 	return r
 
 static func nama_grup(id: String) -> String:
-	var grup: Dictionary = Economy.data_ekonomi().get("grup", {})
-	return String(Dictionary(grup.get(id, {})).get("nama", id))
+	var grup: Dictionary = Dictionary(Economy.data_ekonomi().get("grup", {})).get(id, {})
+	return Bahasa.dua(String(grup.get("nama", id)), String(grup.get("nama_en", grup.get("nama", id))))
+
+# Tingkat reputasi dalam dua bahasa, untuk ditampilkan.
+const TINGKAT_EN := {"tanpa": "none", "anggota": "member", "menengah": "mid-tier", "elite": "elite"}
+static func tingkat_teks(nilai_rep: int) -> String:
+	var k := tingkat(nilai_rep)
+	return Bahasa.dua(k, String(TINGKAT_EN.get(k, k)))
 
 func get_nilai(grup: String) -> int:
 	return int(nilai.get(grup, 0))

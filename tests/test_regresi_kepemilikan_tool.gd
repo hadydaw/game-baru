@@ -12,11 +12,11 @@ func _sesi() -> ShellSession:
 func _teks(hasil: Array) -> String:
 	var t := ""
 	for b in hasil:
-		t += String(b["teks"]) + "\n"
+		t += Bahasa.pilih(Bahasa.pilih(String(b["teks"]))) + "\n"
 	return t
 
 func _tidak_ditemukan(hasil: Array) -> bool:
-	return hasil.size() > 0 and String(hasil[0]["tipe"]) == "error" and String(hasil[0]["teks"]).ends_with("perintah tidak ditemukan")
+	return hasil.size() > 0 and String(hasil[0]["tipe"]) == "error" and Bahasa.pilih(String(hasil[0]["teks"])).ends_with("perintah tidak ditemukan")
 
 func test_trace_ditolak_sebelum_signal_tracer_dibeli() -> void:
 	var s := _sesi()
@@ -44,7 +44,7 @@ func test_help_konsisten_dengan_dispatcher() -> void:
 	s.inventory.miliki("signal_tracer", "black_market", 1)
 	var help := _teks(s.jalankan("help"))
 	for nama in Teks.MAN.keys():
-		var dikenal := CommandRegistry.tersedia(s.inventory, String(nama))
+		var dikenal := CommandRegistry.tersedia(s, String(nama))
 		assert_eq(help.contains("  " + String(nama) + "\n"), dikenal, "help konsisten untuk %s" % nama)
 		if dikenal and CommandRegistry.pemilik(String(nama)) != "":
 			assert_false(_tidak_ditemukan(s.jalankan(String(nama))), "dispatcher mengenali %s" % nama)
@@ -56,6 +56,7 @@ func test_setiap_perintah_milik_tool_punya_manual() -> void:
 			assert_eq(CommandRegistry.pemilik(String(c)), String(id), "%s terdaftar ke %s" % [c, id])
 
 func test_perintah_tanpa_pemilik_selalu_tersedia() -> void:
-	var kosong := Inventory.new()
-	for nama in ["ping", "nmap", "ls", "cd", "wallet", "bm", "tools"]:
+	var kosong := _sesi()
+	kosong.inventory = Inventory.new()
+	for nama in ["ping", "nmap", "ls", "cd", "wallet", "bm", "tools", "device", "toko"]:
 		assert_true(CommandRegistry.tersedia(kosong, nama), "%s tidak perlu tool" % nama)

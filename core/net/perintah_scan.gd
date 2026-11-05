@@ -10,17 +10,17 @@ static func scan(s: ShellSession, p: Dictionary) -> Array:
 		return [s.galat("scan", Teks.t("err.butuh_argumen"))]
 	var ip := String(p["argumen"][0])
 	if not ip_valid(ip):
-		return [s.galat("scan", "masukkan alamat IP, contoh: scan 10.7.0.8")]
+		return [s.galat("scan", Bahasa.dua("masukkan alamat IP, contoh: scan 10.7.0.8", "enter an IP address, example: scan 10.7.0.8"))]
 	var j := s.jaringan
 	var id := j.cari_ip(ip)
 	if id == "":
-		return [s.galat("scan", "Tidak ada perangkat yang ditemukan pada %s" % ip)]
+		return [s.galat("scan", Bahasa.dua("Tidak ada perangkat yang ditemukan pada %s", "No device found at %s", [ip]))]
 	var keadaan := TataLetakPeta.keadaan(j.ringkasan(id))
 	j.tandai_ditemukan(id)
 	j.buka("pindai:" + id)
 	return [
-		s.baris("info", "Memindai %s..." % ip),
-		s.baris("info", "Perangkat ditemukan: %s" % id),
+		s.baris("info", Bahasa.dua("Memindai %s...", "Scanning %s...", [ip])),
+		s.baris("info", Bahasa.dua("Perangkat ditemukan: %s", "Device found: %s", [id])),
 		s.baris("info", "IP      : %s" % ip),
 		s.baris("info", "Status  : %s" % _label_keadaan(keadaan)),
 	]
@@ -33,9 +33,9 @@ static func ip_valid(teks: String) -> bool:
 static func _label_keadaan(keadaan: String) -> String:
 	match keadaan:
 		"aktif":
-			return "Aktif"
+			return Bahasa.dua("Aktif", "Active")
 		"tidak_aktif":
-			return "Tidak aktif"
+			return Bahasa.dua("Tidak aktif", "Inactive")
 		_:
 			return "Terkunci"
 

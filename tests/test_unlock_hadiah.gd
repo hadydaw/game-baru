@@ -14,7 +14,7 @@ func _sesi() -> ShellSession:
 func _teks(hasil: Array) -> String:
 	var t := ""
 	for b in hasil:
-		t += String(b["teks"]) + "\n"
+		t += Bahasa.pilih(String(b["teks"])) + "\n"
 	return t
 
 func test_misi_memberi_hadiah_kredit_dan_reputasi() -> void:
@@ -41,6 +41,7 @@ func test_misi_membuka_node_dan_memulihkan_stok_pasar() -> void:
 
 func test_misi_memberi_tool_dan_membuka_unlock() -> void:
 	var s := _sesi()
+	s.inventory.miliki("network_scanner", "awal", 1)
 	var r := Hadiah.selesaikan_misi(s, "misi_relay")
 	assert_true(s.inventory.punya("network_scanner"))
 	assert_eq(s.inventory.tingkat("network_scanner"), 2, "tool awal dinaikkan oleh hadiah")

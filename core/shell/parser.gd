@@ -57,6 +57,10 @@ static func dari_token(token: Array, mentah: String) -> Dictionary:
         "mentah": mentah.strip_edges(),
     }
 
+# Mengecek apakah opsi tertentu (misal "--scan") ada di daftar opsi.
+static func punya_opsi(opsi: Array, nama: String) -> bool:
+    return opsi.has(nama)
+
 # Mengecek apakah opsi pendek gabungan (misal "-la") memuat huruf tertentu.
 static func punya_huruf(opsi: Array, huruf: String) -> bool:
     for o in opsi:

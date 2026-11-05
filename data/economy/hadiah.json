@@ -1,4 +1,14 @@
 {
+  "misi_1": {
+    "kredit": 150,
+    "xp": 100,
+    "reputasi": {
+      "kolektif_senja": 5
+    },
+    "perangkat": [
+      "wifi_hacking_kit"
+    ]
+  },
   "misi_relay": {
     "kredit": 300,
     "reputasi": {

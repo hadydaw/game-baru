@@ -1,0 +1,8 @@
+{
+  "jaringan": {
+    "LAB-WIFI-01": {"bssid": "02:4A:1C:00:01:01", "kanal": 6, "sinyal": -48, "enkripsi": "WPA2", "kata_sandi": "senja1234"},
+    "LAB-WIFI-02": {"bssid": "02:4A:1C:00:02:02", "kanal": 11, "sinyal": -63, "enkripsi": "WEP", "kata_sandi": "0102030405"},
+    "LAB-WIFI-03": {"bssid": "02:4A:1C:00:03:03", "kanal": 1, "sinyal": -71, "enkripsi": "WPA2", "kata_sandi": "Kh7#pQ2v!m"}
+  },
+  "kamus_audit": ["password", "12345678", "jtn2026", "senja1234", "0102030405", "qwerty123"]
+}

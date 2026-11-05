@@ -6,10 +6,29 @@
       "syarat_grup": "kolektif_senja",
       "syarat_rep": 0,
       "item": [
-        {"id": "a1", "tool": "packet_inspector", "tingkat": 1, "stok": 5, "kelangkaan": "umum"},
-        {"id": "a2", "tool": "signal_tracer", "tingkat": 1, "stok": 5, "kelangkaan": "umum"},
-        {"id": "a3", "tool": "firewall_bypass", "tingkat": 1, "stok": 3, "kelangkaan": "umum"}
-      ]
+        {
+          "id": "a1",
+          "tool": "packet_inspector",
+          "tingkat": 1,
+          "stok": 5,
+          "kelangkaan": "umum"
+        },
+        {
+          "id": "a2",
+          "tool": "signal_tracer",
+          "tingkat": 1,
+          "stok": 5,
+          "kelangkaan": "umum"
+        },
+        {
+          "id": "a3",
+          "tool": "firewall_bypass",
+          "tingkat": 1,
+          "stok": 3,
+          "kelangkaan": "umum"
+        }
+      ],
+      "nama_en": "Seller A — General"
     },
     "b": {
       "nama": "Penjual B — Spesialis Berkas",
@@ -17,9 +36,24 @@
       "syarat_grup": "kolektif_senja",
       "syarat_rep": 0,
       "item": [
-        {"id": "b1", "tool": "crypt_decoder", "tingkat": 1, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"},
-        {"id": "b2", "tool": "password_analyzer", "tingkat": 1, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"}
-      ]
+        {
+          "id": "b1",
+          "tool": "crypt_decoder",
+          "tingkat": 1,
+          "stok": 2,
+          "kelangkaan": "langka",
+          "pulih_oleh": "misi_relay"
+        },
+        {
+          "id": "b2",
+          "tool": "password_analyzer",
+          "tingkat": 1,
+          "stok": 2,
+          "kelangkaan": "langka",
+          "pulih_oleh": "misi_relay"
+        }
+      ],
+      "nama_en": "Seller B — File Specialist"
     },
     "c": {
       "nama": "Penjual C — Jaringan",
@@ -27,9 +61,24 @@
       "syarat_grup": "kolektif_senja",
       "syarat_rep": 50,
       "item": [
-        {"id": "c1", "tool": "signal_tracer", "tingkat": 2, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"},
-        {"id": "c2", "tool": "packet_inspector", "tingkat": 2, "stok": 2, "kelangkaan": "langka", "pulih_oleh": "misi_relay"}
-      ]
+        {
+          "id": "c1",
+          "tool": "signal_tracer",
+          "tingkat": 2,
+          "stok": 2,
+          "kelangkaan": "langka",
+          "pulih_oleh": "misi_relay"
+        },
+        {
+          "id": "c2",
+          "tool": "packet_inspector",
+          "tingkat": 2,
+          "stok": 2,
+          "kelangkaan": "langka",
+          "pulih_oleh": "misi_relay"
+        }
+      ],
+      "nama_en": "Seller C — Network"
     },
     "d": {
       "nama": "Penjual D — Elite",
@@ -37,9 +86,22 @@
       "syarat_grup": "kolektif_senja",
       "syarat_rep": 75,
       "item": [
-        {"id": "d1", "tool": "crypt_decoder", "tingkat": 3, "stok": 1, "kelangkaan": "sangat_langka"},
-        {"id": "d2", "tool": "firewall_bypass", "tingkat": 3, "stok": 1, "kelangkaan": "sangat_langka"}
-      ]
+        {
+          "id": "d1",
+          "tool": "crypt_decoder",
+          "tingkat": 3,
+          "stok": 1,
+          "kelangkaan": "sangat_langka"
+        },
+        {
+          "id": "d2",
+          "tool": "firewall_bypass",
+          "tingkat": 3,
+          "stok": 1,
+          "kelangkaan": "sangat_langka"
+        }
+      ],
+      "nama_en": "Seller D — Elite"
     }
   }
 }

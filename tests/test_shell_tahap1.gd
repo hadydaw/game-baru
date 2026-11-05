@@ -31,13 +31,13 @@ func test_ls_sembunyikan_titik() -> void:
     var s := _sesi()
     var baris := s.jalankan("ls")
     for b in baris:
-        assert_false(String(b["teks"]).begins_with("."))
+        assert_false(Bahasa.pilih(String(b["teks"])).begins_with("."))
 
 func test_ls_a_tampilkan_titik() -> void:
     var s := _sesi()
     var teks := ""
     for b in s.jalankan("ls -a"):
-        teks += String(b["teks"]) + "\n"
+        teks += Bahasa.pilih(String(b["teks"])) + "\n"
     assert_true(teks.contains(".catatan"))
 
 func test_cat_ditolak_tanpa_izin() -> void:

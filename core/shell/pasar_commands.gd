@@ -19,21 +19,21 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         return _info(s, String(args[1]))
     if BlackMarket.penjual_ids().has(sub):
         return _katalog(s, sub)
-    return [s.galat("bm", "%s: penjual tidak dikenal" % sub)]
+    return [s.galat("bm", Bahasa.dua("%s: penjual tidak dikenal", "%s: unknown seller", [sub]))]
 
 static func _daftar_penjual(s: ShellSession) -> Array:
-    var hasil: Array = [s.baris("info", "Penjual di Black Market:")]
+    var hasil: Array = [s.baris("info", Bahasa.dua("Penjual di Black Market:", "Sellers at the Black Market:"))]
     for pid in BlackMarket.penjual_ids():
         var p := BlackMarket.penjual(pid)
-        var status := "[terbuka]" if BlackMarket.penjual_terbuka(pid, s.reputation) else "[butuh reputasi %d]" % int(p.get("syarat_rep", 0))
+        var status := Bahasa.dua("[terbuka]", "[open]") if BlackMarket.penjual_terbuka(pid, s.reputation) else Bahasa.dua("[butuh reputasi %d]", "[requires reputation %d]", [int(p.get("syarat_rep", 0))])
         hasil.append(s.baris("info", "  %s  %s %s" % [pid, String(p.get("nama", pid)), status]))
     return hasil
 
 static func _katalog(s: ShellSession, pid: String) -> Array:
     var p := BlackMarket.penjual(pid)
-    var hasil: Array = [s.baris("info", String(p.get("nama", pid)))]
+    var hasil: Array = [s.baris("info", BlackMarket.nama_penjual(pid))]
     if not BlackMarket.penjual_terbuka(pid, s.reputation):
-        hasil.append(s.baris("info", "Belum terbuka. Butuh reputasi %d (%s)." % [int(p.get("syarat_rep", 0)), Reputation.nama_grup(String(p.get("syarat_grup", "")))]))
+        hasil.append(s.baris("info", Bahasa.dua("Belum terbuka. Butuh reputasi %d (%s).", "Locked. Requires reputation %d (%s).", [int(p.get("syarat_rep", 0)), Reputation.nama_grup(String(p.get("syarat_grup", "")))])))
         return hasil
     var market := s.market
     for it in p.get("item", []):
@@ -50,13 +50,13 @@ static func _ringkas_item(s: ShellSession, id: String, it: Dictionary) -> String
 static func _info(s: ShellSession, id: String) -> Array:
     var it := BlackMarket.item(id)
     if it.is_empty():
-        return [s.galat("bm", "%s: item tidak ditemukan" % id)]
+        return [s.galat("bm", Bahasa.dua("%s: item tidak ditemukan", "%s: item not found", [id]))]
     var tool := String(it["tool"])
     var tgt := int(it["tingkat"])
     var hasil: Array = [
-        s.baris("info", "%s — %s tingkat %d" % [id, ToolDefs.nama(tool), tgt]),
-        s.baris("info", "Harga: %d Kr" % ToolDefs.harga(tool, tgt)),
-        s.baris("info", "Stok: %d (%s)" % [s.market.sisa(id), String(it["kelangkaan"]).replace("_", " ")]),
+        s.baris("info", Bahasa.dua("%s — %s tingkat %d", "%s — %s level %d", [id, ToolDefs.nama(tool), tgt])),
+        s.baris("info", Bahasa.dua("Harga: %d Kr", "Price: %d Kr", [ToolDefs.harga(tool, tgt)])),
+        s.baris("info", Bahasa.dua("Stok: %d (%s)", "Stock: %d (%s)", [s.market.sisa(id), String(it["kelangkaan"]).replace("_", " ")])),
         s.baris("info", "Status: %s" % s.market.status_item(id, s.inventory)),
     ]
     return hasil

@@ -10,12 +10,12 @@ const ALAMAT_DISAMARKAN := "***.***.***.***"
 static func tools(s: ShellSession) -> Array:
     var inv := s.inventory
     if inv.milik.is_empty():
-        return [s.baris("info", "Tidak ada tool yang dimiliki.")]
-    var hasil: Array = [s.baris("info", "Tool yang dimiliki:")]
+        return [s.baris("info", Bahasa.dua("Tidak ada tool yang dimiliki.", "No tools owned."))]
+    var hasil: Array = [s.baris("info", Bahasa.dua("Tool yang dimiliki:", "Tools owned:"))]
     var ids := inv.milik.keys()
     ids.sort()
     for id in ids:
-        hasil.append(s.baris("info", "  %-18s tingkat %d/%d  (%s)" % [ToolDefs.nama(String(id)), inv.tingkat(String(id)), ToolDefs.maks(String(id)), inv.sumber(String(id))]))
+        hasil.append(s.baris("info", Bahasa.dua("  %-18s tingkat %d/%d  (%s)", "  %-18s level %d/%d  (%s)", [ToolDefs.nama(String(id)), inv.tingkat(String(id)), ToolDefs.maks(String(id)), inv.sumber(String(id))])))
     return hasil
 
 # inspeksi <host>: membaca log transfer node yang sudah pernah dipindai nmap.
@@ -26,17 +26,17 @@ static func inspeksi(s: ShellSession, p: Dictionary) -> Array:
     var j := s.jaringan
     var id := j.cari(target)
     if id == "" or not j.dikenal(id):
-        return [s.galat("inspeksi", "%s: Nama atau layanan tidak diketahui" % target)]
+        return [s.galat("inspeksi", Bahasa.dua("%s: Nama atau layanan tidak diketahui", "%s: Name or service not known", [target]))]
     if j.terkunci(id):
-        return [s.galat("inspeksi", "%s: Host tidak dapat dijangkau" % target)]
+        return [s.galat("inspeksi", Bahasa.dua("%s: Host tidak dapat dijangkau", "%s: Host unreachable", [target]))]
     if not j.sudah_dipindai(id):
-        return [s.galat("inspeksi", "%s: host belum dipindai dengan nmap" % target)]
+        return [s.galat("inspeksi", Bahasa.dua("%s: host belum dipindai dengan nmap", "%s: host not scanned with nmap yet", [target]))]
     var t := s.inventory.tingkat("packet_inspector")
     var log: Array = j.data[id].get("log", [])
     var terhapus: Array = j.data[id].get("log_terhapus", []) if t >= 3 else []
-    var hasil: Array = [s.baris("info", "Log transfer %s:" % target)]
+    var hasil: Array = [s.baris("info", Bahasa.dua("Log transfer %s:", "Transfer log %s:", [target]))]
     if log.is_empty() and terhapus.is_empty():
-        hasil.append(s.baris("info", "(tidak ada log)"))
+        hasil.append(s.baris("info", Bahasa.dua("(tidak ada log)", "(no log)")))
         return hasil
     var awal := maxi(log.size() - BATAS_LOG_T1, 0) if t == 1 else 0
     for i in range(awal, log.size()):
@@ -68,12 +68,12 @@ static func trace(s: ShellSession, p: Dictionary) -> Array:
     var j := s.jaringan
     var id := j.cari(target)
     if id == "" or not j.dikenal(id):
-        return [s.galat("trace", "%s: Nama atau layanan tidak diketahui" % target)]
+        return [s.galat("trace", Bahasa.dua("%s: Nama atau layanan tidak diketahui", "%s: Name or service not known", [target]))]
     if j.terkunci(id):
-        return [s.galat("trace", "%s: Host tidak dapat dijangkau" % target)]
+        return [s.galat("trace", Bahasa.dua("%s: Host tidak dapat dijangkau", "%s: Host unreachable", [target]))]
     var t := s.inventory.tingkat("signal_tracer")
     var kedalaman := _kedalaman(j, id)
-    var hasil: Array = [s.baris("info", "Jalur dari %s:" % target)]
+    var hasil: Array = [s.baris("info", Bahasa.dua("Jalur dari %s:", "Route from %s:", [target]))]
     var ids := j.data.keys()
     ids.sort()
     var tampil := 0
@@ -89,13 +89,13 @@ static func trace(s: ShellSession, p: Dictionary) -> Array:
             continue
         tampil += 1
         if j.terkunci(hop):
-            hasil.append(s.baris("info", "%s  %s  terkunci" % [_label_hop(d), hop]))
+            hasil.append(s.baris("info", Bahasa.dua("%s  %s  terkunci", "%s  %s  locked", [_label_hop(d), hop])))
             continue
         if not j.dikenal(hop):
             j.ditemukan.append(hop)
         hasil.append(s.baris("info", "%s  %s (%s)" % [_label_hop(d), hop, j.ip(hop)]))
     if tampil == 0:
-        hasil.append(s.baris("info", "Tidak ada jalur lanjutan dari %s." % target))
+        hasil.append(s.baris("info", Bahasa.dua("Tidak ada jalur lanjutan dari %s.", "No further route from %s.", [target])))
     return hasil
 
 static func _label_hop(d: int) -> String:

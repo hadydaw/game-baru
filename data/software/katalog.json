@@ -1,0 +1,73 @@
+{
+  "driver-ar9271": {
+    "nama": "Driver AR9271",
+    "tipe": "driver",
+    "kategori": "Driver",
+    "versi_awal": "2.0",
+    "versi": "2.0",
+    "ukuran": "1.2 MB",
+    "harga": 0,
+    "deps": [],
+    "butuh_adapter": true,
+    "chipset": [
+      "ar9271"
+    ],
+    "perintah": [],
+    "deskripsi_kunci": "sw.desk.driver-ar9271"
+  },
+  "wifi-scanner": {
+    "nama": "Wireless Scanner",
+    "tipe": "aplikasi",
+    "kategori": "Nirkabel",
+    "versi_awal": "1.0",
+    "versi": "1.1",
+    "ukuran": "3.4 MB",
+    "harga": 60,
+    "deps": [
+      "driver-ar9271"
+    ],
+    "butuh_adapter": true,
+    "chipset": [],
+    "perintah": [
+      "wifi-scanner"
+    ],
+    "deskripsi_kunci": "sw.desk.wifi-scanner"
+  },
+  "network-analyzer": {
+    "nama": "Network Analyzer",
+    "tipe": "aplikasi",
+    "kategori": "Analisis",
+    "versi_awal": "1.0",
+    "versi": "1.2",
+    "ukuran": "5.1 MB",
+    "harga": 120,
+    "deps": [
+      "wifi-scanner"
+    ],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [
+      "network",
+      "security"
+    ],
+    "deskripsi_kunci": "sw.desk.network-analyzer"
+  },
+  "password-auditor": {
+    "nama": "Password Auditor",
+    "tipe": "aplikasi",
+    "kategori": "Autentikasi",
+    "versi_awal": "1.0",
+    "versi": "1.0",
+    "ukuran": "4.0 MB",
+    "harga": 130,
+    "deps": [
+      "network-analyzer"
+    ],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [
+      "audit"
+    ],
+    "deskripsi_kunci": "sw.desk.password-auditor"
+  }
+}

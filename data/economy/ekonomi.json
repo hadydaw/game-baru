@@ -2,7 +2,7 @@
   "saldo_awal": 500,
   "mata_uang": "Kr",
   "grup": {
-    "kolektif_senja": {"nama": "Kolektif Senja"}
+    "kolektif_senja": {"nama": "Kolektif Senja", "nama_en": "Senja Collective"}
   },
   "ambang_reputasi": {"anggota": 25, "menengah": 50, "elite": 75}
 }

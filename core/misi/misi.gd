@@ -12,11 +12,28 @@ const DATA := "res://data/misi/misi.json"
 # Berkas sumber misi. Tes dapat mengarahkannya ke fixture; permainan memakai DATA.
 static var berkas: String = DATA
 
+# Teks misi punya pasangan "<kunci>_en". Saat data dimuat, keduanya digabung menjadi satu teks dua-bahasa.
+static func _dwibahasa(o: Variant) -> void:
+	if o is Array:
+		for x in o:
+			_dwibahasa(x)
+	elif o is Dictionary:
+		for k in o.keys():
+			if not o.has(k) or String(k).ends_with("_en"):
+				continue
+			var en := String(k) + "_en"
+			if o.has(en) and typeof(o[k]) == TYPE_STRING:
+				o[k] = Bahasa.dua(String(o[k]), String(o[en]))
+				o.erase(en)
+			else:
+				_dwibahasa(o[k])
+
 static func daftar(path: String = "") -> Array:
 	var sumber := path if path != "" else berkas
 	var parser := JSON.new()
 	if parser.parse(FileAccess.get_file_as_string(sumber)) != OK or typeof(parser.data) != TYPE_ARRAY:
 		return []
+	_dwibahasa(parser.data)
 	var hasil: Array = parser.data
 	hasil.sort_custom(func(a, b): return int(a["urutan"]) < int(b["urutan"]))
 	return hasil
@@ -45,6 +62,8 @@ static func perbarui(s: ShellSession) -> void:
 				_kirim(s, id, dari, m["pesan_selesai"])
 				Hadiah.selesaikan_misi(s, id)
 				berubah = true
+			elif String(s.misi[id]) == "aktif" and _cek_tahap(s, m):
+				berubah = true
 
 # Mengganti penanda {ip:id} dengan IP node sesi ini. IP tidak pernah ditulis permanen di data misi.
 static func ganti_ip(s: ShellSession, teks: String) -> String:
@@ -71,6 +90,46 @@ static func petunjuk_ditemukan(s: ShellSession, m: Dictionary) -> Array:
 			hasil.append(ganti_ip(s, String(p["teks"])))
 	return hasil
 
+# Tahap misi: setiap tahap yang semua tujuannya terpenuhi memberi umpan balik sekali (pesan dari pengirim).
+static func _cek_tahap(s: ShellSession, m: Dictionary) -> bool:
+	var id := String(m["id"])
+	var sudah: Array = Array(s.misi_tahap.get(id, []))
+	var baru := false
+	var daftar: Array = m.get("tahap", [])
+	for i in range(daftar.size()):
+		var n := i + 1
+		if sudah.has(n) or not _tahap_selesai(s, m, n):
+			continue
+		sudah.append(n)
+		s.misi_tahap[id] = sudah
+		var t: Dictionary = daftar[i]
+		_kirim(s, id, String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": String(t["pesan"])})
+		baru = true
+	return baru
+
+static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
+	var ada := false
+	for t in m.get("tujuan", []):
+		if int(t.get("tahap", 0)) != n:
+			continue
+		ada = true
+		if not s.jaringan.progres.has(String(t["flag"])):
+			return false
+	return ada
+
+# Progres per tahap untuk tampilan: judul tahap, dan tujuan di dalamnya dengan statusnya.
+static func tahap_progres(s: ShellSession, m: Dictionary) -> Array:
+	var hasil: Array = []
+	var daftar: Array = m.get("tahap", [])
+	for i in range(daftar.size()):
+		var n := i + 1
+		var items: Array = []
+		for t in m.get("tujuan", []):
+			if int(t.get("tahap", 0)) == n:
+				items.append({"teks": ganti_ip(s, String(t["teks"])), "selesai": s.jaringan.progres.has(String(t["flag"]))})
+		hasil.append({"judul": String(daftar[i]["judul"]), "tujuan": items, "selesai": _tahap_selesai(s, m, n)})
+	return hasil
+
 static func _tujuan_selesai(s: ShellSession, m: Dictionary) -> bool:
 	for t in m.get("tujuan", []):
 		if not s.jaringan.progres.has(String(t["flag"])):
@@ -94,6 +153,7 @@ static func _kirim(s: ShellSession, id: String, dari: String, pesan: Dictionary)
 
 # Kategori misi untuk tampilan Misi Tersedia. Urutan di sini adalah urutan tampil di layar.
 const KATEGORI := [
+	{"kunci": "tutorial", "judul": "misi.kat.tutorial", "ikon": "tutorial"},
 	{"kunci": "tutorial_lanjutan", "judul": "misi.kat.tutorial_lanjutan", "ikon": "tutorial_lanjutan"},
 	{"kunci": "harian", "judul": "misi.kat.harian", "ikon": "harian"},
 	{"kunci": "hacktivism", "judul": "misi.kat.hacktivism", "ikon": "hacktivism"},

@@ -24,8 +24,8 @@ static func rencana(perintah: String, hasil: Array) -> Array:
         "ssh":
             return _ssh(hasil)
         "exit":
-            return [_status("Menutup sesi SSH...", 300, "spinner")] + _semua_baris(hasil)
-    var pembuka := "Memproses %s..." % nama if nama in Teks.MAN.keys() else "Mencari perintah..."
+            return [_status(Bahasa.dua("Menutup sesi SSH...", "Closing SSH session..."), 300, "spinner")] + _semua_baris(hasil)
+    var pembuka := Bahasa.dua("Memproses %s...", "Processing %s...", [nama]) if nama in Teks.MAN.keys() else Bahasa.dua("Mencari perintah...", "Looking up command...")
     return [_status(pembuka, 200, "titik")] + _semua_baris(hasil)
 
 # Tahapan pemindaian: inisialisasi, penemuan host, pemindaian port, deteksi layanan, selesai.
@@ -57,7 +57,7 @@ static func _ping(hasil: Array) -> Array:
         var t := String(b["teks"])
         if _paket(t):
             k += 1
-            langkah.append(_status("Mengirim paket %d dari %d" % [k, total], 300, "spinner"))
+            langkah.append(_status(Bahasa.dua("Mengirim paket %d dari %d", "Sending packet %d of %d", [k, total]), 300, "spinner"))
             langkah.append(_baris_dari(b, 200))
         else:
             langkah.append(_baris_dari(b))
@@ -84,7 +84,7 @@ static func _ssh(hasil: Array) -> Array:
         langkah.append(_status(String(tahap[i]), 400, "titik"))
     if not _ada_galat(hasil):
         langkah.append(_status("Authentication successful.", 300, "spinner"))
-        langkah.append(_status("Membuka sesi terminal remote...", 300, "spinner"))
+        langkah.append(_status(Bahasa.dua("Membuka sesi terminal remote...", "Opening remote terminal session..."), 300, "spinner"))
     return langkah + _semua_baris(hasil)
 
 static func _paket(teks: String) -> bool:
@@ -100,7 +100,12 @@ static func _status(teks: String, durasi: int, gaya: String, bar: int = 0) -> Di
     return {"tipe": "status", "teks": teks, "durasi": durasi, "gaya": gaya, "bar": bar}
 
 static func _baris_dari(b: Dictionary, jeda: int = JEDA_BARIS) -> Dictionary:
-    return {"tipe": "baris", "tipe_baris": String(b["tipe"]), "teks": String(b["teks"]), "jeda": jeda}
+    var r := {"tipe": "baris", "tipe_baris": String(b["tipe"]), "teks": String(b["teks"]), "jeda": jeda}
+    # Kunci bahasa ikut dibawa agar terminal dapat merender ulang baris ini saat bahasa diganti.
+    for k in ["kunci", "args", "perintah"]:
+        if b.has(k):
+            r[k] = b[k]
+    return r
 
 static func _semua_baris(hasil: Array) -> Array:
     var hasil_langkah: Array = []
