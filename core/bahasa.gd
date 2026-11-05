@@ -135,3 +135,49 @@ static func t(kunci: String) -> String:
 # Membaca bahasa tersimpan. Dipanggil sekali saat aplikasi dibuka.
 static func muat_dari_pengaturan() -> void:
 	kode = Pengaturan.bahasa()
+
+# Teks UI yang bergantung pada bahasa disimpan sebagai kunci (metadata "bkey" dan "bargs") di node-nya.
+# Saat bahasa diganti, segarkan() menelusuri seluruh pohon node dan menulis ulang teksnya.
+# Dengan begitu semua layar yang sedang terbuka ikut berubah tanpa restart atau pemuatan ulang save.
+
+# Mengisi teks Label atau Button dari kunci, dan mencatat kunci agar bisa diperbarui saat bahasa berganti.
+static func isi(node: Node, kunci: String, args: Array = []) -> void:
+	node.set_meta("bkey", kunci)
+	node.set_meta("bargs", args)
+	_tulis(node)
+
+# Mendaftarkan fungsi yang menghitung ulang teks node dari keadaan saat bahasa berganti.
+static func daftar_penyegar(node: Node, fungsi: Callable) -> void:
+	node.set_meta("bsegar", fungsi)
+	fungsi.call()
+
+static func _tulis(node: Node) -> void:
+	var teks := t(String(node.get_meta("bkey")))
+	var args: Array = node.get_meta("bargs", [])
+	if not args.is_empty():
+		teks = teks % args
+	if node is Label or node is Button:
+		node.text = teks
+
+# Memperbarui semua node di bawah root yang memiliki kunci bahasa.
+static func segarkan(root: Node) -> void:
+	if root == null:
+		return
+	if root.has_meta("bkey"):
+		_tulis(root)
+	# Teks yang dihitung dari keadaan (status, saldo, harga) memakai fungsi penyegar sendiri.
+	if root.has_meta("bsegar"):
+		var fungsi: Callable = root.get_meta("bsegar")
+		if fungsi.is_valid():
+			fungsi.call()
+	for anak in root.get_children():
+		segarkan(anak)
+
+# Mengganti bahasa aktif dan memperbarui seluruh teks yang tampil di SceneTree, tanpa restart.
+static func set_kode(baru: String) -> void:
+	if not KODE.has(baru):
+		return
+	kode = baru
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree != null:
+		segarkan(tree.root)

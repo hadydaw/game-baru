@@ -86,7 +86,7 @@ static func set_bahasa(kode: String) -> bool:
 		return false
 	if not _ubah("bahasa", kode):
 		return false
-	Bahasa.kode = kode
+	Bahasa.set_kode(kode)
 	return true
 
 static func set_ukuran_teks(kunci: String) -> bool:
