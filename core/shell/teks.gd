@@ -42,6 +42,7 @@ const MAN := {
     "nmap": "nmap [-p port,...] <host>: periksa port dan layanan pada node jaringan.",
     "ssh": "ssh [user@]<host>: masuk ke node jarak jauh jika akses tersedia. Ketik exit untuk keluar.",
     "exit": "exit: keluar dari sesi SSH dan kembali ke terminal lokal.",
+    "wallet": "wallet: tampilkan saldo kredit dan reputasi per grup.",
 }
 
 static func t(kunci: String, parameter: Dictionary = {}) -> String:

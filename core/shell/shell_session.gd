@@ -15,15 +15,19 @@ var cwd: String = HOME
 var riwayat: Array = []
 var host: String = LOKAL
 var jaringan: Jaringan
+var economy: Economy
+var reputation: Reputation
 var ssh_aktif: ShellSession = null
 
 func _init(p_fs: Vfs, p_jaringan: Jaringan = null) -> void:
     fs = p_fs
     jaringan = p_jaringan if p_jaringan != null else Jaringan.muat()
+    economy = Economy.baru()
+    reputation = Reputation.baru()
 
 # Seluruh keadaan sesi lokal yang perlu disimpan: filesystem, direktori aktif, riwayat, dan jaringan.
 func to_dict() -> Dictionary:
-    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict()}
+    return {"fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict()}
 
 static func dari_dict(d: Dictionary) -> ShellSession:
     var j := Jaringan.muat()
@@ -33,6 +37,10 @@ static func dari_dict(d: Dictionary) -> ShellSession:
     var cwd_tersimpan := String(d.get("cwd", HOME))
     s.cwd = cwd_tersimpan if s.fs.ada(cwd_tersimpan) else HOME
     s.riwayat = Array(d.get("riwayat", []))
+    if typeof(d.get("ekonomi")) == TYPE_DICTIONARY:
+        s.economy.terapkan(d["ekonomi"])
+    if typeof(d.get("reputasi")) == TYPE_DICTIONARY:
+        s.reputation.terapkan(d["reputasi"])
     return s
 
 func prompt() -> String:

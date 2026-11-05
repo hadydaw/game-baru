@@ -104,6 +104,9 @@ static func ssh(s: ShellSession, p: Dictionary) -> Array:
         return [s.galat("ssh", "Permission denied (publickey).")]
     var jauh := ShellSession.new(Vfs.new({}), j)
     jauh.host = id
+    # Saldo dan reputasi milik pemain, bukan milik node, jadi sesi jarak jauh memakai objek yang sama.
+    jauh.economy = s.economy
+    jauh.reputation = s.reputation
     jauh.cwd = ShellSession.HOME
     jauh.fs.akar = j.fs_node[id]
     s.ssh_aktif = jauh

@@ -25,7 +25,20 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "nmap": return PerintahJaringan.nmap(s, p)
         "ssh": return PerintahJaringan.ssh(s, p)
         "exit": return [s.galat("exit", "tidak ada sesi SSH aktif")]
+        "wallet": return _wallet(s)
         _: return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
+
+# Saldo dan reputasi pemain. Hanya membaca keadaan; perubahan dilakukan oleh sistem permainan.
+static func _wallet(s: ShellSession) -> Array:
+    var hasil: Array = [s.baris("info", "Saldo: %d %s" % [s.economy.saldo, String(Economy.data_ekonomi().get("mata_uang", "Kr"))])]
+    hasil.append(s.baris("info", "Reputasi:"))
+    var grup: Dictionary = Economy.data_ekonomi().get("grup", {})
+    var ids := grup.keys()
+    ids.sort()
+    for id in ids:
+        var nilai := s.reputation.get_nilai(String(id))
+        hasil.append(s.baris("info", "  %s: %d (%s)" % [Reputation.nama_grup(String(id)), nilai, Reputation.tingkat(nilai)]))
+    return hasil
 
 static func _history(s: ShellSession) -> Array:
     var hasil: Array = []
