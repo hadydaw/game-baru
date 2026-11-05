@@ -39,7 +39,8 @@ jobs:
           cp -r "$RUNNER_TEMP/gut/addons/gut" addons/
 
       - name: Import proyek
-        run: "$GODOT_BIN" --headless --import || true
+        run: |
+          "$GODOT_BIN" --headless --import || true
 
       - name: Jalankan unit test GUT
         run: |
