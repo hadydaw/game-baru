@@ -1,7 +1,7 @@
 class_name DesktopView
 extends Control
 
-# Desktop JTN: wallpaper penuh layar, bingkai utama di dalam area aman, status bar, grid ikon, dan taskbar.
+# Desktop JTN: wallpaper penuh layar, bingkai utama di dalam area aman, grid ikon bebas, dan hotbar.
 
 signal buka_aplikasi(id: String)
 signal menu_diminta
@@ -17,13 +17,17 @@ const APLIKASI := [
     {"id": "misi", "nama": "Misi", "ikon": "res://assets/ikon/aplikasi/app_misi.png"},
     {"id": "log", "nama": "Log", "ikon": "res://assets/ikon/aplikasi/app_log.png"},
 ]
+# Grid ikon: kolom x baris. Harus sama dengan Pengaturan.KOLOM_DESKTOP dan BARIS_DESKTOP.
 const KOLOM := 4
+const BARIS := 3
 const WALL_POTRET := "res://assets/wallpaper/wp_potret.png"
 const WALL_LANSKAP := "res://assets/wallpaper/wp_lanskap.png"
 const JARAK_BINGKAI := 14
 # Tinggi panel atas dan taskbar. Jendela aplikasi mengisi ruang di antara keduanya.
 const TINGGI_PANEL := PanelAtas.TINGGI
 const TINGGI_TASKBAR := HotBar.TINGGI
+# Pindah ikon: tekan-tahan TAHAN_DETIK memulai mode pindah; geser untuk memilih sel; lepas untuk menaruh.
+const TAHAN_DETIK := 0.4
 
 # Area aman perangkat: kiri, atas, kanan, bawah (diisi oleh MainController).
 var aman := Vector4.ZERO
@@ -42,34 +46,57 @@ static func ikon_aplikasi(id: String) -> String:
 
 var _wallpaper: TextureRect
 var _margin: MarginContainer
-var _grid: GridContainer
+var _area: Control
 var _sel: Array = []
+var _posisi: Dictionary = {}      # id -> Vector2i (kolom, baris)
+var _cw := 0.0                    # lebar sel termasuk jarak
+var _ch := 0.0                    # tinggi sel termasuk jarak
+var _sel_px := Vector2.ZERO       # ukuran tombol ikon
 var _panel: PanelAtas
 var _hotbar: HotBar
 var _jendela: ManajerJendela
 var _wallpaper_terpasang: String = ""
-# Pindah ikon: tekan-tahan TAHAN_DETIK memulai mode pindah; geser untuk memilih posisi; lepas untuk menaruh.
-const TAHAN_DETIK := 0.4
 var _tahan_timer: Timer
 var _tahan_id := ""
 var _tahan_terpicu := false
 var _pindah_id := ""
-# Gambar ikon yang mengikuti jari selama mode pindah.
-var _hantu: TextureRect
+var _hantu: TextureRect           # salinan ikon yang mengikuti jari
+var _penanda: ColorRect           # sel tempat ikon akan diletakkan
 
-# Urutan ikon: susunan tersimpan lebih dulu, lalu aplikasi baru yang belum ada di susunan itu.
-static func urutan_id() -> Array:
-    var urut: Array = Pengaturan.susunan_desktop().duplicate()
-    for a in APLIKASI:
-        if not urut.has(a["id"]):
-            urut.append(a["id"])
-    return urut
+# Posisi semua ikon: posisi tersimpan lebih dulu, lalu aplikasi baru ditaruh di sel kosong terdekat posisi awalnya.
+static func posisi_tampil() -> Dictionary:
+    var p := {}
+    var terpakai := {}
+    var simpan := Pengaturan.posisi_desktop()
+    for id in simpan:
+        var v: Array = simpan[id]
+        var sel := Vector2i(int(v[0]), int(v[1]))
+        p[id] = sel
+        terpakai[sel] = true
+    for i in range(APLIKASI.size()):
+        var id: String = APLIKASI[i]["id"]
+        if p.has(id):
+            continue
+        var awal := Vector2i(i % KOLOM, int(i / float(KOLOM)))
+        var sel := _cari_kosong(terpakai, awal)
+        p[id] = sel
+        terpakai[sel] = true
+    return p
 
-static func _data_aplikasi(id: String) -> Dictionary:
-    for a in APLIKASI:
-        if a["id"] == id:
-            return a
-    return {}
+# Sel kosong terdekat dari posisi "dari". Mengembalikan (-1, -1) jika grid penuh.
+static func _cari_kosong(terpakai: Dictionary, dari: Vector2i) -> Vector2i:
+    var terbaik := Vector2i(-1, -1)
+    var jarak_terbaik := INF
+    for r in range(BARIS):
+        for c in range(KOLOM):
+            var sel := Vector2i(c, r)
+            if terpakai.has(sel):
+                continue
+            var jarak := Vector2(sel - dari).length_squared()
+            if jarak < jarak_terbaik:
+                jarak_terbaik = jarak
+                terbaik = sel
+    return terbaik
 
 func _ready() -> void:
     set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -96,12 +123,13 @@ func _ready() -> void:
     _panel.menu_aplikasi_diminta.connect(func(): menu_aplikasi_diminta.emit())
     kolom.add_child(_panel)
     kolom.add_child(_spasi())
-    _grid = GridContainer.new()
-    _grid.columns = KOLOM
-    _grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-    kolom.add_child(_grid)
-    for id in urutan_id():
-        _grid.add_child(_buat_sel_ikon(_data_aplikasi(id)))
+    _area = Control.new()
+    _area.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+    _area.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    kolom.add_child(_area)
+    for a in APLIKASI:
+        _area.add_child(_buat_sel_ikon(a))
+    _posisi = posisi_tampil()
     kolom.add_child(_spasi())
     _hotbar = HotBar.new()
     _hotbar.home_diminta.connect(func(): menu_aplikasi_diminta.emit())
@@ -213,7 +241,7 @@ func _saat_input_sel(e: InputEvent, tombol: Button) -> void:
     elif e is InputEventMouseMotion and _pindah_id != "":
         _sorot_tujuan(e.global_position)
 
-# Dipanggil setelah tekan-tahan. Ikon yang dipilih tampil redup selama digeser.
+# Dipanggil setelah tekan-tahan. Ikon asli meredup dan salinannya mengikuti jari.
 func _mulai_pindah() -> void:
     if _tahan_id == "":
         return
@@ -226,10 +254,17 @@ func _mulai_pindah() -> void:
     _hantu.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     _hantu.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
     _hantu.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    _hantu.custom_minimum_size = t.custom_minimum_size * 0.7
-    _hantu.size = _hantu.custom_minimum_size
+    _hantu.size = _sel_px * 0.7
+    _hantu.custom_minimum_size = _hantu.size
     add_child(_hantu)
     _hantu.global_position = t.get_global_rect().get_center() - _hantu.size * 0.5
+    _penanda = ColorRect.new()
+    _penanda.color = Color(0.2, 0.9, 0.75, 0.28)
+    _penanda.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    _penanda.size = _sel_px
+    _area.add_child(_penanda)
+    _area.move_child(_penanda, 0)
+    _penanda.position = t.position
 
 func _tombol_id(id: String) -> Button:
     for s in _sel:
@@ -237,55 +272,71 @@ func _tombol_id(id: String) -> Button:
             return s["tombol"]
     return null
 
-# Indeks sel di bawah posisi pointer, atau -1.
-func _indeks_di_bawah(pos: Vector2) -> int:
-    for i in range(_grid.get_child_count()):
-        var c := _grid.get_child(i) as Control
-        if c != null and c.get_global_rect().has_point(pos):
-            return i
-    return -1
+# Sel grid di bawah pointer. Di luar grid, dipakai sel tepi terdekat.
+func _sel_di_bawah(pos: Vector2) -> Vector2i:
+    if _cw <= 0.0 or _ch <= 0.0:
+        return Vector2i.ZERO
+    var lokal := pos - _area.get_global_rect().position
+    var c := clampi(int(floor(lokal.x / _cw)), 0, KOLOM - 1)
+    var r := clampi(int(floor(lokal.y / _ch)), 0, BARIS - 1)
+    return Vector2i(c, r)
+
+# Sel akhir untuk ikon "id" jika dilepas di "sel": sel itu sendiri bila kosong, atau sel kosong terdekat.
+func _tujuan(id: String, sel: Vector2i) -> Vector2i:
+    var terpakai := {}
+    for k in _posisi:
+        if k != id:
+            terpakai[_posisi[k]] = true
+    return _cari_kosong(terpakai, sel)
 
 func _sorot_tujuan(pos: Vector2) -> void:
     if is_instance_valid(_hantu):
         _hantu.global_position = pos - _hantu.size * 0.5
-    var tujuan := _indeks_di_bawah(pos)
-    for s in _sel:
-        var t: Button = s["tombol"]
-        if String(t.get_meta("id")) == _pindah_id:
-            t.modulate = Color(1, 1, 1, 0.25)
-        elif tujuan >= 0 and _grid.get_child(tujuan) == t:
-            t.modulate = Color(0.45, 1.0, 0.85)
-        else:
-            t.modulate = Color(1, 1, 1)
+    if is_instance_valid(_penanda):
+        var sel := _tujuan(_pindah_id, _sel_di_bawah(pos))
+        _penanda.position = Vector2(sel.x * _cw, sel.y * _ch)
 
 func _selesai_pindah(pos: Vector2) -> void:
-    var tujuan := _indeks_di_bawah(pos)
     var id := _pindah_id
     _pindah_id = ""
     _tahan_id = ""
     if is_instance_valid(_hantu):
         _hantu.queue_free()
     _hantu = null
+    if is_instance_valid(_penanda):
+        _penanda.queue_free()
+    _penanda = null
     for s in _sel:
         s["tombol"].modulate = Color(1, 1, 1)
-    if tujuan >= 0:
-        _pindahkan_ikon(id, tujuan)
+    _pindahkan_ke(id, _sel_di_bawah(pos))
 
-# Memindahkan ikon ke indeks grid dan menyimpan susunan baru. Mengembalikan false jika id tidak dikenal.
-func _pindahkan_ikon(id: String, indeks: int) -> bool:
-    var t := _tombol_id(id)
-    if t == null:
+# Menaruh ikon di sel "sel" (atau sel kosong terdekat) lalu menyimpan posisinya.
+func _pindahkan_ke(id: String, sel: Vector2i) -> bool:
+    if not _posisi.has(id):
         return false
-    _grid.move_child(t, clampi(indeks, 0, _grid.get_child_count() - 1))
-    return _simpan_susunan()
+    _posisi[id] = _tujuan(id, sel)
+    _tata_ulang()
+    return _simpan_posisi()
 
-func _simpan_susunan() -> bool:
-    var urut: Array = []
-    for c in _grid.get_children():
-        urut.append(String(c.get_meta("id")))
-    return Pengaturan.set_susunan_desktop(urut)
+# Menempatkan setiap ikon di selnya masing-masing.
+func _tata_ulang() -> void:
+    for s in _sel:
+        var t: Button = s["tombol"]
+        var id := String(t.get_meta("id"))
+        if not _posisi.has(id):
+            continue
+        var sel: Vector2i = _posisi[id]
+        t.position = Vector2(sel.x * _cw, sel.y * _ch)
+        t.size = _sel_px
 
-# Menyesuaikan wallpaper dan ukuran ikon dengan orientasi dan ukuran layar saat ini.
+func _simpan_posisi() -> bool:
+    var d := {}
+    for id in _posisi:
+        var sel: Vector2i = _posisi[id]
+        d[id] = [sel.x, sel.y]
+    return Pengaturan.set_posisi_desktop(d)
+
+# Menyesuaikan wallpaper, ukuran sel, dan ukuran ikon dengan orientasi dan ukuran layar saat ini.
 func _susun() -> void:
     var vp := get_viewport_rect().size
     var landscape := vp.x > vp.y
@@ -296,10 +347,13 @@ func _susun() -> void:
 
     var lebar_tersedia := vp.x - aman.x - aman.z - JARAK_BINGKAI * 2 - 28
     var sel := minf(lebar_tersedia / (KOLOM + 0.4), vp.y * 0.2)
-    var jarak := int(sel * 0.12)
-    _grid.add_theme_constant_override("h_separation", jarak)
-    _grid.add_theme_constant_override("v_separation", jarak)
+    var jarak := sel * 0.12
+    _sel_px = Vector2(sel, sel * 1.3)
+    _cw = sel + jarak
+    _ch = sel * 1.3 + jarak
+    _area.custom_minimum_size = Vector2(KOLOM * _cw - jarak, BARIS * _ch - jarak)
     for s in _sel:
-        s["tombol"].custom_minimum_size = Vector2(sel, sel * 1.3)
+        s["tombol"].custom_minimum_size = _sel_px
         s["gambar"].custom_minimum_size = Vector2(sel * 0.62, sel * 0.62)
         s["label"].add_theme_font_size_override("font_size", int(clampf(sel * 0.13, 20.0, 30.0)))
+    _tata_ulang()

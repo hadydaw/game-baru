@@ -12,12 +12,15 @@ const NAMA_MAKS := 16
 
 # Aplikasi yang bisa diatur posisinya di Desktop. Urutan ini adalah susunan awal.
 const SEMUA_APLIKASI := ["terminal", "peta", "berkas", "tools", "forum", "pasar", "misi", "log"]
+# Ukuran grid ikon Desktop (kolom x baris). Harus sama dengan DesktopView.KOLOM dan BARIS.
+const KOLOM_DESKTOP := 4
+const BARIS_DESKTOP := 3
 
 # Jalur berkas yang dipakai. Tes mengganti ini agar tidak menimpa pengaturan pemain.
 static var berkas_aktif: String = BERKAS
 
 static func muat() -> Dictionary:
-	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL, "susunan_desktop": []}
+	var hasil := {"profil_nama": "", "ukuran_teks": UKURAN_AWAL, "posisi_desktop": {}}
 	if not FileAccess.file_exists(berkas_aktif):
 		return hasil
 	var parser := JSON.new()
@@ -28,18 +31,29 @@ static func muat() -> Dictionary:
 		hasil["profil_nama"] = String(d["profil_nama"])
 	if UKURAN.has(String(d.get("ukuran_teks", ""))):
 		hasil["ukuran_teks"] = String(d["ukuran_teks"])
-	hasil["susunan_desktop"] = _bersihkan_susunan(d.get("susunan_desktop", []))
+	hasil["posisi_desktop"] = _bersihkan_posisi(d.get("posisi_desktop", {}))
 	return hasil
 
-# Hanya id aplikasi yang dikenal, tanpa duplikat. Id asing diabaikan agar berkas rusak tidak merusak Desktop.
-static func _bersihkan_susunan(mentah: Variant) -> Array:
-	var hasil: Array = []
-	if typeof(mentah) != TYPE_ARRAY:
+# Posisi ikon: id -> [kolom, baris]. Hanya id yang dikenal, koordinat dalam grid, dan satu ikon per sel.
+static func _bersihkan_posisi(mentah: Variant) -> Dictionary:
+	var hasil := {}
+	if typeof(mentah) != TYPE_DICTIONARY:
 		return hasil
-	for id in mentah:
-		var nama := String(id)
-		if SEMUA_APLIKASI.has(nama) and not hasil.has(nama):
-			hasil.append(nama)
+	var terpakai := {}
+	for k in mentah:
+		var id := String(k)
+		var v: Variant = mentah[k]
+		if not SEMUA_APLIKASI.has(id) or typeof(v) != TYPE_ARRAY or v.size() != 2:
+			continue
+		var c := int(v[0])
+		var r := int(v[1])
+		if c < 0 or c >= KOLOM_DESKTOP or r < 0 or r >= BARIS_DESKTOP:
+			continue
+		var sel := Vector2i(c, r)
+		if terpakai.has(sel):
+			continue
+		terpakai[sel] = true
+		hasil[id] = [c, r]
 	return hasil
 
 static func simpan(d: Dictionary) -> bool:
@@ -82,13 +96,13 @@ static func set_nama_profil(nama: String) -> bool:
 		return false
 	return _ubah("profil_nama", nama)
 
-# Susunan ikon Desktop. Kosong berarti urutan awal. Disimpan di pengaturan perangkat, bukan di sesi:
-# ini preferensi tampilan dan tidak mengubah progres permainan.
-static func susunan_desktop() -> Array:
-	return muat()["susunan_desktop"]
+# Posisi ikon Desktop. Kosong berarti posisi awal. Disimpan sebagai preferensi perangkat, bukan di sesi,
+# sehingga tidak mengubah progres permainan.
+static func posisi_desktop() -> Dictionary:
+	return muat()["posisi_desktop"]
 
-static func set_susunan_desktop(urutan: Array) -> bool:
-	return _ubah("susunan_desktop", _bersihkan_susunan(urutan))
+static func set_posisi_desktop(posisi: Dictionary) -> bool:
+	return _ubah("posisi_desktop", _bersihkan_posisi(posisi))
 
-static func reset_susunan_desktop() -> bool:
-	return set_susunan_desktop([])
+static func reset_posisi_desktop() -> bool:
+	return set_posisi_desktop({})

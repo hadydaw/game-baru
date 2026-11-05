@@ -1,6 +1,6 @@
 extends GutTest
 
-# Pindah ikon Desktop: urutan mengikuti Pengaturan, pindah menyimpan susunan, reset kembali ke awal.
+# Pindah ikon Desktop: ikon diletakkan bebas di sel grid, posisi tersimpan, dan reset kembali ke awal.
 
 const UJI := "user://uji_desktop_ikon.json"
 
@@ -22,67 +22,80 @@ func after_each() -> void:
 	Pengaturan.berkas_aktif = Pengaturan.BERKAS
 	SesiUtama.reset()
 
-func _urutan_grid() -> Array:
-	var hasil: Array = []
-	for c in d._grid.get_children():
-		hasil.append(String(c.get_meta("id")))
-	return hasil
+func _desktop_baru() -> DesktopView:
+	var x := DesktopView.new()
+	add_child(x)
+	return x
 
-func test_urutan_bawaan_mengikuti_daftar_aplikasi() -> void:
-	assert_eq(_urutan_grid(), DesktopView.urutan_id())
-	assert_eq(_urutan_grid().size(), DesktopView.APLIKASI.size())
+func _buang(x: DesktopView) -> void:
+	remove_child(x)
+	x.free()
 
-func test_urutan_mengikuti_pengaturan() -> void:
-	Pengaturan.set_susunan_desktop(["log", "terminal"])
-	var baru := DesktopView.new()
-	add_child(baru)
-	var hasil: Array = []
-	for c in baru._grid.get_children():
-		hasil.append(String(c.get_meta("id")))
-	remove_child(baru)
-	baru.free()
-	assert_eq(hasil[0], "log")
-	assert_eq(hasil[1], "terminal")
-	assert_eq(hasil.size(), DesktopView.APLIKASI.size(), "aplikasi lain tetap ada")
+func _pusat_sel(sel: Vector2i) -> Vector2:
+	return d._area.get_global_rect().position + Vector2((sel.x + 0.5) * d._cw, (sel.y + 0.5) * d._ch)
 
-func test_pindah_ikon_mengubah_urutan_dan_menyimpan() -> void:
-	assert_true(d._pindahkan_ikon("log", 0))
-	assert_eq(_urutan_grid()[0], "log")
-	assert_eq(Pengaturan.susunan_desktop()[0], "log", "susunan tersimpan")
+func test_posisi_awal_berurutan_dari_kiri_atas() -> void:
+	assert_eq(d._posisi["terminal"], Vector2i(0, 0))
+	assert_eq(d._posisi["tools"], Vector2i(3, 0))
+	assert_eq(d._posisi["misi"], Vector2i(2, 1))
+	assert_eq(d._posisi.size(), DesktopView.APLIKASI.size())
 
-func test_pindah_ikon_bertahan_setelah_desktop_dibuat_ulang() -> void:
-	d._pindahkan_ikon("misi", 1)
-	var kedua := DesktopView.new()
-	add_child(kedua)
-	assert_eq(String(kedua._grid.get_child(1).get_meta("id")), "misi")
-	remove_child(kedua)
-	kedua.free()
+func test_posisi_tersimpan_dipakai_saat_desktop_dibuat_ulang() -> void:
+	Pengaturan.set_posisi_desktop({"log": [2, 2]})
+	var x := _desktop_baru()
+	assert_eq(x._posisi["log"], Vector2i(2, 2))
+	_buang(x)
+
+func test_ikon_diletakkan_di_sel_kosong_dan_tetap_di_sana() -> void:
+	assert_true(d._pindahkan_ke("log", Vector2i(3, 2)))
+	assert_eq(d._posisi["log"], Vector2i(3, 2))
+	var x := _desktop_baru()
+	assert_eq(x._posisi["log"], Vector2i(3, 2), "setelah dibuat ulang tetap di tempat")
+	_buang(x)
+
+func test_sel_terisi_dicari_sel_kosong_terdekat() -> void:
+	# Baris 0 dan 1 penuh; sel kosong pertama adalah baris 2. Terdekat dari (0,0) adalah (0,2).
+	d._pindahkan_ke("log", Vector2i(0, 0))
+	assert_eq(d._posisi["log"], Vector2i(0, 2))
+	assert_eq(d._posisi["terminal"], Vector2i(0, 0), "ikon yang sudah ada tidak berpindah")
+
+func test_lepas_di_luar_grid_masuk_sel_tepi_terdekat() -> void:
+	var sel := d._sel_di_bawah(Vector2(-500, -500))
+	assert_eq(sel, Vector2i(0, 0))
+	d._pindahkan_ke("log", sel)
+	assert_eq(d._posisi["log"], Vector2i(0, 2), "tidak kembali ke posisi lama")
+
+func test_reset_mengembalikan_posisi_awal() -> void:
+	d._pindahkan_ke("log", Vector2i(3, 2))
+	assert_true(Pengaturan.reset_posisi_desktop())
+	var x := _desktop_baru()
+	assert_eq(x._posisi["log"], Vector2i(3, 1))
+	_buang(x)
 
 func test_pindah_ikon_tidak_dikenal_ditolak() -> void:
-	assert_false(d._pindahkan_ikon("tidak_ada", 0))
-	assert_eq(_urutan_grid(), DesktopView.urutan_id())
-
-func test_reset_mengembalikan_urutan_bawaan() -> void:
-	d._pindahkan_ikon("log", 0)
-	Pengaturan.reset_susunan_desktop()
-	var kedua := DesktopView.new()
-	add_child(kedua)
-	var hasil: Array = []
-	for c in kedua._grid.get_children():
-		hasil.append(String(c.get_meta("id")))
-	remove_child(kedua)
-	kedua.free()
-	assert_eq(hasil, DesktopView.APLIKASI.map(func(a): return a["id"]))
+	assert_false(d._pindahkan_ke("tidak_ada", Vector2i(0, 0)))
 
 func test_tekan_tahan_memicu_mode_pindah() -> void:
-	var t := d._tombol_id("terminal")
 	d._tahan_id = "terminal"
 	d._mulai_pindah()
 	assert_eq(d._pindah_id, "terminal")
 	assert_true(d._tahan_terpicu, "ketuk berikutnya diabaikan")
-	d._selesai_pindah(t.get_global_rect().get_center())
+	d._selesai_pindah(_pusat_sel(Vector2i(0, 0)))
 	assert_eq(d._pindah_id, "")
-	assert_eq(_urutan_grid()[0], "terminal", "lepas di tempat sendiri tidak mengubah urutan")
+	assert_eq(d._posisi["terminal"], Vector2i(0, 0), "lepas di tempat sendiri tidak mengubah posisi")
+
+func test_ikon_mengikuti_pointer_dan_penanda_menunjukkan_sel_tujuan() -> void:
+	d._tahan_id = "log"
+	d._mulai_pindah()
+	assert_not_null(d._hantu, "salinan ikon dibuat")
+	assert_not_null(d._penanda, "penanda sel dibuat")
+	var pos := _pusat_sel(Vector2i(3, 2))
+	d._sorot_tujuan(pos)
+	assert_almost_eq(d._hantu.global_position, pos - d._hantu.size * 0.5, Vector2(1, 1), "salinan berada di bawah jari")
+	assert_eq(d._penanda.position, Vector2(3 * d._cw, 2 * d._ch), "penanda di sel tujuan")
+	d._selesai_pindah(pos)
+	assert_null(d._hantu, "salinan dihapus setelah lepas")
+	assert_eq(d._posisi["log"], Vector2i(3, 2))
 
 func test_ketuk_biasa_tetap_membuka_aplikasi() -> void:
 	watch_signals(d)
@@ -103,13 +116,3 @@ func test_reset_susunan_terdengar_di_panel_pengaturan() -> void:
 	assert_true(m._lbl_hint_pengaturan.text.contains("dikembalikan"), "umpan balik terlihat di panel")
 	remove_child(m)
 	m.free()
-
-func test_ikon_mengikuti_pointer_saat_pindah() -> void:
-	d._tahan_id = "terminal"
-	d._mulai_pindah()
-	assert_not_null(d._hantu, "gambar ikon dibuat")
-	var target := Vector2(300, 600)
-	d._sorot_tujuan(target)
-	assert_eq(d._hantu.global_position, target - d._hantu.size * 0.5, "gambar berada di bawah jari")
-	d._selesai_pindah(target)
-	assert_null(d._hantu, "gambar dihapus setelah lepas")
