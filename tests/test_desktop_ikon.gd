@@ -94,3 +94,12 @@ func test_ketuk_setelah_tekan_tahan_tidak_membuka_aplikasi() -> void:
 	d._tahan_terpicu = true
 	d._ketuk_sel("peta")
 	assert_signal_not_emitted(d, "buka_aplikasi")
+
+func test_reset_susunan_terdengar_di_panel_pengaturan() -> void:
+	var m := MenuUtama.new()
+	add_child(m)
+	await get_tree().process_frame
+	m._aksi_atur_ulang_ikon()
+	assert_true(m._lbl_hint_pengaturan.text.contains("dikembalikan"), "umpan balik terlihat di panel")
+	remove_child(m)
+	m.free()

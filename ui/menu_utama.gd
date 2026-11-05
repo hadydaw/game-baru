@@ -172,8 +172,11 @@ func _bangun_panel_pengaturan() -> void:
 
 # Mengembalikan urutan ikon Desktop ke susunan awal. Progres permainan tidak ikut berubah.
 func _aksi_atur_ulang_ikon() -> void:
+	# Umpan balik ditampilkan di panel Pengaturan; label status menu berada di balik panel.
 	if Pengaturan.reset_susunan_desktop():
-		_set_status("Susunan ikon Desktop dikembalikan ke awal.")
+		_lbl_hint_pengaturan.text = "Susunan ikon Desktop dikembalikan ke awal. Buka Desktop untuk melihatnya."
+	else:
+		_lbl_hint_pengaturan.text = "Gagal menyimpan pengaturan."
 
 func _bangun_panel_login() -> void:
 	_panel_login = _bangun_panel("Login")
