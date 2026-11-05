@@ -13,7 +13,6 @@ const UKURAN_IKON := 36
 
 const IKON_LOGO := "res://assets/logo/sys_logo_menu.png"
 const IKON_KOIN := "res://assets/ikon/sistem/sys_koin.png"
-const IKON_WIFI := "res://assets/ikon/sistem/sys_wifi_aktif.png"
 const IKON_NOTIF_KOSONG := "res://assets/ikon/sistem/sys_notifikasi_kosong.png"
 const IKON_NOTIF_PESAN := "res://assets/ikon/sistem/sys_notifikasi_pesan.png"
 
@@ -24,6 +23,7 @@ var _saldo: Label
 var _notif: TextureRect
 var _jam: Label
 var _tanggal: Label
+var _wifi: WifiSinyal
 
 func _ready() -> void:
     custom_minimum_size = Vector2(0, TINGGI)
@@ -32,6 +32,11 @@ func _ready() -> void:
     baris.add_theme_constant_override("separation", 10)
     baris.alignment = BoxContainer.ALIGNMENT_BEGIN
     add_child(baris)
+    var cek_wifi := Timer.new()
+    cek_wifi.wait_time = 1.0
+    cek_wifi.timeout.connect(_segarkan_wifi)
+    add_child(cek_wifi)
+    cek_wifi.start()
 
     var logo := TextureButton.new()
     logo.texture_normal = load(IKON_LOGO) as Texture2D
@@ -56,7 +61,9 @@ func _ready() -> void:
     var status := Tema.label(Bahasa.t("panel.lokal"), Tema.TEAL, 22)
     status.size_flags_vertical = Control.SIZE_SHRINK_CENTER
     baris.add_child(status)
-    baris.add_child(_ikon(IKON_WIFI, 30))
+    _wifi = WifiSinyal.new()
+    _wifi.visible = false
+    baris.add_child(_wifi)
 
     _notif = _ikon(IKON_NOTIF_KOSONG, UKURAN_IKON)
     baris.add_child(_notif)
@@ -75,6 +82,15 @@ func _ready() -> void:
     segarkan()
 
 # Memperbarui saldo, notifikasi, jam, dan tanggal. Dipanggil saat dibuat dan berkala dari Desktop.
+# Sinyal Wi-Fi hanya tampil saat perangkat terhubung, dan dicek tiap detik agar langsung muncul.
+func _segarkan_wifi() -> void:
+    if _wifi == null:
+        return
+    var s := SesiUtama.sesi
+    var tersambung := s != null and s.perangkat.terhubung()
+    _wifi.visible = tersambung
+    _wifi.set_process(tersambung)
+
 func segarkan() -> void:
     var s := SesiUtama.ambil()
     if s != null:
