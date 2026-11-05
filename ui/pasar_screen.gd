@@ -40,11 +40,18 @@ func _ready() -> void:
 	kolom.add_child(banner)
 
 	_info = Tema.label("", Tema.TEAL, 24)
+	_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	kolom.add_child(_info)
 
+	# Tab kategori digulir ke kanan-kiri, karena tombolnya lebih lebar dari layar HP.
+	var gulir_penjual := ScrollContainer.new()
+	gulir_penjual.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	gulir_penjual.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	kolom.add_child(gulir_penjual)
 	var baris_penjual := HBoxContainer.new()
 	baris_penjual.add_theme_constant_override("separation", 8)
-	kolom.add_child(baris_penjual)
+	baris_penjual.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	gulir_penjual.add_child(baris_penjual)
 	for pid in BlackMarket.penjual_ids():
 		var b := Button.new()
 		var nama_pendek := func(): b.text = Bahasa.pilih(BlackMarket.nama_penjual(pid)).split("—")[-1].strip_edges()
@@ -63,6 +70,7 @@ func _ready() -> void:
 
 	var gulir := ScrollContainer.new()
 	gulir.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gulir.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	kolom.add_child(gulir)
 	_daftar = VBoxContainer.new()
 	_daftar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -146,15 +154,21 @@ func _kartu_komponen(id: String) -> Control:
 	var teks := VBoxContainer.new()
 	teks.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	baris.add_child(teks)
-	teks.add_child(Tema.label(String(it["nama"]), Tema.TEKS, 24))
-	teks.add_child(Tema.label(Bahasa.t("pasar.harga_komponen") % [int(it["harga"]), _sesi.perangkat.jumlah(id)], Tema.TEKS_REDUP, 19))
-	teks.add_child(Tema.label(Bahasa.t(String(it["deskripsi_kunci"])), Tema.TEKS_REDUP, 17))
+	teks.add_child(_bungkus(Tema.label(String(it["nama"]), Tema.TEKS, 24)))
+	teks.add_child(_bungkus(Tema.label(Bahasa.t("pasar.harga_komponen") % [int(it["harga"]), _sesi.perangkat.jumlah(id)], Tema.TEKS_REDUP, 19)))
+	teks.add_child(_bungkus(Tema.label(Bahasa.t(String(it["deskripsi_kunci"])), Tema.TEKS_REDUP, 17)))
 	var beli := Button.new()
 	beli.text = Bahasa.t("pasar.beli")
-	beli.custom_minimum_size = Vector2(150, 64)
+	beli.custom_minimum_size = Vector2(120, 64)
 	beli.pressed.connect(_beli_komponen.bind(id))
 	baris.add_child(beli)
 	return kartu
+
+# Teks kartu boleh turun baris agar tidak mendorong tombol Beli keluar layar.
+func _bungkus(l: Label) -> Label:
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	return l
 
 func _beli_komponen(id: String) -> void:
 	var h := _sesi.perangkat.beli(id, _sesi.economy)
