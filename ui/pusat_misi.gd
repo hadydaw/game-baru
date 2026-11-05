@@ -330,16 +330,32 @@ func _isi_panel_deskripsi(m: Dictionary) -> void:
 	if m.has("tahap"):
 		for tahap in Misi.tahap_progres(_sesi, m):
 			var selesai := bool(tahap["selesai"])
-			_isi_deskripsi.add_child(_teks(("[x] " if selesai else "[ ] ") + String(tahap["judul"]), Tema.AMBER if selesai else Tema.TEKS, 24))
+			_isi_deskripsi.add_child(_baris_ceklis(selesai, String(tahap["judul"]), Tema.AMBER if selesai else Tema.TEKS, 24, 0))
 			for t in tahap["tujuan"]:
-				var tanda := "    [x] " if bool(t["selesai"]) else "    [ ] "
-				_isi_deskripsi.add_child(_teks(tanda + String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS_REDUP, 21))
+				_isi_deskripsi.add_child(_baris_ceklis(bool(t["selesai"]), String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS_REDUP, 21, 28))
 	else:
 		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.tujuan"), Tema.TEKS, 22))
 		for t in Misi.status_tujuan(_sesi, m):
-			var tanda := "[x] " if bool(t["selesai"]) else "[ ] "
-			_isi_deskripsi.add_child(_teks(tanda + String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS, 22))
+			_isi_deskripsi.add_child(_baris_ceklis(bool(t["selesai"]), String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS, 22, 0))
 	_isi_deskripsi.add_child(_teks(_teks_hadiah(String(m["id"])), Tema.TEKS_REDUP, 22))
+
+# Satu baris tahap atau tujuan: ceklis di kiri, teks di kanan. Menjorok bila tujuan berada di dalam tahap.
+func _baris_ceklis(selesai: bool, teks: String, warna: Color, ukuran: int, jorok: int) -> HBoxContainer:
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 10)
+	h.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tepi := Control.new()
+	tepi.custom_minimum_size = Vector2(jorok, 0)
+	tepi.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.add_child(tepi)
+	var pusat := CenterContainer.new()
+	pusat.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pusat.add_child(Ceklis.new(selesai))
+	h.add_child(pusat)
+	var label := _teks(teks, warna, ukuran)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(label)
+	return h
 
 func _pilih_misi(id: String) -> void:
 	_misi_terpilih = id
