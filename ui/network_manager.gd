@@ -111,6 +111,8 @@ func _bar_tab() -> Control:
 	_tombol_tab.clear()
 	for t in TABS:
 		var b := Button.new()
+		b.mouse_filter = Control.MOUSE_FILTER_PASS
+		b.focus_mode = Control.FOCUS_NONE
 		b.text = Bahasa.t("netmgr.tab_" + t)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.custom_minimum_size = Vector2(0, 64)
@@ -511,6 +513,8 @@ func _warna_tingkat(tingkat: String) -> Color:
 
 func _kartu(isi: Array, batas: Color = Tema.TEAL) -> PanelContainer:
 	var kartu := PanelContainer.new()
+	# Sentuhan geser diteruskan ke daftar agar layar bisa digulir ke atas dan bawah.
+	kartu.mouse_filter = Control.MOUSE_FILTER_PASS
 	kartu.add_theme_stylebox_override("panel", Tema.kotak(Tema.LATAR_PANEL, batas, 2, 14))
 	var m := MarginContainer.new()
 	Tema.margin_seragam(m, 14)
@@ -538,6 +542,8 @@ func _kartu_tekan(kartu: Control, aksi: Callable) -> void:
 func _tombol(teks: String, aktif: bool, aksi: Callable) -> Button:
 	var b := Button.new()
 	b.text = teks
+	b.mouse_filter = Control.MOUSE_FILTER_PASS
+	b.focus_mode = Control.FOCUS_NONE
 	b.disabled = not aktif
 	b.custom_minimum_size = Vector2(0, 76)
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL

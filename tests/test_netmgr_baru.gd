@@ -104,3 +104,25 @@ func test_pemindaian_dari_terminal_langsung_tampil_di_network_manager() -> void:
 	_nm._reveal_n = 3
 	_nm._selesai_reveal()
 	assert_false(_nm._memindai, "tampilan selesai setelah semua jaringan tampil")
+
+# Setiap kontrol di dalam daftar gulir harus meneruskan sentuhan geser, supaya layar bisa digulir.
+func test_semua_tab_meneruskan_sentuhan_geser() -> void:
+	var s := _sesi_terpasang()
+	s.jalankan("wifi-scanner --scan")
+	s.jalankan("network inspect LAB-WIFI-01")
+	s.jalankan("security analyze LAB-WIFI-01")
+	SesiUtama.sesi = s
+	_nm = NetworkManager.new()
+	add_child(_nm)
+	for t in ["antarmuka", "pindai", "detail", "analisis", "riwayat"]:
+		_nm._pilih_tab(t)
+		var menghalangi := _cari_penghalang(_nm._isi)
+		assert_true(menghalangi.is_empty(), "tab %s: tidak ada kontrol yang menelan geseran: %s" % [t, str(menghalangi)])
+
+func _cari_penghalang(node: Node) -> Array:
+	var hasil: Array = []
+	for c in node.get_children():
+		if c is Control and (c as Control).mouse_filter == Control.MOUSE_FILTER_STOP:
+			hasil.append(c.get_class())
+		hasil.append_array(_cari_penghalang(c))
+	return hasil
