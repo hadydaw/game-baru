@@ -8,6 +8,8 @@ extends RefCounted
 # Semua pemeriksaan memakai flag di Jaringan.progres, sehingga hasil tindakan pemain yang sebenarnya.
 
 const DATA := "res://data/misi/misi.json"
+# Materi pembelajaran per tahap, dikelompokkan menurut id misi. Dibaca terpisah dari tugas misi.
+const DATA_PEMBELAJARAN := "res://data/misi/pembelajaran.json"
 
 # Berkas sumber misi. Tes dapat mengarahkannya ke fixture; permainan memakai DATA.
 static var berkas: String = DATA
@@ -37,6 +39,24 @@ static func daftar(path: String = "") -> Array:
 	var hasil: Array = parser.data
 	hasil.sort_custom(func(a, b): return int(a["urutan"]) < int(b["urutan"]))
 	return hasil
+
+# Materi pembelajaran seluruh tahap satu misi, sudah dua bahasa. Kosong bila misi tidak punya materi.
+static func pembelajaran(id: String) -> Array:
+	var parser := JSON.new()
+	if parser.parse(FileAccess.get_file_as_string(DATA_PEMBELAJARAN)) != OK or typeof(parser.data) != TYPE_DICTIONARY:
+		return []
+	var mentah: Variant = parser.data.get(id, [])
+	if not mentah is Array:
+		return []
+	_dwibahasa(mentah)
+	return mentah
+
+# Materi satu tahap (nomor dimulai dari 1). Kosong bila tidak ada.
+static func materi_tahap(id: String, n: int) -> Dictionary:
+	var semua := pembelajaran(id)
+	if n < 1 or n > semua.size():
+		return {}
+	return semua[n - 1]
 
 static func temukan(id: String) -> Dictionary:
 	for m in daftar():
@@ -126,7 +146,7 @@ static func _kirim_tahap(s: ShellSession, m: Dictionary, n: int) -> void:
 		return
 	var t: Dictionary = daftar[n - 1]
 	# Email hanya pengantar langkah. Penjelasan lengkap ada di aplikasi Misi, langkah demi langkah.
-	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Buka aplikasi Misi untuk panduan lengkap langkah ini.", "Open the Missions app for the full guide to this step.")
+	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Buka aplikasi Misi lalu tekan BELAJAR untuk materi dan panduan langkah ini.", "Open the Missions app and press LEARN for the material and guide to this step.")
 	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": isi})
 
 static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
