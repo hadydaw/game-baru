@@ -26,10 +26,11 @@ func test_misi_diterima_saat_mulai_tanpa_alat() -> void:
 	assert_eq(s.perangkat.komponen.size(), 0)
 	assert_eq(s.repositori.terpasang.size(), 0)
 
-func test_sepuluh_tahap_terdefinisi() -> void:
+func test_tahap_terdefinisi_dan_berurutan() -> void:
 	var m := Misi.temukan("misi_1")
-	assert_eq(m["tahap"].size(), 10)
-	assert_eq(Misi.tahap_progres(_sesi(), m).size(), 10)
+	assert_eq(m["tahap"].size(), 26, "tutorial dipecah menjadi langkah kecil")
+	assert_eq(Misi.tahap_progres(_sesi(), m).size(), 26)
+	assert_eq(Bahasa.pilih(String(m["tahap"][0]["judul"])), "Tahap 1: Membuka Daftar Perintah", "judul tahap pertama")
 
 func test_alur_lengkap_sampai_hadiah() -> void:
 	var s := _sesi()
@@ -43,22 +44,31 @@ func test_alur_lengkap_sampai_hadiah() -> void:
 	# Tahap 3: rakit
 	assert_false(_galat(_jalan(s, "device rakit")))
 	# Tahap 4: driver dan koneksi
+	_jalan(s, "tools search driver")
 	assert_false(_galat(_jalan(s, "tools install driver-ar9271")))
 	assert_false(_galat(_jalan(s, "device hubungkan")))
 	# Tahap 5-6: software dan pemindaian
 	_jalan(s, "tools install wifi-scanner")
 	assert_false(_galat(_jalan(s, "wifi-scanner --scan")))
+	s.jaringan.buka("ui:netmgr")
+	Misi.perbarui(s)
 	# Tahap 7: analisis
 	_jalan(s, "tools install network-analyzer")
 	_jalan(s, "network inspect LAB-WIFI-01")
 	_jalan(s, "security analyze LAB-WIFI-01")
 	# Tahap 8: pengujian keamanan
+	_jalan(s, "man password-auditor")
 	_jalan(s, "tools install password-auditor")
+	_jalan(s, "tools list")
+	_jalan(s, "man handshake")
 	_jalan(s, "audit auth LAB-WIFI-01")
+	_jalan(s, "man hasil-handshake")
+	_jalan(s, "man audit")
 	_jalan(s, "audit run LAB-WIFI-01")
+	_jalan(s, "man kesimpulan-audit")
 	# Tahap 9: verifikasi akses
 	assert_false(_galat(_jalan(s, "security verify LAB-WIFI-01 senja1234")))
-	# Tahap 10: penyelesaian
+	# Tahap 26: penyelesaian
 	assert_eq(String(s.misi["misi_1"]), "selesai")
 	assert_eq(s.xp, 100)
 	assert_eq(s.perangkat.jumlah("wifi_hacking_kit"), 1)
@@ -73,7 +83,7 @@ func test_umpan_balik_tahap_sekali_per_tahap() -> void:
 	var judul := []
 	for p in s.pesan_misi:
 		judul.append(Bahasa.pilih(String(p["subjek"])))
-	assert_true(judul.has("Tahap 1: Mengenal Terminal"))
+	assert_true(judul.has("Tahap 1: Membuka Daftar Perintah"))
 	var n := s.pesan_misi.size()
 	_jalan(s, "device list")
 	assert_eq(s.pesan_misi.size(), n, "tidak diulang")
@@ -86,16 +96,25 @@ func test_hadiah_tidak_ganda_setelah_dimuat_ulang() -> void:
 	_jalan(s, "toko beli antena_eksternal")
 	_jalan(s, "toko beli kabel_usb")
 	_jalan(s, "device rakit")
+	_jalan(s, "tools search driver")
 	_jalan(s, "tools install driver-ar9271")
 	_jalan(s, "device hubungkan")
 	_jalan(s, "tools install wifi-scanner")
 	_jalan(s, "wifi-scanner --scan")
+	s.jaringan.buka("ui:netmgr")
+	Misi.perbarui(s)
 	_jalan(s, "tools install network-analyzer")
 	_jalan(s, "network inspect LAB-WIFI-01")
 	_jalan(s, "security analyze LAB-WIFI-01")
+	_jalan(s, "man password-auditor")
 	_jalan(s, "tools install password-auditor")
+	_jalan(s, "tools list")
+	_jalan(s, "man handshake")
 	_jalan(s, "audit auth LAB-WIFI-01")
+	_jalan(s, "man hasil-handshake")
+	_jalan(s, "man audit")
 	_jalan(s, "audit run LAB-WIFI-01")
+	_jalan(s, "man kesimpulan-audit")
 	_jalan(s, "security verify LAB-WIFI-01 senja1234")
 	assert_eq(String(s.misi["misi_1"]), "selesai")
 	var saldo := s.economy.saldo
@@ -114,9 +133,10 @@ func test_progres_tahap_bertahan_setelah_disimpan() -> void:
 	var pulih := ShellSession.dari_dict(s.to_dict())
 	var progres := Misi.tahap_progres(pulih, Misi.temukan("misi_1"))
 	assert_true(bool(progres[0]["selesai"]), "tahap 1 tetap selesai")
-	assert_false(bool(progres[1]["selesai"]))
+	assert_true(bool(progres[1]["selesai"]), "tahap 2 selesai dengan device list")
+	assert_false(bool(progres[2]["selesai"]))
 
-func test_pusat_misi_menampilkan_sepuluh_tahap() -> void:
+func test_pusat_misi_menampilkan_semua_tahap() -> void:
 	SesiUtama.sesi = _sesi()
 	var p := PusatMisi.new()
 	add_child_autofree(p)

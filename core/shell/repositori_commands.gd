@@ -14,6 +14,8 @@ static func tools(s: ShellSession, p: Dictionary) -> Array:
 	var sub := String(args[0])
 	match sub:
 		"search":
+			if args.size() > 1:
+				s.jaringan.buka("cari:" + String(args[1]).to_lower())
 			return _cari(s, args.slice(1))
 		"info":
 			if args.size() < 2:
@@ -31,6 +33,7 @@ static func tools(s: ShellSession, p: Dictionary) -> Array:
 				return [s.galat_kunci("tools", "err.butuh_argumen")]
 			return [s.hasil_ke_baris("tools", s.repositori.perbarui(String(args[1])))]
 		"list":
+			s.jaringan.buka("tools:list")
 			return _terpasang(s)
 	return [s.galat_kunci("tools", "repo.usage")]
 

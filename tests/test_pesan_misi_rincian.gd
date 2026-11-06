@@ -19,7 +19,8 @@ func test_email_masuk_memuat_rincian() -> void:
 	assert_true(isi.contains("Tujuan:"), "rincian tujuan harus ada")
 	assert_true(isi.contains("Pembayaran: Kr 150"), "rincian pembayaran harus ada")
 	assert_true(isi.contains("Persyaratan:"), "rincian persyaratan harus ada")
-	assert_true(isi.contains("Tahap 1"), "daftar tahap harus ada")
+	assert_true(isi.contains("Buka aplikasi Misi"), "email pembuka mengarahkan ke aplikasi Misi")
+	assert_false(isi.contains("Tahap 1"), "email pembuka tidak menumpuk daftar tahap")
 
 func test_email_tahap_memuat_tujuan_tahap() -> void:
 	var s := _sesi()
@@ -54,6 +55,8 @@ func test_email_tahap_datang_berurutan() -> void:
 	assert_true(_ada_subjek(s, "Tahap 1"), "tahap 1 datang saat misi diterima")
 	assert_false(_ada_subjek(s, "Tahap 2"), "tahap 2 belum datang sebelum tahap 1 selesai")
 	s.jalankan("help")
-	s.jalankan("device list")
 	assert_true(_ada_subjek(s, "Tahap 2"), "tahap 2 datang setelah tahap 1 selesai")
-	assert_false(_ada_subjek(s, "Tahap 3"), "tahap 3 belum datang")
+	assert_false(_ada_subjek(s, "Tahap 3"), "tahap 3 belum datang sebelum tahap 2 selesai")
+	s.jalankan("device list")
+	assert_true(_ada_subjek(s, "Tahap 3"), "tahap 3 datang setelah tahap 2 selesai")
+	assert_false(_ada_subjek(s, "Tahap 4"), "tahap 4 belum datang")

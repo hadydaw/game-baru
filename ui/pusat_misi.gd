@@ -278,9 +278,22 @@ func _isi_panel_deskripsi(m: Dictionary) -> void:
 	for t in petunjuk:
 		_isi_deskripsi.add_child(_teks("· " + String(t), Tema.TEKS, 22))
 	if m.has("tahap"):
-		for tahap in Misi.tahap_progres(_sesi, m):
+		var progres := Misi.tahap_progres(_sesi, m)
+		var aktif := -1
+		for i in range(progres.size()):
+			if not bool(progres[i]["selesai"]):
+				aktif = i
+				break
+		# Tutorial dipandu satu langkah: langkah aktif menjelaskan alasan dan pengetahuannya.
+		if aktif >= 0:
+			_isi_deskripsi.add_child(_teks(Bahasa.t("misi.langkah") % [aktif + 1, progres.size()], Tema.AMBER, 22))
+			_isi_deskripsi.add_child(_teks(Bahasa.t("misi.alasan") + ": " + String(progres[aktif]["alasan"]), Tema.TEKS, 21))
+			if String(progres[aktif]["pengetahuan"]) != "":
+				_isi_deskripsi.add_child(_teks(Bahasa.t("misi.pengetahuan") + ": " + String(progres[aktif]["pengetahuan"]), Tema.TEKS_REDUP, 20))
+		for i in range(progres.size()):
+			var tahap: Dictionary = progres[i]
 			var selesai := bool(tahap["selesai"])
-			_isi_deskripsi.add_child(_baris_ceklis(selesai, String(tahap["judul"]), Tema.AMBER if selesai else Tema.TEKS, 24, 0))
+			_isi_deskripsi.add_child(_baris_ceklis(selesai, String(tahap["judul"]), Tema.AMBER if selesai else (Tema.TEKS if i == aktif else Tema.TEKS_REDUP), 24, 0))
 			for t in tahap["tujuan"]:
 				_isi_deskripsi.add_child(_baris_ceklis(bool(t["selesai"]), String(t["teks"]), Tema.TEAL if bool(t["selesai"]) else Tema.TEKS_REDUP, 21, 28))
 	else:

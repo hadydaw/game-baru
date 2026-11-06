@@ -87,6 +87,13 @@ const MAN := {
     "tools": "tools [search <kata> | info <id> | install <id> | update <id> | list]: tool yang dimiliki dan Tools Repository.",
     "inspeksi": "inspeksi <host>: baca log transfer node yang sudah dipindai nmap. Membutuhkan Packet Inspector.",
     "trace": "trace <host>: tampilkan jalur koneksi dari node. Membutuhkan Signal Tracer.",
+    "wifi-scanner": "wifi-scanner: memindai jaringan Wi-Fi di sekitarmu dan menampilkan SSID, BSSID, kanal, dan sinyal.",
+    "network-analyzer": "network-analyzer: membaca konfigurasi keamanan satu jaringan dan menilai tingkat risikonya.",
+    "password-auditor": "password-auditor: menguji kata sandi jaringan terhadap daftar kandidat umum, dalam simulasi lab.",
+    "handshake": "handshake: pertukaran empat pesan saat perangkat terhubung ke jaringan WPA2. Data ini bisa ditangkap untuk diuji.",
+    "hasil-handshake": "hasil-handshake: data handshake yang tertangkap belum berisi kata sandi. Kata sandi harus diuji dengan audit.",
+    "audit": "audit: menguji kandidat kata sandi satu per satu terhadap data handshake yang sudah tertangkap.",
+    "kesimpulan-audit": "kesimpulan-audit: kata sandi lemah cepat ditemukan. Kata sandi panjang dan acak tidak ada dalam daftar umum.",
 }
 
 const MAN_EN := {
@@ -118,6 +125,13 @@ const MAN_EN := {
     "tools": "tools [search <kata> | info <id> | install <id> | update <id> | list]: owned tools and the Tools Repository.",
     "inspeksi": "inspeksi <host>: read the transfer log of a node scanned with nmap. Requires Packet Inspector.",
     "trace": "trace <host>: show the connection path from a node. Requires Signal Tracer.",
+    "wifi-scanner": "wifi-scanner: scans nearby Wi-Fi networks and shows SSID, BSSID, channel, and signal.",
+    "network-analyzer": "network-analyzer: reads one network's security settings and rates its risk level.",
+    "password-auditor": "password-auditor: tests a network's password against a list of common candidates, inside the lab simulation.",
+    "handshake": "handshake: the four-message exchange when a device connects to a WPA2 network. This data can be captured for testing.",
+    "hasil-handshake": "hasil-handshake: captured handshake data does not contain the password. The password must be tested with an audit.",
+    "audit": "audit: tests password candidates one by one against captured handshake data.",
+    "kesimpulan-audit": "kesimpulan-audit: weak passwords are found quickly. Long, random passwords are not in common lists.",
 }
 
 static func man(nama: String) -> String:

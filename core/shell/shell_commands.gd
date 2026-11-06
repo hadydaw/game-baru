@@ -76,6 +76,8 @@ static func _man(s: ShellSession, p: Dictionary) -> Array:
     var nama := String(p["argumen"][0])
     if not Teks.MAN.has(nama):
         return [s.galat("man", "%s %s" % [Teks.t("man.tidak_ada"), nama])]
+    # Membaca halaman man dicatat sebagai flag, dipakai langkah belajar pada misi tutorial.
+    s.jaringan.buka("man:" + nama)
     return [s.baris("info", Teks.man(nama))]
 
 static func _ls(s: ShellSession, p: Dictionary) -> Array:

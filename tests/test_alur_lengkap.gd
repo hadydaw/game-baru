@@ -12,16 +12,24 @@ const LANGKAH := [
 	"toko beli antena_eksternal",
 	"toko beli kabel_usb",
 	"device rakit",
+	"tools search driver",
 	"tools install driver-ar9271",
 	"device hubungkan",
 	"tools install wifi-scanner",
 	"wifi-scanner --scan",
+	"__netmgr__",
 	"tools install network-analyzer",
 	"network inspect LAB-WIFI-01",
 	"security analyze LAB-WIFI-01",
+	"man password-auditor",
 	"tools install password-auditor",
+	"tools list",
+	"man handshake",
 	"audit auth LAB-WIFI-01",
+	"man hasil-handshake",
+	"man audit",
 	"audit run LAB-WIFI-01",
+	"man kesimpulan-audit",
 	"security verify LAB-WIFI-01 senja1234",
 	"device list",
 	"tools",
@@ -43,6 +51,11 @@ func after_each() -> void:
 
 func _jalankan(s: ShellSession, cmd: String) -> Array:
 	var teks: Array = []
+	# Membuka aplikasi Network Manager dari desktop dicatat sebagai flag, bukan perintah Terminal.
+	if cmd == "__netmgr__":
+		s.jaringan.buka("ui:netmgr")
+		Misi.perbarui(s)
+		return teks
 	for b in s.jalankan(cmd):
 		teks.append(ShellSession.teks_baris(b))
 	return teks

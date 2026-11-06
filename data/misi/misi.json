@@ -18,84 +18,264 @@
     "target": "Jaringan laboratorium LAB-WIFI-01",
     "tahap": [
       {
-        "judul": "Tahap 1: Mengenal Terminal",
-        "pesan": "Terminal adalah pusat kendalimu. Ketik 'help' untuk melihat daftar perintah, lalu periksa perangkatmu dengan 'device list'. — Agensi",
-        "judul_en": "Stage 1: Getting to Know the Terminal",
-        "pesan_en": "The terminal is your control center. Type 'help' to see the list of commands, then check your devices with 'device list'. — Agency",
-        "pengetahuan": "Di dunia nyata, pengujian keamanan banyak dikerjakan lewat terminal, karena sebagian besar alat keamanan hanya berjalan sebagai perintah. Setiap alat punya opsi sendiri, biasanya ditulis dengan tanda -- (misalnya --scan). Perintah help adalah cara tercepat untuk tahu apa yang tersedia.",
-        "pengetahuan_en": "In the real world, security testing is largely done in a terminal, because most security tools run as commands. Each tool has its own options, usually written with -- (for example --scan). The help command is the fastest way to see what is available."
+        "judul": "Tahap 1: Membuka Daftar Perintah",
+        "judul_en": "Stage 1: Opening the Command List",
+        "pesan": "Terminal adalah pusat kendalimu. Ketik 'help' untuk melihat perintah yang tersedia. — Agensi",
+        "pesan_en": "The Terminal is your control center. Type 'help' to see the available commands. — Agency",
+        "alasan": "Kamu perlu tahu alat apa saja yang bisa dipakai sebelum mulai bekerja.",
+        "alasan_en": "You need to know which tools are available before you start working.",
+        "pengetahuan": "Setiap perintah punya nama dan opsi. Di dunia nyata, pengujian keamanan banyak dikerjakan lewat terminal karena alatnya berjalan sebagai perintah.",
+        "pengetahuan_en": "Every command has a name and options. In the real world, security testing is done largely in terminals because the tools run as commands."
       },
       {
-        "judul": "Tahap 2: Mendapatkan Hardware",
-        "pesan": "Belilah USB Wireless Adapter, Antena Eksternal, dan Kabel USB lewat 'toko' atau aplikasi Pasar. Perangkat ini harus kamu rakit sendiri. — Agensi",
-        "judul_en": "Stage 2: Getting Hardware",
-        "pesan_en": "Buy a USB Wireless Adapter, External Antenna, and USB Cable through 'toko' or the Market app. You must assemble this device yourself. — Agency",
-        "pengetahuan": "Pentester Wi-Fi memakai adapter USB khusus karena kartu Wi-Fi bawaan laptop sering tidak bisa menangkap paket dari jaringan lain. Antena menentukan seberapa jauh dan seberapa kuat sinyal yang bisa diterima. Kekuatan sinyal diukur dalam dBm: makin mendekati 0, makin kuat sinyalnya.",
-        "pengetahuan_en": "Wi-Fi pentesters use dedicated USB adapters, because a laptop's built-in Wi-Fi card often cannot capture packets from other networks. The antenna determines how far and how strongly signals can be received. Signal strength is measured in dBm: the closer to 0, the stronger the signal."
+        "judul": "Tahap 2: Memeriksa Perangkatmu",
+        "judul_en": "Stage 2: Checking Your Devices",
+        "pesan": "Ketik 'device list' untuk melihat perangkat yang kamu miliki sekarang. — Agensi",
+        "pesan_en": "Type 'device list' to see the devices you have right now. — Agency",
+        "alasan": "Kamu harus tahu apa yang sudah ada sebelum membeli sesuatu.",
+        "alasan_en": "You should know what you already have before buying anything.",
+        "pengetahuan": "Pentester selalu memulai dengan inventaris: apa yang tersedia, apa yang kurang.",
+        "pengetahuan_en": "Pentesters always start with an inventory: what is available and what is missing."
       },
       {
-        "judul": "Tahap 3: Merakit Perangkat",
-        "pesan": "Gabungkan komponen dengan 'device rakit'. Chipset adapter menentukan driver yang bisa kamu pakai. — Agensi",
-        "judul_en": "Stage 3: Assembling the Device",
-        "pesan_en": "Combine the components with 'device rakit'. The adapter's chipset determines which driver you can use. — Agency",
-        "pengetahuan": "Chipset adalah otak adapter, dan menentukan driver mana yang bisa dipakai. Tidak semua chipset mendukung monitor mode, yaitu mode ketika adapter menangkap semua paket di udara, bukan hanya paket untuk perangkat itu sendiri. Pentester selalu memeriksa daftar chipset sebelum membeli.",
-        "pengetahuan_en": "The chipset is the adapter's brain, and it determines which driver can be used. Not every chipset supports monitor mode, the mode in which the adapter captures all packets in the air, not just those addressed to the device itself. Pentesters always check chipset compatibility before buying."
+        "judul": "Tahap 3: Membeli USB Wireless Adapter",
+        "judul_en": "Stage 3: Buying a USB Wireless Adapter",
+        "pesan": "Beli USB Wireless Adapter lewat 'toko' di Terminal atau aplikasi Pasar. Adapter ini yang akan menangkap sinyal Wi-Fi. — Agensi",
+        "pesan_en": "Buy a USB Wireless Adapter through 'toko' in the Terminal or the Market app. This adapter will capture Wi-Fi signals. — Agency",
+        "alasan": "Kartu Wi-Fi bawaan laptop biasanya tidak bisa menangkap paket dari jaringan lain.",
+        "alasan_en": "A laptop's built-in Wi-Fi card usually cannot capture packets from other networks.",
+        "pengetahuan": "Pentester Wi-Fi memakai adapter khusus. Adapter ini harus mendukung mode yang dibutuhkan alat pengujian.",
+        "pengetahuan_en": "Wi-Fi pentesters use dedicated adapters. The adapter must support the mode the testing tools need."
       },
       {
-        "judul": "Tahap 4: Menginstal Driver",
-        "pesan": "Adapter membutuhkan driver. Cari dengan 'tools search driver', pasang dengan 'tools install driver-ar9271', lalu hubungkan perangkat dengan 'device hubungkan'. — Agensi",
-        "judul_en": "Stage 4: Installing the Driver",
-        "pesan_en": "The adapter needs a driver. Search with 'tools search driver', install with 'tools install driver-ar9271', then connect the device with 'device hubungkan'. — Agency",
-        "pengetahuan": "Driver menerjemahkan perintah sistem ke perangkat keras. Driver yang salah membuat perangkat terlihat terpasang tetapi tidak berfungsi. Beberapa driver juga bergantung pada library lain (dependensi), dan harus dipasang bersamaan agar berjalan.",
-        "pengetahuan_en": "A driver translates system commands into hardware actions. A wrong driver makes a device appear installed while it does not work. Some drivers also depend on other libraries (dependencies) and must be installed together to run."
+        "judul": "Tahap 4: Membeli Antena Eksternal",
+        "judul_en": "Stage 4: Buying an External Antenna",
+        "pesan": "Beli Antena Eksternal. Antena menentukan seberapa kuat sinyal yang bisa diterima. — Agensi",
+        "pesan_en": "Buy an External Antenna. The antenna decides how strong a signal can be received. — Agency",
+        "alasan": "Sinyal yang lemah membuat data yang tertangkap tidak lengkap.",
+        "alasan_en": "A weak signal makes the captured data incomplete.",
+        "pengetahuan": "Kekuatan sinyal diukur dalam dBm. Makin mendekati 0, makin kuat sinyalnya. Antena penguat membantu menjangkau jaringan yang lebih jauh.",
+        "pengetahuan_en": "Signal strength is measured in dBm. The closer to 0, the stronger the signal. A stronger antenna helps reach more distant networks."
       },
       {
-        "judul": "Tahap 5: Mendapatkan Software",
+        "judul": "Tahap 5: Membeli Kabel USB",
+        "judul_en": "Stage 5: Buying a USB Cable",
+        "pesan": "Beli Kabel USB untuk menghubungkan adapter ke komputermu. — Agensi",
+        "pesan_en": "Buy a USB Cable to connect the adapter to your computer. — Agency",
+        "alasan": "Tanpa kabel, adapter tidak bisa terhubung ke sistem.",
+        "alasan_en": "Without the cable, the adapter cannot connect to the system.",
+        "pengetahuan": "Kabel hanya menghubungkan. Perangkat yang sudah terhubung pun tetap butuh driver agar bisa dipakai.",
+        "pengetahuan_en": "The cable only connects. A connected device still needs a driver before it can be used."
+      },
+      {
+        "judul": "Tahap 6: Merakit Perangkat",
+        "judul_en": "Stage 6: Assembling the Device",
+        "pesan": "Gabungkan komponen dengan 'device rakit'. — Agensi",
+        "pesan_en": "Combine the components with 'device rakit'. — Agency",
+        "alasan": "Semua komponen harus bersatu sebelum bisa dipakai.",
+        "alasan_en": "All the components must come together before they can be used.",
+        "pengetahuan": "Chipset adalah otak adapter. Chipset menentukan driver mana yang bisa dipakai, dan apakah mendukung monitor mode.",
+        "pengetahuan_en": "The chipset is the adapter's brain. It determines which driver can be used and whether it supports monitor mode."
+      },
+      {
+        "judul": "Tahap 7: Mencari Driver",
+        "judul_en": "Stage 7: Searching for a Driver",
+        "pesan": "Cari driver yang cocok dengan chipset adaptermu: 'tools search driver'. — Agensi",
+        "pesan_en": "Search for a driver that matches your adapter's chipset: 'tools search driver'. — Agency",
+        "alasan": "Driver yang salah membuat perangkat terlihat terpasang tetapi tidak bekerja.",
+        "alasan_en": "A wrong driver makes the device look installed while it does not work.",
+        "pengetahuan": "Driver menerjemahkan perintah sistem ke perangkat keras. Selalu cocokkan driver dengan chipset, bukan dengan merek.",
+        "pengetahuan_en": "A driver translates system commands into hardware actions. Always match the driver to the chipset, not to the brand."
+      },
+      {
+        "judul": "Tahap 8: Memasang Driver",
+        "judul_en": "Stage 8: Installing the Driver",
+        "pesan": "Pasang driver-ar9271 dari Tools Repository: 'tools install driver-ar9271'. — Agensi",
+        "pesan_en": "Install driver-ar9271 from the Tools Repository: 'tools install driver-ar9271'. — Agency",
+        "alasan": "Driver menghubungkan adapter dengan sistem sehingga perangkat bisa dipakai.",
+        "alasan_en": "The driver connects the adapter to the system so the device can be used.",
+        "pengetahuan": "Driver bisa bergantung pada library lain (dependensi). Pemasangan yang lengkap memastikan semua bagian ikut terpasang.",
+        "pengetahuan_en": "Drivers can depend on other libraries (dependencies). A complete installation makes sure every part is installed."
+      },
+      {
+        "judul": "Tahap 9: Menghubungkan Perangkat",
+        "judul_en": "Stage 9: Connecting the Device",
+        "pesan": "Hubungkan perangkat dengan 'device hubungkan'. — Agensi",
+        "pesan_en": "Connect the device with 'device hubungkan'. — Agency",
+        "alasan": "Perangkat harus aktif di sistem sebelum bisa memindai jaringan.",
+        "alasan_en": "The device must be active in the system before it can scan networks.",
+        "pengetahuan": "Indikator status di Network Manager menunjukkan apakah adapter aktif, terputus, atau bermasalah.",
+        "pengetahuan_en": "The status indicator in Network Manager shows whether the adapter is active, disconnected, or has a problem."
+      },
+      {
+        "judul": "Tahap 10: Memasang Wireless Scanner",
+        "judul_en": "Stage 10: Installing the Wireless Scanner",
         "pesan": "Pasang Wireless Scanner dari Tools Repository: 'tools install wifi-scanner'. — Agensi",
-        "judul_en": "Stage 5: Getting Software",
-        "pesan_en": "Install Wireless Scanner from the Tools Repository: 'tools install wifi-scanner'. — Agency",
-        "pengetahuan": "Pentester memilih alat sesuai tugas, dan lebih memilih alat dari sumber terpercaya yang bisa diperiksa. Wireless scanner menampilkan jaringan di sekitar: SSID adalah nama jaringan, BSSID adalah alamat MAC unik dari titik akses, dan kanal serta frekuensi (2,4 GHz atau 5 GHz) menunjukkan jalur sinyalnya.",
-        "pengetahuan_en": "Pentesters choose tools for the task and prefer trusted sources that can be inspected. A wireless scanner lists nearby networks: the SSID is the network name, the BSSID is the unique MAC address of the access point, and the channel and frequency (2.4 GHz or 5 GHz) show which band it uses."
+        "pesan_en": "Install the Wireless Scanner from the Tools Repository: 'tools install wifi-scanner'. — Agency",
+        "alasan": "Scanner adalah alat untuk melihat jaringan di sekitarmu.",
+        "alasan_en": "The scanner is the tool for seeing the networks around you.",
+        "pengetahuan": "Setiap jaringan punya nama (SSID) dan alamat perangkat unik (BSSID). Nama bisa sama, tetapi BSSID selalu berbeda.",
+        "pengetahuan_en": "Every network has a name (SSID) and a unique device address (BSSID). Names can be the same, but BSSIDs are always different."
       },
       {
-        "judul": "Tahap 6: Memindai Jaringan",
-        "pesan": "Jalankan 'wifi-scanner --scan' untuk menemukan jaringan laboratorium di sekitarmu. Hasil pemindaian tampil di aplikasi Network Manager. Buka dari desktop. — Agensi",
-        "judul_en": "Stage 6: Scanning the Network",
-        "pesan_en": "Run 'wifi-scanner --scan' to find the laboratory network around you. The scan results appear in the Network Manager app. Open it from the desktop. — Agency",
-        "pengetahuan": "Pengintaian (reconnaissance) adalah tahap pertama dalam pengujian penetrasi. Satu nama jaringan bisa dipancarkan oleh beberapa titik akses, jadi BSSID adalah pembeda yang pasti. Sinyal kuat tidak berarti aman. Dunia nyata hanya menguji jaringan yang sudah diberi izin tertulis dari pemiliknya.",
-        "pengetahuan_en": "Reconnaissance is the first phase of a penetration test. Several access points can broadcast the same network name, so the BSSID is the reliable identifier. A strong signal does not mean a secure network. In the real world, only networks with written permission from their owner are tested."
+        "judul": "Tahap 11: Memindai Jaringan",
+        "judul_en": "Stage 11: Scanning Networks",
+        "pesan": "Jalankan 'wifi-scanner --scan' untuk melihat jaringan di sekitarmu. — Agensi",
+        "pesan_en": "Run 'wifi-scanner --scan' to see the networks around you. — Agency",
+        "alasan": "Kamu harus tahu target yang tersedia sebelum memilih.",
+        "alasan_en": "You need to know which targets are available before choosing one.",
+        "pengetahuan": "Pengintaian (reconnaissance) adalah tahap pertama pengujian penetrasi. Hanya jaringan yang sudah diberi izin tertulis yang boleh diuji.",
+        "pengetahuan_en": "Reconnaissance is the first phase of a penetration test. Only networks with written permission may be tested."
       },
       {
-        "judul": "Tahap 7: Menganalisis Jaringan",
-        "pesan": "Pasang Network Analyzer. Pilih LAB-WIFI-01 dengan 'network inspect LAB-WIFI-01', lalu analisis dengan 'security analyze LAB-WIFI-01'. Lihat detail dan hasil analisis jaringan di aplikasi Network Manager. — Agensi",
-        "judul_en": "Stage 7: Analyzing the Network",
-        "pesan_en": "Install Network Analyzer. Select LAB-WIFI-01 with 'network inspect LAB-WIFI-01', then analyze it with 'security analyze LAB-WIFI-01'. See the network details and analysis results in the Network Manager app. — Agency",
-        "pengetahuan": "Jenis enkripsi menentukan seberapa kuat jaringan melindungi datanya. WEP sudah usang dan mudah ditembus. WPA2 adalah standar yang umum, dan mengandalkan handshake. WPA3 lebih kuat. Fitur seperti WPS yang aktif atau kata sandi yang pendek menambah risiko, dan itulah yang dicatat dalam analisis.",
-        "pengetahuan_en": "The encryption type determines how well a network protects its data. WEP is obsolete and easily broken. WPA2 is the common standard and relies on a handshake. WPA3 is stronger. Features such as an active WPS or a short password add risk, and these are recorded in the analysis."
+        "judul": "Tahap 12: Membuka Network Manager",
+        "judul_en": "Stage 12: Opening Network Manager",
+        "pesan": "Buka aplikasi Network Manager dari desktop. Di sana hasil pemindaian tampil sebagai daftar yang mudah dibaca. — Agensi",
+        "pesan_en": "Open the Network Manager app from the desktop. There, the scan results appear as an easy-to-read list. — Agency",
+        "alasan": "Terminal menampilkan teks, sedangkan Network Manager membantu membaca hasilnya dengan lebih jelas.",
+        "alasan_en": "The Terminal shows text, while Network Manager helps you read the results more clearly.",
+        "pengetahuan": "Network Manager dan Terminal memakai data yang sama. Semua perubahan yang kamu buat terlihat di keduanya.",
+        "pengetahuan_en": "Network Manager and the Terminal use the same data. Every change you make shows up in both."
       },
       {
-        "judul": "Tahap 8: Menguji Keamanan",
-        "pesan": "Pasang Password Auditor. Tangkap autentikasi dengan 'audit auth LAB-WIFI-01', lalu uji kata sandinya dengan 'audit run LAB-WIFI-01'. Hasil audit dan status handshake tampil di aplikasi Network Manager. — Agensi",
-        "judul_en": "Stage 8: Testing Security",
-        "pesan_en": "Install Password Auditor. Capture the authentication with 'audit auth LAB-WIFI-01', then test the password with 'audit run LAB-WIFI-01'. Audit results and handshake status appear in the Network Manager app. — Agency",
-        "pengetahuan": "Saat perangkat terhubung ke jaringan WPA2, keduanya bertukar empat pesan (four-way handshake) untuk membuktikan kunci tanpa mengirim kata sandi. Tangkapan yang lemah, misalnya karena sinyal rendah, bisa tidak lengkap. Kata sandi yang panjang dan acak membuat pengujian kamus gagal, dan itulah pelajaran keamanan yang sebenarnya.",
-        "pengetahuan_en": "When a device connects to a WPA2 network, both sides exchange four messages (the four-way handshake) to prove the key without sending the password itself. A weak capture, for example due to a low signal, can be incomplete. A long, random password makes dictionary testing fail, and that is the real security lesson."
+        "judul": "Tahap 13: Memilih Target",
+        "judul_en": "Stage 13: Choosing a Target",
+        "pesan": "Pilih LAB-WIFI-01 dengan 'network inspect LAB-WIFI-01'. — Agensi",
+        "pesan_en": "Choose LAB-WIFI-01 with 'network inspect LAB-WIFI-01'. — Agency",
+        "alasan": "Kamu perlu memilih satu target agar analisis berfokus.",
+        "alasan_en": "You need to pick one target so the analysis stays focused.",
+        "pengetahuan": "Jaringan dengan nama sama bisa berbeda perangkatnya. BSSID menunjukkan perangkat yang sebenarnya.",
+        "pengetahuan_en": "Networks with the same name can be different devices. The BSSID shows the actual device."
       },
       {
-        "judul": "Tahap 9: Memverifikasi Akses",
-        "pesan": "Masukkan kata sandi yang ditemukan dengan 'security verify LAB-WIFI-01 <kata_sandi>'. Jika benar, jaringan laboratorium akan terbuka. Status akses jaringan laboratorium tampil di aplikasi Network Manager. — Agensi",
-        "judul_en": "Stage 9: Verifying Access",
-        "pesan_en": "Enter the password you found with 'security verify LAB-WIFI-01 <password>'. If it is correct, the laboratory network will open. The lab network access status appears in the Network Manager app. — Agency",
-        "pengetahuan": "Setelah kata sandi ditemukan dalam lingkup izin, verifikasi hanya dilakukan untuk membuktikan temuan. Pentester tidak menyalahgunakan akses. Temuan harus dicatat dengan bukti, lalu disertai rekomendasi, seperti mengganti kata sandi, memakai WPA3, dan menonaktifkan WPS.",
-        "pengetahuan_en": "Once a password is found within the scope of permission, verification is done only to prove the finding. A pentester does not misuse access. Findings must be recorded with evidence and followed by recommendations, such as changing the password, using WPA3, and disabling WPS."
+        "judul": "Tahap 14: Memasang Network Analyzer",
+        "judul_en": "Stage 14: Installing the Network Analyzer",
+        "pesan": "Pasang Network Analyzer: 'tools install network-analyzer'. — Agensi",
+        "pesan_en": "Install the Network Analyzer: 'tools install network-analyzer'. — Agency",
+        "alasan": "Analisis butuh alat khusus untuk membaca konfigurasi keamanan.",
+        "alasan_en": "Analysis needs a special tool to read the security configuration.",
+        "pengetahuan": "Jenis enkripsi menentukan seberapa kuat jaringan melindungi datanya. WEP sudah usang, WPA2 umum dipakai, dan WPA3 lebih kuat.",
+        "pengetahuan_en": "The encryption type decides how well a network protects its data. WEP is obsolete, WPA2 is common, and WPA3 is stronger."
       },
       {
-        "judul": "Tahap 10: Penyelesaian",
+        "judul": "Tahap 15: Menganalisis Keamanan",
+        "judul_en": "Stage 15: Analyzing Security",
+        "pesan": "Jalankan 'security analyze LAB-WIFI-01' untuk memeriksa konfigurasi keamanannya. — Agensi",
+        "pesan_en": "Run 'security analyze LAB-WIFI-01' to check its security configuration. — Agency",
+        "alasan": "Kamu harus tahu kelemahan jaringan sebelum mengujinya.",
+        "alasan_en": "You need to know a network's weaknesses before testing it.",
+        "pengetahuan": "WPS yang aktif dan kata sandi pendek menambah risiko. Analisis mencatat semua temuan ini.",
+        "pengetahuan_en": "An active WPS and a short password add risk. The analysis records all of these findings."
+      },
+      {
+        "judul": "Tahap 16: Fungsi Password Auditor",
+        "judul_en": "Stage 16: What Password Auditor Does",
+        "pesan": "Pelajari fungsi Password Auditor dengan 'man password-auditor'. — Agensi",
+        "pesan_en": "Learn what Password Auditor does with 'man password-auditor'. — Agency",
+        "alasan": "Kamu perlu tahu apa yang akan dilakukan alat ini sebelum memasangnya.",
+        "alasan_en": "You need to know what this tool does before installing it.",
+        "pengetahuan": "Alat audit kata sandi menguji kandidat kata sandi terhadap data yang sudah tertangkap. Kamu hanya menguji sistem yang sudah diberi izin.",
+        "pengetahuan_en": "Password audit tools test candidate passwords against captured data. You only test systems you have permission for."
+      },
+      {
+        "judul": "Tahap 17: Memasang Password Auditor",
+        "judul_en": "Stage 17: Installing Password Auditor",
+        "pesan": "Pasang Password Auditor dari Tools Repository: 'tools install password-auditor'. — Agensi",
+        "pesan_en": "Install Password Auditor from the Tools Repository: 'tools install password-auditor'. — Agency",
+        "alasan": "Alat ini dibutuhkan untuk tahap audit kata sandi nanti.",
+        "alasan_en": "This tool is needed for the password audit stage later.",
+        "pengetahuan": "Tools Repository adalah tempat mencari, memasang, dan memperbarui software.",
+        "pengetahuan_en": "The Tools Repository is where you find, install, and update software."
+      },
+      {
+        "judul": "Tahap 18: Memastikan Alat Terpasang",
+        "judul_en": "Stage 18: Confirming the Tool Is Installed",
+        "pesan": "Cek daftar alat yang terpasang dengan 'tools list'. Password Auditor harus muncul di sana. — Agensi",
+        "pesan_en": "Check the installed tools with 'tools list'. Password Auditor should appear there. — Agency",
+        "alasan": "Kamu harus memastikan alat benar-benar siap sebelum dipakai.",
+        "alasan_en": "You must make sure the tool is really ready before using it.",
+        "pengetahuan": "Alat yang terlihat terpasang tetapi tidak muncul di daftar biasanya menandakan pemasangan belum selesai.",
+        "pengetahuan_en": "A tool that seems installed but is missing from the list usually means the installation is not finished."
+      },
+      {
+        "judul": "Tahap 19: Memahami Data Autentikasi",
+        "judul_en": "Stage 19: Understanding Authentication Data",
+        "pesan": "Pelajari apa itu data autentikasi dengan 'man handshake'. — Agensi",
+        "pesan_en": "Learn what authentication data is with 'man handshake'. — Agency",
+        "alasan": "Data ini adalah bahan yang akan diuji oleh Password Auditor.",
+        "alasan_en": "This data is what Password Auditor will test.",
+        "pengetahuan": "Saat perangkat terhubung ke WPA2, keduanya bertukar empat pesan (four-way handshake) untuk membuktikan kunci tanpa mengirim kata sandi.",
+        "pengetahuan_en": "When a device connects to WPA2, both sides exchange four messages (the four-way handshake) to prove the key without sending the password."
+      },
+      {
+        "judul": "Tahap 20: Mengambil Data Autentikasi",
+        "judul_en": "Stage 20: Capturing Authentication Data",
+        "pesan": "Jalankan 'audit auth LAB-WIFI-01' untuk mengambil data autentikasi dari jaringan laboratorium. — Agensi",
+        "pesan_en": "Run 'audit auth LAB-WIFI-01' to capture authentication data from the lab network. — Agency",
+        "alasan": "Tanpa data ini, kata sandi tidak bisa diuji.",
+        "alasan_en": "Without this data, the password cannot be tested.",
+        "pengetahuan": "Tangkapan yang lemah, misalnya karena sinyal rendah, bisa tidak lengkap. Antena penguat membantu menutup selisih sinyal.",
+        "pengetahuan_en": "A weak capture, for example from a low signal, can be incomplete. A stronger antenna helps close the signal gap."
+      },
+      {
+        "judul": "Tahap 21: Membaca Hasil Tangkapan",
+        "judul_en": "Stage 21: Reading the Capture Result",
+        "pesan": "Baca arti hasil tangkapan dengan 'man hasil-handshake'. Status handshake juga tampil di Network Manager. — Agensi",
+        "pesan_en": "Read what the capture means with 'man hasil-handshake'. The handshake status also shows in Network Manager. — Agency",
+        "alasan": "Kamu harus paham arti data yang berhasil diambil.",
+        "alasan_en": "You need to understand what the captured data means.",
+        "pengetahuan": "Data handshake belum berisi kata sandi. Kata sandi hanya bisa diketahui setelah diuji.",
+        "pengetahuan_en": "Handshake data does not contain the password. The password is only known after it is tested."
+      },
+      {
+        "judul": "Tahap 22: Mempelajari Password Audit",
+        "judul_en": "Stage 22: Learning Password Audit",
+        "pesan": "Pelajari cara kerja audit kata sandi dengan 'man audit'. — Agensi",
+        "pesan_en": "Learn how password auditing works with 'man audit'. — Agency",
+        "alasan": "Kamu perlu tahu bagaimana kata sandi diuji sebelum menjalankannya.",
+        "alasan_en": "You need to know how the password is tested before running it.",
+        "pengetahuan": "Audit membandingkan kandidat kata sandi dengan data handshake, satu per satu. Kandidat yang cocok berarti kata sandi ditemukan.",
+        "pengetahuan_en": "The audit compares password candidates with the handshake data, one by one. A matching candidate means the password is found."
+      },
+      {
+        "judul": "Tahap 23: Menguji Kata Sandi",
+        "judul_en": "Stage 23: Testing the Password",
+        "pesan": "Jalankan 'audit run LAB-WIFI-01' untuk menguji kata sandi pada dataset simulasi. — Agensi",
+        "pesan_en": "Run 'audit run LAB-WIFI-01' to test the password against the simulated dataset. — Agency",
+        "alasan": "Di sinilah kelemahan kata sandi jaringan ditemukan.",
+        "alasan_en": "This is where the network's password weakness is found.",
+        "pengetahuan": "Kata sandi yang ada di daftar umum cepat ditemukan. Kata sandi panjang dan acak tidak akan ditemukan dengan cara ini.",
+        "pengetahuan_en": "Passwords on common lists are found quickly. Long, random passwords will not be found this way."
+      },
+      {
+        "judul": "Tahap 24: Membaca Kesimpulan Audit",
+        "judul_en": "Stage 24: Reading the Audit Conclusion",
+        "pesan": "Baca kesimpulan audit dengan 'man kesimpulan-audit'. Hasilnya juga tampil di Network Manager. — Agensi",
+        "pesan_en": "Read the audit conclusion with 'man kesimpulan-audit'. The result also appears in Network Manager. — Agency",
+        "alasan": "Hasil audit harus dipahami agar bisa dijelaskan kepada pemilik jaringan.",
+        "alasan_en": "The audit result must be understood so it can be explained to the network owner.",
+        "pengetahuan": "Laporan pentester berisi temuan, tingkat risiko, dan rekomendasi perbaikan. Pengujian belum selesai sebelum laporan dibuat.",
+        "pengetahuan_en": "A pentest report contains the findings, risk levels, and recommended fixes. A test is not complete until the report is written."
+      },
+      {
+        "judul": "Tahap 25: Memverifikasi Akses",
+        "judul_en": "Stage 25: Verifying Access",
+        "pesan": "Masukkan kata sandi yang ditemukan dengan 'security verify LAB-WIFI-01 <kata_sandi>'. Jika benar, akses akan terbuka. — Agensi",
+        "pesan_en": "Enter the password you found with 'security verify LAB-WIFI-01 <password>'. If it is correct, access opens. — Agency",
+        "alasan": "Verifikasi membuktikan temuanmu tanpa menyalahgunakan akses.",
+        "alasan_en": "Verification proves your finding without misusing the access.",
+        "pengetahuan": "Pentester hanya membuktikan temuan dengan cara yang paling sedikit mengganggu, lalu mencatat semuanya.",
+        "pengetahuan_en": "Pentesters prove findings in the least disruptive way, then record everything."
+      },
+      {
+        "judul": "Tahap 26: Penyelesaian",
+        "judul_en": "Stage 26: Completion",
         "pesan": "Kamu berhasil menembus jaringan laboratorium pertamamu. Hadiah sudah dikirim. — Agensi",
-        "judul_en": "Stage 10: Completion",
-        "pesan_en": "You have broken into your first laboratory network. The reward has been sent. — Agency",
-        "pengetahuan": "Laporan adalah produk utama pentester. Laporan berisi ringkasan, daftar temuan, tingkat risiko, bukti, dan rekomendasi perbaikan. Dalam praktik industri, pengujian selesai ketika laporan diserahkan dan dibahas bersama pemilik sistem. Gunakan security report untuk membuatnya.",
-        "pengetahuan_en": "The report is the pentester's main deliverable. It contains a summary, the list of findings, risk levels, evidence, and remediation recommendations. In industry practice, a test is complete when the report is delivered and discussed with the system owner. Use security report to create it."
+        "pesan_en": "You have breached your first laboratory network. Your reward has been sent. — Agency",
+        "alasan": "",
+        "alasan_en": "",
+        "pengetahuan": "Pengujian keamanan yang baik selalu berakhir dengan laporan dan rekomendasi.",
+        "pengetahuan_en": "A good security test always ends with a report and recommendations."
       }
     ],
     "petunjuk": [
@@ -112,106 +292,154 @@
     ],
     "tujuan": [
       {
-        "teks": "Jalankan perintah help di terminal",
+        "teks": "Ketik 'help' di Terminal",
+        "teks_en": "Type 'help' in the Terminal",
         "flag": "cmd:help",
-        "tahap": 1,
-        "teks_en": "Run the help command in the terminal"
+        "tahap": 1
       },
       {
-        "teks": "Periksa perangkat dengan device list",
+        "teks": "Ketik 'device list' di Terminal",
+        "teks_en": "Type 'device list' in the Terminal",
         "flag": "cmd:device",
-        "tahap": 1,
-        "teks_en": "Check your devices with device list"
+        "tahap": 2
       },
       {
         "teks": "Beli USB Wireless Adapter",
+        "teks_en": "Buy a USB Wireless Adapter",
         "flag": "beli:usb_wireless_adapter",
-        "tahap": 2,
-        "teks_en": "Buy a USB Wireless Adapter"
+        "tahap": 3
       },
       {
         "teks": "Beli Antena Eksternal",
+        "teks_en": "Buy an External Antenna",
         "flag": "beli:antena_eksternal",
-        "tahap": 2,
-        "teks_en": "Buy an External Antenna"
+        "tahap": 4
       },
       {
         "teks": "Beli Kabel USB",
+        "teks_en": "Buy a USB Cable",
         "flag": "beli:kabel_usb",
-        "tahap": 2,
-        "teks_en": "Buy a USB Cable"
+        "tahap": 5
       },
       {
-        "teks": "Rakit perangkat dengan device rakit",
+        "teks": "Rakit perangkat dengan 'device rakit'",
+        "teks_en": "Assemble the device with 'device rakit'",
         "flag": "rakit:wifi_kit",
-        "tahap": 3,
-        "teks_en": "Assemble the device with device rakit"
+        "tahap": 6
+      },
+      {
+        "teks": "Cari driver lewat 'tools search driver'",
+        "teks_en": "Search for a driver with 'tools search driver'",
+        "flag": "cari:driver",
+        "tahap": 7
       },
       {
         "teks": "Pasang driver-ar9271 dari Tools Repository",
+        "teks_en": "Install driver-ar9271 from the Tools Repository",
         "flag": "pasang:driver-ar9271",
-        "tahap": 4,
-        "teks_en": "Install driver-ar9271 from the Tools Repository"
+        "tahap": 8
       },
       {
-        "teks": "Hubungkan perangkat dengan device hubungkan",
+        "teks": "Hubungkan perangkat dengan 'device hubungkan'",
+        "teks_en": "Connect the device with 'device hubungkan'",
         "flag": "device:terhubung",
-        "tahap": 4,
-        "teks_en": "Connect the device with device hubungkan"
+        "tahap": 9
       },
       {
         "teks": "Pasang Wireless Scanner",
+        "teks_en": "Install the Wireless Scanner",
         "flag": "pasang:wifi-scanner",
-        "tahap": 5,
-        "teks_en": "Install Wireless Scanner"
+        "tahap": 10
       },
       {
-        "teks": "Jalankan wifi-scanner --scan",
+        "teks": "Jalankan 'wifi-scanner --scan'",
+        "teks_en": "Run 'wifi-scanner --scan'",
         "flag": "wifi:scan",
-        "tahap": 6,
-        "teks_en": "Run wifi-scanner --scan"
+        "tahap": 11
+      },
+      {
+        "teks": "Buka aplikasi Network Manager",
+        "teks_en": "Open the Network Manager app",
+        "flag": "ui:netmgr",
+        "tahap": 12
+      },
+      {
+        "teks": "Pilih LAB-WIFI-01 dengan 'network inspect'",
+        "teks_en": "Select LAB-WIFI-01 with 'network inspect'",
+        "flag": "wifi:pilih:LAB-WIFI-01",
+        "tahap": 13
       },
       {
         "teks": "Pasang Network Analyzer",
+        "teks_en": "Install the Network Analyzer",
         "flag": "pasang:network-analyzer",
-        "tahap": 7,
-        "teks_en": "Install Network Analyzer"
+        "tahap": 14
       },
       {
-        "teks": "Pilih LAB-WIFI-01 dengan network inspect",
-        "flag": "wifi:pilih:LAB-WIFI-01",
-        "tahap": 7,
-        "teks_en": "Select LAB-WIFI-01 with network inspect"
-      },
-      {
-        "teks": "Analisis keamanan dengan security analyze",
+        "teks": "Analisis keamanan dengan 'security analyze'",
+        "teks_en": "Analyze security with 'security analyze'",
         "flag": "wifi:analisis:LAB-WIFI-01",
-        "tahap": 7,
-        "teks_en": "Analyze security with security analyze"
+        "tahap": 15
       },
       {
-        "teks": "Pasang Password Auditor",
+        "teks": "Baca 'man password-auditor'",
+        "teks_en": "Read 'man password-auditor'",
+        "flag": "man:password-auditor",
+        "tahap": 16
+      },
+      {
+        "teks": "Pasang Password Auditor dari Tools Repository",
+        "teks_en": "Install Password Auditor from the Tools Repository",
         "flag": "pasang:password-auditor",
-        "tahap": 8,
-        "teks_en": "Install Password Auditor"
+        "tahap": 17
       },
       {
-        "teks": "Tangkap autentikasi dengan audit auth",
+        "teks": "Cek daftar dengan 'tools list'",
+        "teks_en": "Check the list with 'tools list'",
+        "flag": "tools:list",
+        "tahap": 18
+      },
+      {
+        "teks": "Baca 'man handshake'",
+        "teks_en": "Read 'man handshake'",
+        "flag": "man:handshake",
+        "tahap": 19
+      },
+      {
+        "teks": "Tangkap autentikasi dengan 'audit auth'",
+        "teks_en": "Capture authentication with 'audit auth'",
         "flag": "wifi:auth:LAB-WIFI-01",
-        "tahap": 8,
-        "teks_en": "Capture the authentication with audit auth"
+        "tahap": 20
       },
       {
-        "teks": "Temukan kata sandi dengan audit run",
+        "teks": "Baca 'man hasil-handshake'",
+        "teks_en": "Read 'man hasil-handshake'",
+        "flag": "man:hasil-handshake",
+        "tahap": 21
+      },
+      {
+        "teks": "Baca 'man audit'",
+        "teks_en": "Read 'man audit'",
+        "flag": "man:audit",
+        "tahap": 22
+      },
+      {
+        "teks": "Uji kata sandi dengan 'audit run'",
+        "teks_en": "Test the password with 'audit run'",
         "flag": "wifi:audit:LAB-WIFI-01",
-        "tahap": 8,
-        "teks_en": "Find the password with audit run"
+        "tahap": 23
       },
       {
-        "teks": "Verifikasi akses dengan security verify",
+        "teks": "Baca 'man kesimpulan-audit'",
+        "teks_en": "Read 'man kesimpulan-audit'",
+        "flag": "man:kesimpulan-audit",
+        "tahap": 24
+      },
+      {
+        "teks": "Verifikasi dengan 'security verify'",
+        "teks_en": "Verify with 'security verify'",
         "flag": "wifi:akses:LAB-WIFI-01",
-        "tahap": 9,
-        "teks_en": "Verify access with security verify"
+        "tahap": 25
       }
     ],
     "pesan_selesai": {

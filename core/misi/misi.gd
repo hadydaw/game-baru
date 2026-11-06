@@ -125,10 +125,8 @@ static func _kirim_tahap(s: ShellSession, m: Dictionary, n: int) -> void:
 	if n < 1 or n > daftar.size():
 		return
 	var t: Dictionary = daftar[n - 1]
-	var isi := String(t["pesan"]) + _rincian_tahap(m, n)
-	# Pengetahuan tahap: konsep dunia nyata di balik langkah ini, agar pemain ikut belajar.
-	if t.has("pengetahuan"):
-		isi += "\n\n" + Bahasa.dua("Pengetahuan:", "Knowledge:") + "\n" + String(t["pengetahuan"])
+	# Email hanya pengantar langkah. Penjelasan lengkap ada di aplikasi Misi, langkah demi langkah.
+	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Buka aplikasi Misi untuk panduan lengkap langkah ini.", "Open the Missions app for the full guide to this step.")
 	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": isi})
 
 static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
@@ -151,7 +149,8 @@ static func tahap_progres(s: ShellSession, m: Dictionary) -> Array:
 		for t in m.get("tujuan", []):
 			if int(t.get("tahap", 0)) == n:
 				items.append({"teks": ganti_ip(s, String(t["teks"])), "selesai": s.jaringan.progres.has(String(t["flag"]))})
-		hasil.append({"judul": String(daftar[i]["judul"]), "tujuan": items, "selesai": _tahap_selesai(s, m, n)})
+		hasil.append({"judul": String(daftar[i]["judul"]), "tujuan": items, "selesai": _tahap_selesai(s, m, n),
+			"alasan": String(daftar[i].get("alasan", "")), "pengetahuan": String(daftar[i].get("pengetahuan", ""))})
 	return hasil
 
 static func _tujuan_selesai(s: ShellSession, m: Dictionary) -> bool:
@@ -175,9 +174,7 @@ static func _pesan_masuk_lengkap(m: Dictionary) -> Dictionary:
 	r += Bahasa.dua("Pembayaran: Kr %d", "Payment: Kr %d", [hadiah]) + "\n"
 	r += Bahasa.dua("Persyaratan: ", "Requirements: ") + String(m.get("persyaratan", "-")) + "\n"
 	r += Bahasa.dua("Target: ", "Target: ") + String(m.get("target", "")) + "\n"
-	r += Bahasa.dua("Tahap:", "Stages:")
-	for tahap in m.get("tahap", []):
-		r += "\n- " + String(tahap["judul"])
+	r += Bahasa.dua("Buka aplikasi Misi untuk panduan langkah demi langkah.", "Open the Missions app for a step-by-step guide.")
 	p["isi"] = String(p.get("isi", "")) + r
 	return p
 

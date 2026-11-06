@@ -35,6 +35,10 @@ func _ready() -> void:
 	_sesi = SesiUtama.ambil()
 	_jumlah_riwayat = _sesi.wifi.riwayat.size()
 	_sig = _signature()
+	# Membuka aplikasi dicatat sebagai flag, dipakai langkah tutorial.
+	_sesi.jaringan.buka("ui:netmgr")
+	Misi.perbarui(_sesi)
+	Penyimpanan.simpan_sesi(_sesi)
 	var latar := ColorRect.new()
 	latar.color = Color("0d1117")
 	latar.mouse_filter = Control.MOUSE_FILTER_IGNORE
