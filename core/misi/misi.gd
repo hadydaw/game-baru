@@ -103,9 +103,12 @@ static func tahap_aktif(s: ShellSession, m: Dictionary) -> int:
 			return n
 	return 0
 
-# Materi hanya bisa dibaca untuk tahap yang sedang aktif, selama misi sudah diterima.
+# Materi BELAJAR bersifat panduan opsional. Hanya tahap yang sudah terbuka (sampai tahap aktif) yang bisa dibuka.
 static func tahap_bisa_dibaca(s: ShellSession, m: Dictionary, n: int) -> bool:
-	return String(s.misi.get(String(m["id"]), "")) == "aktif" and n == tahap_aktif(s, m)
+	if String(s.misi.get(String(m["id"]), "")) != "aktif" or n < 1:
+		return false
+	var aktif := tahap_aktif(s, m)
+	return aktif == 0 or n <= aktif
 
 # Dipanggil saat pemain menekan KEMBALI setelah membaca materi tahap n.
 static func tandai_baca(s: ShellSession, id: String, n: int) -> bool:
@@ -170,13 +173,13 @@ static func _kirim_tahap(s: ShellSession, m: Dictionary, n: int) -> void:
 		return
 	var t: Dictionary = daftar[n - 1]
 	# Email hanya pengantar langkah. Penjelasan lengkap ada di aplikasi Misi, langkah demi langkah.
-	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Tekan BELAJAR untuk membaca materi, lalu KEMBALI. Tahap ini selesai setelah materi dibaca dan tugasnya terpenuhi.", "Press LEARN to read the material, then BACK. This stage is complete once the material is read and its task is done.")
+	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Selesaikan tugas tahap ini di Terminal. BELAJAR membuka materi panduan (opsional). Tahap berikutnya dikirim setelah tugas ini selesai.", "Complete this stage's task in the Terminal. LEARN opens an optional guide. The next stage is sent once this task is done.")
 	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": isi, "tahap": n})
 
-# Tahap n selesai bila materinya sudah dibaca, tugasnya terpenuhi, dan semua tahap sebelumnya selesai.
+# Tahap n selesai bila tugas utama tahap 1..n sudah terpenuhi. Membaca materi tidak diperlukan.
 static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
 	for k in range(1, n + 1):
-		if not s.jaringan.progres.has(baca_flag(String(m["id"]), k)) or not _tugas_tahap(s, m, k):
+		if not _tugas_tahap(s, m, k):
 			return false
 	return true
 
