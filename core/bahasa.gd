@@ -41,8 +41,6 @@ const KAMUS := {
 	"misi.tombol_rincian": {"id": "RINCIAN", "en": "DETAILS"},
 	"misi.tombol_belajar": {"id": "BELAJAR", "en": "LEARN"},
 	"misi.tombol_kembali": {"id": "KEMBALI", "en": "BACK"},
-	"misi.tombol_sebelumnya": {"id": "< SEBELUM", "en": "< PREV"},
-	"misi.tombol_berikutnya": {"id": "SESUDAH >", "en": "NEXT >"},
 	"misi.pembelajaran": {"id": "PEMBELAJARAN", "en": "LEARNING"},
 	"misi.materi_tahap": {"id": "Tahap %d dari %d", "en": "Stage %d of %d"},
 	"misi.materi_konsep": {"id": "Penjelasan Konsep", "en": "Concept"},

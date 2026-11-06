@@ -299,6 +299,8 @@ func _bangun_pembaca() -> void:
 		_pembaca = false
 		_segarkan()
 		return
+	if _belajar and not _bisa_baca_tahap(p):
+		_belajar = false
 	if _belajar:
 		_bangun_belajar(p)
 		return
@@ -345,6 +347,7 @@ func _bangun_pembaca() -> void:
 	var tahap := int(p.get("tahap", 0))
 	if tahap > 0 and not Misi.pembelajaran(String(p.get("misi", ""))).is_empty():
 		var belajar := _tombol_aksi("misi.tombol_belajar", Tema.TEAL)
+		belajar.disabled = not _bisa_baca_tahap(p)
 		belajar.pressed.connect(func():
 			_belajar = true
 			_tahap_belajar = tahap
@@ -446,23 +449,20 @@ func _bangun_belajar(p: Dictionary) -> void:
 		isi.add_child(h)
 		isi.add_child(_label_dwibahasa(String(materi.get(String(b[1]), "")), TEKS_ISI, 24))
 
-	var kembali := _tombol_aksi("misi.tombol_kembali", Tema.TEKS_REDUP)
+	# KEMBALI menandai materi tahap ini sudah dibaca. Tahap baru dihitung selesai setelah tugasnya juga terpenuhi.
+	var kembali := _tombol_aksi("misi.tombol_kembali", Tema.TEAL)
 	kembali.pressed.connect(func():
+		Misi.tandai_baca(_sesi, id, n)
+		_simpan()
 		_belajar = false
 		_segarkan())
 	_bawah.add_child(kembali)
-	if n > 1:
-		var sebelum := _tombol_aksi("misi.tombol_sebelumnya", Tema.TEAL)
-		sebelum.pressed.connect(func():
-			_tahap_belajar = n - 1
-			_segarkan())
-		_bawah.add_child(sebelum)
-	if n < jumlah:
-		var sesudah := _tombol_aksi("misi.tombol_berikutnya", Tema.TEAL)
-		sesudah.pressed.connect(func():
-			_tahap_belajar = n + 1
-			_segarkan())
-		_bawah.add_child(sesudah)
+
+func _bisa_baca_tahap(p: Dictionary) -> bool:
+	var tahap := int(p.get("tahap", 0))
+	if tahap <= 0:
+		return false
+	return Misi.tahap_bisa_dibaca(_sesi, Misi.temukan(String(p.get("misi", ""))), tahap)
 
 # Teks dua-bahasa dari data misi; ikut berganti saat bahasa diganti.
 func _label_dwibahasa(teks: String, warna: Color, ukuran: int) -> Label:
@@ -514,5 +514,7 @@ func _tombol_aksi(kunci: String, warna_batas: Color) -> Button:
 	b.add_theme_stylebox_override("normal", Tema.kotak(Color(0.05, 0.1, 0.12), warna_batas, 2, 16))
 	b.add_theme_stylebox_override("hover", Tema.kotak(Color(0.08, 0.18, 0.2), warna_batas, 2, 16))
 	b.add_theme_stylebox_override("pressed", Tema.kotak(Color(0.08, 0.18, 0.2), warna_batas, 2, 16))
+	b.add_theme_stylebox_override("disabled", Tema.kotak(Color(0.05, 0.06, 0.07), Color(0.25, 0.3, 0.3), 2, 16))
+	b.add_theme_color_override("font_disabled_color", Color(0.4, 0.45, 0.45))
 	Bahasa.isi(b, kunci)
 	return b

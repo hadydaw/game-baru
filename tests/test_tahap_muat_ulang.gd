@@ -18,9 +18,19 @@ func test_email_tahap_tidak_berulang_setelah_muat_ulang() -> void:
 	Misi.terima(s, "misi_1")
 	s.jalankan("help")
 	s.jalankan("device list")
+	_baca_tahap_aktif(s)
 	var d = JSON.parse_string(JSON.stringify(s.to_dict()))
 	var s2 := ShellSession.dari_dict(d)
 	Misi.perbarui(s2)
 	Misi.perbarui(s2)
 	assert_eq(_jumlah_subjek(s2, "Tahap 2"), 1, "tahap 2 tetap satu email")
 	assert_eq(_jumlah_subjek(s2, "Tahap 1"), 1, "tahap 1 tetap satu email")
+
+# Pemain membaca materi tahap yang sedang aktif (tombol KEMBALI), lalu menyelesaikan tugasnya.
+func _baca_tahap_aktif(s: ShellSession) -> void:
+	var m := Misi.temukan("misi_1")
+	var n := Misi.tahap_aktif(s, m)
+	while n > 0 and not s.jaringan.progres.has(Misi.baca_flag("misi_1", n)):
+		if not Misi.tandai_baca(s, "misi_1", n):
+			break
+		n = Misi.tahap_aktif(s, m)

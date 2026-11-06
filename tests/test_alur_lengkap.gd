@@ -50,6 +50,11 @@ func after_each() -> void:
 	Bahasa.set_kode("id")
 
 func _jalankan(s: ShellSession, cmd: String) -> Array:
+	var hasil := _jalankan_asli(s, cmd)
+	_baca_tahap_aktif(s)
+	return hasil
+
+func _jalankan_asli(s: ShellSession, cmd: String) -> Array:
 	var teks: Array = []
 	# Membuka aplikasi Network Manager dari desktop dicatat sebagai flag, bukan perintah Terminal.
 	if cmd == "__netmgr__":
@@ -59,6 +64,15 @@ func _jalankan(s: ShellSession, cmd: String) -> Array:
 	for b in s.jalankan(cmd):
 		teks.append(ShellSession.teks_baris(b))
 	return teks
+
+# Pemain membaca materi tahap yang sedang aktif (tombol KEMBALI), lalu menyelesaikan tugasnya.
+func _baca_tahap_aktif(s: ShellSession) -> void:
+	var m := Misi.temukan("misi_1")
+	var n := Misi.tahap_aktif(s, m)
+	while n > 0 and not s.jaringan.progres.has(Misi.baca_flag("misi_1", n)):
+		if not Misi.tandai_baca(s, "misi_1", n):
+			break
+		n = Misi.tahap_aktif(s, m)
 
 func test_tutorial_selesai_lalu_bertahan_setelah_dimuat_ulang() -> void:
 	var s := SesiUtama.ambil()

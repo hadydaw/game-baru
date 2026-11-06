@@ -26,6 +26,7 @@ func test_email_tahap_memuat_tujuan_tahap() -> void:
 	var s := _sesi()
 	s.jalankan("help")
 	s.jalankan("device list")
+	_baca_tahap_aktif(s)
 	var isi := ""
 	for p in s.pesan_misi:
 		if String(p["subjek"]).contains("Tahap 1"):
@@ -55,8 +56,19 @@ func test_email_tahap_datang_berurutan() -> void:
 	assert_true(_ada_subjek(s, "Tahap 1"), "tahap 1 datang saat misi diterima")
 	assert_false(_ada_subjek(s, "Tahap 2"), "tahap 2 belum datang sebelum tahap 1 selesai")
 	s.jalankan("help")
+	_baca_tahap_aktif(s)
 	assert_true(_ada_subjek(s, "Tahap 2"), "tahap 2 datang setelah tahap 1 selesai")
 	assert_false(_ada_subjek(s, "Tahap 3"), "tahap 3 belum datang sebelum tahap 2 selesai")
 	s.jalankan("device list")
+	_baca_tahap_aktif(s)
 	assert_true(_ada_subjek(s, "Tahap 3"), "tahap 3 datang setelah tahap 2 selesai")
 	assert_false(_ada_subjek(s, "Tahap 4"), "tahap 4 belum datang")
+
+# Pemain membaca materi tahap yang sedang aktif (tombol KEMBALI), lalu menyelesaikan tugasnya.
+func _baca_tahap_aktif(s: ShellSession) -> void:
+	var m := Misi.temukan("misi_1")
+	var n := Misi.tahap_aktif(s, m)
+	while n > 0 and not s.jaringan.progres.has(Misi.baca_flag("misi_1", n)):
+		if not Misi.tandai_baca(s, "misi_1", n):
+			break
+		n = Misi.tahap_aktif(s, m)

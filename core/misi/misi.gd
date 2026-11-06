@@ -95,6 +95,30 @@ static func terima(s: ShellSession, id: String) -> bool:
 	perbarui(s)
 	return true
 
+# Nomor tahap yang sedang aktif (dari 1). Nol bila semua tahap sudah selesai.
+static func tahap_aktif(s: ShellSession, m: Dictionary) -> int:
+	var jumlah := (m.get("tahap", []) as Array).size()
+	for n in range(1, jumlah + 1):
+		if not _tahap_selesai(s, m, n):
+			return n
+	return 0
+
+# Materi hanya bisa dibaca untuk tahap yang sedang aktif, selama misi sudah diterima.
+static func tahap_bisa_dibaca(s: ShellSession, m: Dictionary, n: int) -> bool:
+	return String(s.misi.get(String(m["id"]), "")) == "aktif" and n == tahap_aktif(s, m)
+
+# Dipanggil saat pemain menekan KEMBALI setelah membaca materi tahap n.
+static func tandai_baca(s: ShellSession, id: String, n: int) -> bool:
+	var m := temukan(id)
+	if m.is_empty() or not tahap_bisa_dibaca(s, m, n):
+		return false
+	s.jaringan.buka(baca_flag(id, n))
+	perbarui(s)
+	return true
+
+static func baca_flag(id: String, n: int) -> String:
+	return "belajar:%s:%d" % [id, n]
+
 # Mengganti penanda {ip:id} dengan IP node sesi ini. IP tidak pernah ditulis permanen di data misi.
 static func ganti_ip(s: ShellSession, teks: String) -> String:
 	var re := RegEx.new()
@@ -146,18 +170,24 @@ static func _kirim_tahap(s: ShellSession, m: Dictionary, n: int) -> void:
 		return
 	var t: Dictionary = daftar[n - 1]
 	# Email hanya pengantar langkah. Penjelasan lengkap ada di aplikasi Misi, langkah demi langkah.
-	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Tekan BELAJAR di bawah untuk materi dan panduan langkah ini.", "Press LEARN below for the material and guide to this step.")
+	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Tekan BELAJAR untuk membaca materi, lalu KEMBALI. Tahap ini selesai setelah materi dibaca dan tugasnya terpenuhi.", "Press LEARN to read the material, then BACK. This stage is complete once the material is read and its task is done.")
 	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": isi, "tahap": n})
 
+# Tahap n selesai bila materinya sudah dibaca, tugasnya terpenuhi, dan semua tahap sebelumnya selesai.
 static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
-	var ada := false
+	for k in range(1, n + 1):
+		if not s.jaringan.progres.has(baca_flag(String(m["id"]), k)) or not _tugas_tahap(s, m, k):
+			return false
+	return true
+
+# Semua tujuan di tahap n terpenuhi. Tahap tanpa tujuan (Penyelesaian) dianggap terpenuhi.
+static func _tugas_tahap(s: ShellSession, m: Dictionary, n: int) -> bool:
 	for t in m.get("tujuan", []):
 		if int(t.get("tahap", 0)) != n:
 			continue
-		ada = true
 		if not s.jaringan.progres.has(String(t["flag"])):
 			return false
-	return ada
+	return true
 
 # Progres per tahap untuk tampilan: judul tahap, dan tujuan di dalamnya dengan statusnya.
 static func tahap_progres(s: ShellSession, m: Dictionary) -> Array:
@@ -174,6 +204,9 @@ static func tahap_progres(s: ShellSession, m: Dictionary) -> Array:
 	return hasil
 
 static func _tujuan_selesai(s: ShellSession, m: Dictionary) -> bool:
+	# Misi bertahap selesai hanya setelah tahap terakhir selesai, sehingga semua materi sudah dibaca.
+	if m.has("tahap"):
+		return tahap_aktif(s, m) == 0
 	for t in m.get("tujuan", []):
 		if not s.jaringan.progres.has(String(t["flag"])):
 			return false

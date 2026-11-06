@@ -11,7 +11,18 @@ func _sesi() -> ShellSession:
 	return s
 
 func _jalan(s: ShellSession, perintah: String) -> Array:
-	return s.jalankan(perintah)
+	var hasil := s.jalankan(perintah)
+	_baca_tahap_aktif(s)
+	return hasil
+
+# Pemain membaca materi tahap yang sedang aktif (tombol KEMBALI), lalu menyelesaikan tugasnya.
+func _baca_tahap_aktif(s: ShellSession) -> void:
+	var m := Misi.temukan("misi_1")
+	var n := Misi.tahap_aktif(s, m)
+	while n > 0 and not s.jaringan.progres.has(Misi.baca_flag("misi_1", n)):
+		if not Misi.tandai_baca(s, "misi_1", n):
+			break
+		n = Misi.tahap_aktif(s, m)
 
 func _galat(hasil: Array) -> bool:
 	return hasil.size() > 0 and String(hasil[0]["tipe"]) == "error"

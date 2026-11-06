@@ -29,7 +29,8 @@
     "butuh_adapter": true,
     "chipset": [],
     "perintah": [
-      "wifi-scanner"
+      "wifi-scanner",
+      "network"
     ],
     "deskripsi_kunci": "sw.desk.wifi-scanner"
   },
@@ -47,7 +48,6 @@
     "butuh_adapter": false,
     "chipset": [],
     "perintah": [
-      "network",
       "security"
     ],
     "deskripsi_kunci": "sw.desk.network-analyzer"
