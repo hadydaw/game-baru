@@ -32,7 +32,7 @@ func test_email_langkah_mengarahkan_ke_aplikasi_misi() -> void:
 	for p in s.pesan_misi:
 		if Bahasa.pilih(String(p["subjek"])).contains("Tahap 1"):
 			email_tahap_1 = Bahasa.pilih(String(p["isi"]))
-	assert_true(email_tahap_1.contains("Buka aplikasi Misi"), "email langkah mengarahkan ke Misi")
+	assert_true(email_tahap_1.contains("BELAJAR"), "email langkah mengarahkan ke tombol BELAJAR")
 	assert_false(email_tahap_1.contains("Pengetahuan:"), "pengetahuan tidak menumpuk di email")
 
 func test_pengetahuan_tampil_di_aplikasi_misi_untuk_langkah_aktif() -> void:

@@ -146,8 +146,8 @@ static func _kirim_tahap(s: ShellSession, m: Dictionary, n: int) -> void:
 		return
 	var t: Dictionary = daftar[n - 1]
 	# Email hanya pengantar langkah. Penjelasan lengkap ada di aplikasi Misi, langkah demi langkah.
-	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Buka aplikasi Misi lalu tekan BELAJAR untuk materi dan panduan langkah ini.", "Open the Missions app and press LEARN for the material and guide to this step.")
-	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": isi})
+	var isi := String(t["pesan"]) + _rincian_tahap(m, n) + "\n\n" + Bahasa.dua("Tekan BELAJAR di bawah untuk materi dan panduan langkah ini.", "Press LEARN below for the material and guide to this step.")
+	_kirim(s, String(m["id"]), String(m["pengirim"]), {"subjek": String(t["judul"]), "isi": isi, "tahap": n})
 
 static func _tahap_selesai(s: ShellSession, m: Dictionary, n: int) -> bool:
 	var ada := false
@@ -213,6 +213,7 @@ static func _kirim(s: ShellSession, id: String, dari: String, pesan: Dictionary)
 		"subjek": ganti_ip(s, String(pesan.get("subjek", ""))),
 		"isi": ganti_ip(s, String(pesan.get("isi", ""))),
 		"dilaporkan": false,
+		"tahap": int(pesan.get("tahap", 0)),
 	})
 
 # Kategori misi untuk tampilan Misi Tersedia. Urutan di sini adalah urutan tampil di layar.

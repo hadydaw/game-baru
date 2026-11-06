@@ -16,8 +16,6 @@ var _terpilih := ""              # kunci kategori yang disorot di kisi
 var _tampil_daftar := ""         # kunci kategori yang daftarnya tampil; "" = kisi kategori
 var _misi_terpilih := ""         # id misi yang sedang disorot di daftar
 var _rincian := false            # panel Deskripsi menampilkan detail lengkap
-var _belajar := false            # panel Deskripsi menampilkan materi pembelajaran, bukan tugas
-var _tahap_belajar := -1         # nomor tahap (dari 0) yang materinya dibuka; -1 = tahap aktif
 var _judul: Label
 var _kisi_wrap: VBoxContainer
 var _grid: GridContainer
@@ -112,8 +110,6 @@ func _segarkan_semua() -> void:
 	if _tampil_daftar == "":
 		_misi_terpilih = ""
 		_rincian = false
-		_belajar = false
-		_tahap_belajar = -1
 	_judul.text = Bahasa.t("misi.judul_tersedia") if _tampil_daftar == "" else Bahasa.t(_judul_kategori(_tampil_daftar))
 	_kisi_wrap.visible = _tampil_daftar == ""
 	_daftar_wrap.visible = _tampil_daftar != ""
@@ -263,44 +259,7 @@ func _bangun_daftar() -> void:
 	if _misi_terpilih == "":
 		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.tidak_aktif"), Tema.TEKS_REDUP, 22))
 		return
-	var terpilih := _cari_misi(_misi_terpilih)
-	if _belajar and terpilih.has("tahap"):
-		_isi_panel_belajar(terpilih)
-		return
-	_isi_panel_deskripsi(terpilih)
-
-# Panel Pembelajaran: materi satu tahap, dipisah dari daftar tugas. Hanya berisi penjelasan.
-func _isi_panel_belajar(m: Dictionary) -> void:
-	_isi_deskripsi.add_child(_teks(Bahasa.t("misi.pembelajaran"), Tema.AMBER, 34, HORIZONTAL_ALIGNMENT_CENTER))
-	var jumlah := Misi.pembelajaran(String(m["id"])).size()
-	if jumlah == 0:
-		_isi_deskripsi.add_child(_teks(Bahasa.t("misi.materi_kosong"), Tema.TEKS_REDUP, 22))
-		return
-	var idx := _indeks_belajar(m)
-	var materi := Misi.materi_tahap(String(m["id"]), idx + 1)
-	_isi_deskripsi.add_child(_teks(Bahasa.t("misi.materi_tahap") % [idx + 1, jumlah], Tema.TEKS_REDUP, 22, HORIZONTAL_ALIGNMENT_CENTER))
-	_isi_deskripsi.add_child(_teks(String(materi.get("judul", "")), Tema.TEAL, 30))
-	var bagian := [
-		["misi.materi_konsep", "konsep"],
-		["misi.materi_cara", "cara_kerja"],
-		["misi.materi_contoh", "contoh"],
-		["misi.materi_hubungan", "hubungan"],
-		["misi.materi_ringkasan", "ringkasan"],
-	]
-	for b in bagian:
-		_isi_deskripsi.add_child(_teks(Bahasa.t(String(b[0])), Tema.AMBER, 24))
-		_isi_deskripsi.add_child(_teks(String(materi.get(String(b[1]), "")), Tema.TEKS, 22))
-
-# Nomor tahap (dari 0) yang materinya sedang dibuka. Bila belum dipilih, tahap yang sedang dikerjakan.
-func _indeks_belajar(m: Dictionary) -> int:
-	var jumlah := Misi.pembelajaran(String(m["id"])).size()
-	if _tahap_belajar >= 0:
-		return clampi(_tahap_belajar, 0, max(jumlah - 1, 0))
-	var progres := Misi.tahap_progres(_sesi, m)
-	for i in range(progres.size()):
-		if not bool(progres[i]["selesai"]):
-			return i
-	return max(progres.size() - 1, 0)
+	_isi_panel_deskripsi(_cari_misi(_misi_terpilih))
 
 # Isi panel Deskripsi. Mode ringkas: Tujuan, Pembayaran, Persyaratan. Mode RINCIAN: detail lengkap.
 func _isi_panel_deskripsi(m: Dictionary) -> void:
@@ -364,8 +323,6 @@ func _baris_ceklis(selesai: bool, teks: String, warna: Color, ukuran: int, jorok
 func _pilih_misi(id: String) -> void:
 	_misi_terpilih = id
 	_rincian = false
-	_belajar = false
-	_tahap_belajar = -1
 	_segarkan_semua()
 
 # Tombol bawah per tampilan.
@@ -373,10 +330,6 @@ func _bangun_tombol() -> void:
 	for c in _bawah.get_children():
 		c.queue_free()
 	if _tampil_daftar != "":
-		var m := _cari_misi(_misi_terpilih)
-		if _belajar and m.has("tahap"):
-			_bangun_tombol_belajar(m)
-			return
 		var keluar := _tombol_bawah(Bahasa.t("misi.tombol_keluar"), Tema.TEKS_REDUP, true)
 		keluar.pressed.connect(func():
 			_tampil_daftar = ""
@@ -385,7 +338,7 @@ func _bangun_tombol() -> void:
 			_segarkan_semua())
 		_bawah.add_child(keluar)
 		var ada := _misi_terpilih != ""
-		var bisa_terima := ada and Misi.tersedia(_sesi, m)
+		var bisa_terima := ada and Misi.tersedia(_sesi, _cari_misi(_misi_terpilih))
 		var terima := _tombol_bawah(Bahasa.t("misi.tombol_terima"), Tema.TEAL, bisa_terima)
 		terima.pressed.connect(_terima_misi)
 		_bawah.add_child(terima)
@@ -394,16 +347,6 @@ func _bangun_tombol() -> void:
 			_rincian = not _rincian
 			_segarkan_semua())
 		_bawah.add_child(rincian)
-		# Materi tutorial terbuka setelah misi diterima.
-		if m.has("tahap"):
-			var sudah_terima := ada and (String(_sesi.misi.get(_misi_terpilih, "")) == "aktif" or String(_sesi.misi.get(_misi_terpilih, "")) == "selesai")
-			var belajar := _tombol_bawah(Bahasa.t("misi.tombol_belajar"), Tema.TEAL, sudah_terima and not Misi.pembelajaran(_misi_terpilih).is_empty(), 24)
-			belajar.pressed.connect(func():
-				_belajar = true
-				_rincian = false
-				_tahap_belajar = -1
-				_segarkan_semua())
-			_bawah.add_child(belajar)
 		return
 	var keluar_kisi := _tombol_bawah(Bahasa.t("misi.tombol_keluar"), Tema.TEKS_REDUP, true)
 	keluar_kisi.pressed.connect(func():
@@ -428,35 +371,14 @@ func _terima_misi() -> void:
 	_segarkan_semua()
 	_hint.text = Bahasa.t("misi.diterima")
 
-# Tombol bawah saat materi pembelajaran dibuka: kembali ke tugas, dan pindah antar tahap.
-func _bangun_tombol_belajar(m: Dictionary) -> void:
-	var jumlah := Misi.pembelajaran(String(m["id"])).size()
-	var idx := _indeks_belajar(m)
-	var kembali := _tombol_bawah(Bahasa.t("misi.tombol_kembali"), Tema.TEKS_REDUP, true)
-	kembali.pressed.connect(func():
-		_belajar = false
-		_tahap_belajar = -1
-		_segarkan_semua())
-	_bawah.add_child(kembali)
-	var sebelum := _tombol_bawah(Bahasa.t("misi.tombol_sebelumnya"), Tema.TEAL, idx > 0, 24)
-	sebelum.pressed.connect(func():
-		_tahap_belajar = idx - 1
-		_segarkan_semua())
-	_bawah.add_child(sebelum)
-	var sesudah := _tombol_bawah(Bahasa.t("misi.tombol_berikutnya"), Tema.TEAL, idx < jumlah - 1, 24)
-	sesudah.pressed.connect(func():
-		_tahap_belajar = idx + 1
-		_segarkan_semua())
-	_bawah.add_child(sesudah)
-
-func _tombol_bawah(teks: String, warna_batas: Color, aktif: bool, ukuran: int = 30) -> Button:
+func _tombol_bawah(teks: String, warna_batas: Color, aktif: bool) -> Button:
 	var b := Button.new()
 	b.text = Bahasa.pilih(teks)
 	b.focus_mode = Control.FOCUS_NONE
 	b.disabled = not aktif
 	b.custom_minimum_size = Vector2(0, 96)
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	b.add_theme_font_size_override("font_size", ukuran)
+	b.add_theme_font_size_override("font_size", 30)
 	b.add_theme_color_override("font_color", Tema.TEKS)
 	b.add_theme_color_override("font_disabled_color", Color(0.4, 0.45, 0.45))
 	b.add_theme_stylebox_override("normal", Tema.kotak(Color(0.05, 0.1, 0.12), warna_batas, 2, 16))

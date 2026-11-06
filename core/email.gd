@@ -14,7 +14,7 @@ static func pesan_misi(s: ShellSession) -> Array:
 	var hasil: Array = []
 	for i in range(s.pesan_misi.size()):
 		var p: Dictionary = s.pesan_misi[i]
-		hasil.append({"id": "misi:%d" % i, "dari": String(p.get("dari", "")), "judul": String(p.get("subjek", "")), "isi": String(p.get("isi", "")), "mentah": true})
+		hasil.append({"id": "misi:%d" % i, "dari": String(p.get("dari", "")), "judul": String(p.get("subjek", "")), "isi": String(p.get("isi", "")), "mentah": true, "misi": String(p.get("misi", "")), "tahap": int(p.get("tahap", 0))})
 	return hasil
 
 static func cari(id: String, s: ShellSession = null) -> Dictionary:

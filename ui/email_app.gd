@@ -14,6 +14,10 @@ var _sesi: ShellSession
 var _tab := "masuk"
 var _pilih := ""
 var _pembaca := false
+var _belajar := false          # pembaca menampilkan materi pembelajaran tahap email misi
+var _tahap_belajar := 1
+var _konfirmasi: KonfirmasiPanel
+var _aksi_tertunda := Callable()   # hapus permanen yang menunggu konfirmasi
 var _tab_masuk: Button
 var _tab_sampah: Button
 var _lbl_jumlah: Label
@@ -90,7 +94,7 @@ func _ready() -> void:
 	kolom.add_child(_area_pembaca)
 
 	_bawah = HBoxContainer.new()
-	_bawah.add_theme_constant_override("separation", 12)
+	_bawah.add_theme_constant_override("separation", 8)
 	kolom.add_child(_bawah)
 
 	_segarkan()
@@ -105,6 +109,7 @@ func _segarkan() -> void:
 	for c in _area_pembaca.get_children():
 		c.queue_free()
 	for c in _bawah.get_children():
+		_bawah.remove_child(c)
 		c.queue_free()
 	_gulir_daftar.visible = not _pembaca
 	_area_pembaca.visible = _pembaca
@@ -112,6 +117,54 @@ func _segarkan() -> void:
 		_bangun_pembaca()
 	else:
 		_bangun_daftar()
+	_sesuaikan_bawah()
+
+# Semua tombol bawah tetap dalam satu baris. Ukuran font dikecilkan bertahap sampai semua tulisan
+# muat, dan lebar tiap tombol mengikuti lebar tulisannya. Lebar dihitung dari layar aplikasi ini.
+func _sesuaikan_bawah() -> void:
+	var tombol: Array = []
+	for c in _bawah.get_children():
+		if c is Button:
+			tombol.append(c)
+	if tombol.is_empty():
+		return
+	var lebar_layar := size.x if size.x > 0.0 else get_viewport_rect().size.x
+	var lebar := lebar_layar - 2.0 * 24.0  # margin area email di kiri dan kanan
+	var celah := 6.0 * float(tombol.size() - 1)
+	for b in tombol:
+		_rapatkan_margin(b as Button)
+	var font := 28
+	while font > 14 and _lebar_bawah(tombol, font) + celah > lebar:
+		font -= 1
+	for b in tombol:
+		var btn := b as Button
+		btn.add_theme_font_size_override("font_size", font)
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.size_flags_stretch_ratio = _lebar_teks(btn, font)
+		btn.custom_minimum_size = Vector2(0, 96)
+
+# Margin kiri-kanan gaya tombol dipersempit agar tulisan panjang tetap muat dalam satu baris.
+func _rapatkan_margin(btn: Button) -> void:
+	for nama in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var sb := btn.get_theme_stylebox(nama)
+		if sb is StyleBoxFlat:
+			var salinan := (sb as StyleBoxFlat).duplicate() as StyleBoxFlat
+			salinan.content_margin_left = 4.0
+			salinan.content_margin_right = 4.0
+			btn.add_theme_stylebox_override(nama, salinan)
+
+func _lebar_bawah(tombol: Array, font: int) -> float:
+	var total := 0.0
+	for b in tombol:
+		total += _lebar_teks(b as Button, font)
+	return total
+
+# Lebar yang dibutuhkan satu tombol: tulisan ditambah margin kiri-kanan gaya tombol.
+func _lebar_teks(btn: Button, font: int) -> float:
+	var fnt := btn.get_theme_font("font")
+	var tulisan := fnt.get_string_size(btn.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font).x
+	var gaya := btn.get_theme_stylebox("normal")
+	return tulisan + gaya.get_margin(SIDE_LEFT) + gaya.get_margin(SIDE_RIGHT) + 2.0
 
 # Jumlah pesan belum dibaca. Dihitung ulang juga saat bahasa berganti.
 func _tulis_jumlah() -> void:
@@ -122,6 +175,7 @@ func _ganti_tab(tab: String) -> void:
 	_tab = tab
 	_pilih = ""
 	_pembaca = false
+	_belajar = false
 	_segarkan()
 
 func _bangun_daftar() -> void:
@@ -211,6 +265,7 @@ func _teks_pesan(label: Label, p: Dictionary, kunci: String) -> void:
 
 func _pilih_pesan(id: String) -> void:
 	_pilih = id
+	_belajar = false
 	_segarkan()
 
 func _aksi_baca() -> void:
@@ -227,11 +282,15 @@ func _aksi_hapus_daftar() -> void:
 		return
 	if _tab == "masuk":
 		Email.pindah_ke_sampah(_sesi, _pilih)
-	else:
+		_pilih = ""
+		_simpan()
+		_segarkan()
+		return
+	_minta_hapus_permanen(func():
 		Email.hapus_permanen(_sesi, _pilih)
-	_pilih = ""
-	_simpan()
-	_segarkan()
+		_pilih = ""
+		_simpan()
+		_segarkan())
 
 # Pembaca: kartu header dengan pengirim dan judul, isi pesan dalam area gulir, lalu tombol aksi.
 func _bangun_pembaca() -> void:
@@ -239,6 +298,9 @@ func _bangun_pembaca() -> void:
 	if p.is_empty():
 		_pembaca = false
 		_segarkan()
+		return
+	if _belajar:
+		_bangun_belajar(p)
 		return
 	var kartu := PanelContainer.new()
 	kartu.add_theme_stylebox_override("panel", Tema.kotak(LATAR_KARTU, Tema.TEAL, 2, 16))
@@ -279,6 +341,15 @@ func _bangun_pembaca() -> void:
 		_pembaca = false
 		_segarkan())
 	_bawah.add_child(keluar)
+	# Email tahap misi membawa tombol BELAJAR: materi tahap itu dibuka di sini, tanpa berpindah aplikasi.
+	var tahap := int(p.get("tahap", 0))
+	if tahap > 0 and not Misi.pembelajaran(String(p.get("misi", ""))).is_empty():
+		var belajar := _tombol_aksi("misi.tombol_belajar", Tema.TEAL)
+		belajar.pressed.connect(func():
+			_belajar = true
+			_tahap_belajar = tahap
+			_segarkan())
+		_bawah.add_child(belajar)
 	if _tab == "sampah":
 		var pulih := _tombol_aksi("email.pulihkan", Tema.TEAL)
 		pulih.pressed.connect(func():
@@ -290,11 +361,12 @@ func _bangun_pembaca() -> void:
 		_bawah.add_child(pulih)
 		var permanen := _tombol_aksi("email.hapus_permanen", Tema.AMBER)
 		permanen.pressed.connect(func():
-			Email.hapus_permanen(_sesi, _pilih)
-			_pembaca = false
-			_pilih = ""
-			_simpan()
-			_segarkan())
+			_minta_hapus_permanen(func():
+				Email.hapus_permanen(_sesi, _pilih)
+				_pembaca = false
+				_pilih = ""
+				_simpan()
+				_segarkan()))
 		_bawah.add_child(permanen)
 	else:
 		var hapus := _tombol_aksi("email.hapus", Tema.AMBER)
@@ -305,6 +377,102 @@ func _bangun_pembaca() -> void:
 			_simpan()
 			_segarkan())
 		_bawah.add_child(hapus)
+
+# Hapus permanen selalu lewat konfirmasi, karena pesan tidak bisa dipulihkan lagi.
+func _minta_hapus_permanen(aksi: Callable) -> void:
+	if not is_instance_valid(_konfirmasi):
+		_konfirmasi = KonfirmasiPanel.new()
+		_konfirmasi.diterima.connect(_jalankan_tertunda)
+		_konfirmasi.dibatalkan.connect(_batal_tertunda)
+		add_child(_konfirmasi)
+	_aksi_tertunda = aksi
+	_konfirmasi.tampil(Bahasa.t("email.konfirmasi_hapus_judul"), Bahasa.t("email.konfirmasi_hapus_isi"), Bahasa.t("email.hapus_permanen"), Bahasa.t("umum.batal"))
+
+func _jalankan_tertunda() -> void:
+	_konfirmasi.sembunyikan()
+	var aksi := _aksi_tertunda
+	_aksi_tertunda = Callable()
+	if aksi.is_valid():
+		aksi.call()
+
+func _batal_tertunda() -> void:
+	_konfirmasi.sembunyikan()
+	_aksi_tertunda = Callable()
+
+# Materi pembelajaran satu tahap: judul, enam bagian, dan tombol KEMBALI serta pindah tahap.
+func _bangun_belajar(p: Dictionary) -> void:
+	var id := String(p.get("misi", ""))
+	var jumlah := Misi.pembelajaran(id).size()
+	var n := clampi(_tahap_belajar, 1, maxi(jumlah, 1))
+	var materi: Dictionary = Misi.materi_tahap(id, n)
+	var kartu := PanelContainer.new()
+	kartu.add_theme_stylebox_override("panel", Tema.kotak(LATAR_KARTU, Tema.AMBER, 2, 16))
+	_area_pembaca.add_child(kartu)
+	var pad := MarginContainer.new()
+	Tema.margin_seragam(pad, 22)
+	kartu.add_child(pad)
+	var kepala := VBoxContainer.new()
+	kepala.add_theme_constant_override("separation", 8)
+	pad.add_child(kepala)
+	var l_pembelajaran := Tema.label("", Tema.AMBER, 30)
+	Bahasa.isi(l_pembelajaran, "misi.pembelajaran")
+	kepala.add_child(l_pembelajaran)
+	var l_tahap := Tema.label("", Tema.TEKS_REDUP, 22)
+	l_tahap.text = Bahasa.t("misi.materi_tahap") % [n, jumlah]
+	Bahasa.daftar_penyegar(l_tahap, func():
+		if is_instance_valid(l_tahap):
+			l_tahap.text = Bahasa.t("misi.materi_tahap") % [n, jumlah])
+	kepala.add_child(l_tahap)
+	kepala.add_child(_label_dwibahasa(String(materi.get("judul", "")), Tema.TEAL, 28))
+
+	var gulir := ScrollContainer.new()
+	gulir.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gulir.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_area_pembaca.add_child(gulir)
+	var isi := VBoxContainer.new()
+	isi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	isi.add_theme_constant_override("separation", 12)
+	gulir.add_child(isi)
+	var bagian := [
+		["misi.materi_konsep", "konsep"],
+		["misi.materi_cara", "cara_kerja"],
+		["misi.materi_contoh", "contoh"],
+		["misi.materi_hubungan", "hubungan"],
+		["misi.materi_ringkasan", "ringkasan"],
+	]
+	for b in bagian:
+		var h := Tema.label("", Tema.AMBER, 24)
+		Bahasa.isi(h, String(b[0]))
+		isi.add_child(h)
+		isi.add_child(_label_dwibahasa(String(materi.get(String(b[1]), "")), TEKS_ISI, 24))
+
+	var kembali := _tombol_aksi("misi.tombol_kembali", Tema.TEKS_REDUP)
+	kembali.pressed.connect(func():
+		_belajar = false
+		_segarkan())
+	_bawah.add_child(kembali)
+	if n > 1:
+		var sebelum := _tombol_aksi("misi.tombol_sebelumnya", Tema.TEAL)
+		sebelum.pressed.connect(func():
+			_tahap_belajar = n - 1
+			_segarkan())
+		_bawah.add_child(sebelum)
+	if n < jumlah:
+		var sesudah := _tombol_aksi("misi.tombol_berikutnya", Tema.TEAL)
+		sesudah.pressed.connect(func():
+			_tahap_belajar = n + 1
+			_segarkan())
+		_bawah.add_child(sesudah)
+
+# Teks dua-bahasa dari data misi; ikut berganti saat bahasa diganti.
+func _label_dwibahasa(teks: String, warna: Color, ukuran: int) -> Label:
+	var l := Tema.label(teks, warna, ukuran)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	Bahasa.daftar_penyegar(l, func():
+		if is_instance_valid(l):
+			l.text = Bahasa.pilih(teks))
+	return l
 
 func _hint(kunci: String) -> void:
 	var l := Tema.label("", Tema.AMBER, 24)
