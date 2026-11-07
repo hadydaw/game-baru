@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Pusat Misi 4A: status misi, pemeriksaan tujuan dari tindakan nyata, hadiah sekali, dan persistensi.
 
 const BERKAS := "user://uji_misi.json"
@@ -69,7 +71,7 @@ func test_ssh_gagal_tidak_menyelesaikan_tujuan() -> void:
 func test_misi_selesai_setelah_tindakan_nyata_dan_hadiah_sekali() -> void:
 	var s := _baru()
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("scan 10.7.0.8")
+	UA.alat(s, "scan", ["10.7.0.8"])
 	s.jalankan("ssh operator@arsip")
 	assert_true(s.jaringan.progres.has("ssh:arsip"), "login berhasil menandai tujuan")
 	assert_eq(String(s.misi["misi_1"]), "aktif", "belum selesai: catatan belum dibaca")
@@ -87,7 +89,7 @@ func test_misi_selesai_setelah_tindakan_nyata_dan_hadiah_sekali() -> void:
 func test_status_dan_hadiah_bertahan_setelah_muat_ulang() -> void:
 	var s := _baru()
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("scan 10.7.0.8")
+	UA.alat(s, "scan", ["10.7.0.8"])
 	s.jalankan("ssh operator@arsip")
 	s.jalankan("cat catatan.txt")
 	assert_true(Penyimpanan.simpan_sesi(s, BERKAS))

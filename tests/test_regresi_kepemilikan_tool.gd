@@ -1,5 +1,10 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
+func before_each() -> void:
+	Bahasa.kode = "id"
+
 # Regresi: perintah milik tool hanya aktif setelah tool dimiliki, dan help serta dispatcher konsisten.
 # Kasus asal: pemain membeli Packet Inspector, lalu "trace" ditolak karena Signal Tracer belum dibeli.
 
@@ -15,13 +20,16 @@ func _teks(hasil: Array) -> String:
 		t += Bahasa.pilih(Bahasa.pilih(String(b["teks"]))) + "\n"
 	return t
 
+func _galat(hasil: Array) -> bool:
+	return hasil.size() > 0 and String(hasil[0]["tipe"]) == "error"
+
 func _tidak_ditemukan(hasil: Array) -> bool:
 	return hasil.size() > 0 and String(hasil[0]["tipe"]) == "error" and Bahasa.pilih(String(hasil[0]["teks"])).ends_with("perintah tidak ditemukan")
 
 func test_trace_ditolak_sebelum_signal_tracer_dibeli() -> void:
 	var s := _sesi()
 	s.jalankan("ping -c 1 gerbang")
-	assert_true(_tidak_ditemukan(s.jalankan("trace gerbang")))
+	assert_true(_tidak_ditemukan(UA.alat(s, "trace", ["gerbang"])))
 	assert_false(s.inventory.punya("signal_tracer"))
 
 func test_pembelian_signal_tracer_membuka_trace() -> void:
@@ -29,15 +37,14 @@ func test_pembelian_signal_tracer_membuka_trace() -> void:
 	s.jalankan("ping -c 1 gerbang")
 	assert_true(bool(s.market.beli("a2", s)["ok"]), "pembelian a2 berhasil")
 	assert_true(s.inventory.punya("signal_tracer"))
-	var hasil := s.jalankan("trace gerbang")
+	var hasil := UA.alat(s, "trace", ["gerbang"])
 	assert_false(_tidak_ditemukan(hasil), "setelah dibeli, trace harus dikenali")
 	assert_true(_teks(hasil).contains("relay"))
 
 func test_pembelian_packet_inspector_tidak_membuka_trace() -> void:
 	var s := _sesi()
 	s.market.beli("a1", s)
-	assert_true(_tidak_ditemukan(s.jalankan("trace gerbang")), "tool lain tidak membuka trace")
-	assert_false(_tidak_ditemukan(s.jalankan("tools")))
+	assert_true(_tidak_ditemukan(UA.alat(s, "trace", ["gerbang"])), "tool lain tidak membuka trace")
 
 func test_help_konsisten_dengan_dispatcher() -> void:
 	var s := _sesi()
@@ -49,14 +56,18 @@ func test_help_konsisten_dengan_dispatcher() -> void:
 		if dikenal and CommandRegistry.pemilik(String(nama)) != "":
 			assert_false(_tidak_ditemukan(s.jalankan(String(nama))), "dispatcher mengenali %s" % nama)
 
-func test_setiap_perintah_milik_tool_punya_manual() -> void:
-	for id in ToolDefs.DEFS:
-		for c in ToolDefs.perintah(String(id)):
-			assert_true(Teks.MAN.has(String(c)), "manual untuk %s hilang" % c)
-			assert_eq(CommandRegistry.pemilik(String(c)), String(id), "%s terdaftar ke %s" % [c, id])
+func test_perintah_alat_dimiliki_tool_dan_bukan_perintah_terminal() -> void:
+	# Setiap perintah Alat punya tool pemilik, tetapi tidak ada di manual Terminal.
+	var s := _sesi()
+	for c in AlatCommands.NAMA:
+		if c == "scan":
+			continue  # scan tidak butuh tool
+		assert_ne(CommandRegistry.pemilik(String(c)), "", "%s punya tool pemilik" % c)
+		assert_false(Teks.MAN.has(String(c)), "%s bukan perintah Terminal" % c)
+		assert_true(_galat(s.jalankan(String(c))), "%s ditolak di Terminal" % c)
 
 func test_perintah_tanpa_pemilik_selalu_tersedia() -> void:
 	var kosong := _sesi()
 	kosong.inventory = Inventory.new()
-	for nama in ["ping", "nmap", "ls", "cd", "wallet", "bm", "tools", "device", "toko"]:
+	for nama in ["ping", "nmap", "ls", "cd", "lsusb", "apt", "man", "help"]:
 		assert_true(CommandRegistry.tersedia(kosong, nama), "%s tidak perlu tool" % nama)

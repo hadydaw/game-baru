@@ -102,6 +102,8 @@ func _ready() -> void:
     _masukan.add_theme_color_override("font_color", Color(WARNA_TEKS))
     _masukan.add_theme_stylebox_override("normal", Tema.kotak(Color(0.05, 0.08, 0.1), Tema.TEAL, 1, 10))
     _masukan.add_theme_stylebox_override("focus", Tema.kotak(Color(0.05, 0.08, 0.1), Tema.TEAL, 2, 10))
+    # Tanpa ini LineEdit melepas mode edit saat Enter: ketikan berikutnya dibuang sampai kolom diklik ulang.
+    _masukan.keep_editing_on_text_submit = true
     _masukan.text_submitted.connect(_kirim)
     _masukan.text_changed.connect(_teks_berubah)
     baris.add_child(_masukan)
@@ -423,6 +425,11 @@ func _jalankan_aksi(a: String) -> void:
         return
     match a:
         "batal":
+            # Ctrl+C saat prompt Y/n apt: batalkan prompt, tidak ada yang dipasang.
+            if _sesi != null and _sesi.batalkan_konfirmasi():
+                _tampil_perintah(_masukan.text + "^C")
+                _set_teks("")
+                return
             _tampil_perintah(_masukan.text + "^C")
             _set_teks("")
         "bersihkan":

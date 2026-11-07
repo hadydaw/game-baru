@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Pengujian Wi-Fi yang mendalam: keluaran tabel, hambatan perangkat, sinyal lemah, log, laporan,
 # permintaan membuka Network Manager setelah scan, dan Tab melengkapi alat yang terpasang.
 
@@ -10,8 +12,8 @@ func _sesi_terpasang() -> ShellSession:
 	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
 	Misi.perbarui(s)
 	Misi.terima(s, "misi_1")
-	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install airodump-ng", "tools install network-analyzer", "tools install password-auditor"]:
-		s.jalankan(c)
+	for c in ["__beli__usb_wireless_adapter", "__beli__antena_eksternal", "__beli__kabel_usb", "__rakit__", "apt install -y driver-ar9271", "__hubungkan__", "apt install -y aircrack-ng", "apt install -y network-analyzer", "apt install -y password-auditor"]:
+		UA.jalan(s, c)
 	return s
 
 func _teks(hasil: Array) -> String:
@@ -44,8 +46,8 @@ func test_handshake_gagal_karena_sinyal_lemah_beralasan() -> void:
 	s.jalankan("airmon-ng start wlan0")
 	s.jalankan("airodump-ng wlan0mon")
 	s.jalankan("airodump-ng --bssid 02:4A:1C:00:03:03 wlan0mon")
-	s.jalankan("security analyze LAB-WIFI-03")
-	var t := _teks(s.jalankan("audit auth LAB-WIFI-03"))
+	s.jalankan("network-analyzer analyze LAB-WIFI-03")
+	var t := _teks(s.jalankan("password-auditor auth LAB-WIFI-03"))
 	assert_true(t.contains("tidak lengkap"), "alasan kegagalan tampil")
 	assert_false(s.wifi.handshake.has("LAB-WIFI-03"), "handshake tidak tercatat")
 
@@ -54,9 +56,9 @@ func test_antena_lebih_kuat_membuat_handshake_berhasil() -> void:
 	s.jalankan("airmon-ng start wlan0")
 	s.jalankan("airodump-ng wlan0mon")
 	s.jalankan("airodump-ng --bssid 02:4A:1C:00:03:03 wlan0mon")
-	s.jalankan("security analyze LAB-WIFI-03")
+	s.jalankan("network-analyzer analyze LAB-WIFI-03")
 	s.perangkat.rakitan["antena"] = 2
-	s.jalankan("audit auth LAB-WIFI-03")
+	s.jalankan("password-auditor auth LAB-WIFI-03")
 	assert_true(s.wifi.handshake.has("LAB-WIFI-03"), "antena penguat menutup selisih sinyal")
 
 func test_log_dan_laporan_tertulis_di_berkas() -> void:
@@ -64,8 +66,8 @@ func test_log_dan_laporan_tertulis_di_berkas() -> void:
 	s.jalankan("airmon-ng start wlan0")
 	s.jalankan("airodump-ng wlan0mon")
 	s.jalankan("airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
-	s.jalankan("security analyze LAB-WIFI-01")
-	s.jalankan("security report LAB-WIFI-01")
+	s.jalankan("network-analyzer analyze LAB-WIFI-01")
+	s.jalankan("network-analyzer report LAB-WIFI-01")
 	var log_node := s.fs.ambil("/home/operator/log/wifi.log")
 	assert_false(log_node.is_empty(), "log dibuat")
 	assert_true(String(log_node["isi"]).contains("airodump-ng wlan0mon"), "log mencatat scan")
@@ -78,8 +80,8 @@ func test_laporan_butuh_analisis_dulu() -> void:
 	var s := _sesi_terpasang()
 	s.jalankan("airmon-ng start wlan0")
 	s.jalankan("airodump-ng wlan0mon")
-	var t := _teks(s.jalankan("security report LAB-WIFI-01"))
-	assert_true(t.contains("security analyze"), "pemain diarahkan ke analisis")
+	var t := _teks(s.jalankan("network-analyzer report LAB-WIFI-01"))
+	assert_true(t.contains("network-analyzer analyze"), "pemain diarahkan ke analisis")
 
 func test_tab_melengkapi_alat_yang_terpasang() -> void:
 	var s := _sesi_terpasang()

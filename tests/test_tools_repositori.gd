@@ -22,18 +22,18 @@ func _adapter(s: ShellSession) -> void:
 	s.perangkat.rakit()
 
 func test_katalog_berisi_software_awal() -> void:
-	for id in ["driver-ar9271", "airodump-ng", "network-analyzer", "password-auditor"]:
+	for id in ["driver-ar9271", "aircrack-ng", "network-analyzer", "password-auditor"]:
 		assert_false(Repositori.item(id).is_empty(), id)
 
 func test_cari_mencocokkan_nama_dan_kategori() -> void:
-	assert_true(Repositori.cari("airodump").has("airodump-ng"))
+	assert_true(Repositori.cari("airodump").has("aircrack-ng"))
 	assert_true(Repositori.cari("autentikasi").has("password-auditor"))
 	assert_eq(Repositori.cari("xyz_tidak_ada").size(), 0)
 
 func test_pasang_butuh_dependensi() -> void:
 	var s := _sesi()
 	_adapter(s)
-	var h := s.repositori.pasang("airodump-ng", s.economy, s.perangkat)
+	var h := s.repositori.pasang("aircrack-ng", s.economy, s.perangkat)
 	assert_false(bool(h["ok"]))
 	assert_eq(String(h["kunci"]), "sw.dependensi")
 
@@ -42,20 +42,20 @@ func test_pasang_berurutan_dan_bayar() -> void:
 	_adapter(s)
 	var saldo := s.economy.saldo
 	assert_true(bool(s.repositori.pasang("driver-ar9271", s.economy, s.perangkat)["ok"]))
-	assert_true(bool(s.repositori.pasang("airodump-ng", s.economy, s.perangkat)["ok"]))
-	assert_eq(s.economy.saldo, saldo - 60, "driver gratis, airodump-ng Kr 60")
-	assert_eq(s.repositori.versi("airodump-ng"), "1.0", "dipasang dengan versi awal")
+	assert_true(bool(s.repositori.pasang("aircrack-ng", s.economy, s.perangkat)["ok"]))
+	assert_eq(s.economy.saldo, saldo - 60, "driver gratis, aircrack-ng (berisi airodump-ng dan airmon-ng) Kr 60")
+	assert_eq(s.repositori.versi("aircrack-ng"), "1.6", "dipasang dengan versi awal")
 
-func test_pasang_butuh_adapter_untuk_airodump() -> void:
+func test_pasang_butuh_adapter_untuk_aircrack() -> void:
 	var s := _sesi()
 	s.repositori.terpasang["driver-ar9271"] = {"versi": "2.0", "riwayat": ["2.0"]}
-	var h := s.repositori.pasang("airodump-ng", s.economy, s.perangkat)
+	var h := s.repositori.pasang("aircrack-ng", s.economy, s.perangkat)
 	assert_false(bool(h["ok"]), "tanpa adapter tidak bisa dipasang")
 	assert_eq(String(h["kunci"]), "sw.butuh_adapter")
 
 func test_saldo_kurang_menolak_tanpa_mengubah_saldo() -> void:
 	var s := _sesi()
-	s.repositori.terpasang["airodump-ng"] = {"versi": "1.0", "riwayat": ["1.0"]}
+	s.repositori.terpasang["aircrack-ng"] = {"versi": "1.6", "riwayat": ["1.6"]}
 	s.economy.saldo = 50
 	var h := s.repositori.pasang("network-analyzer", s.economy, s.perangkat)
 	assert_false(bool(h["ok"]))
@@ -63,31 +63,31 @@ func test_saldo_kurang_menolak_tanpa_mengubah_saldo() -> void:
 
 func test_perbarui_menaikkan_versi_dan_riwayat() -> void:
 	var s := _sesi()
-	s.repositori.terpasang["airodump-ng"] = {"versi": "1.0", "riwayat": ["1.0"]}
-	assert_true(bool(s.repositori.perbarui("airodump-ng")["ok"]))
-	assert_eq(s.repositori.versi("airodump-ng"), "1.1")
-	assert_eq(s.repositori.riwayat("airodump-ng"), ["1.0", "1.1"])
-	assert_false(bool(s.repositori.perbarui("airodump-ng")["ok"]), "sudah terbaru")
+	s.repositori.terpasang["aircrack-ng"] = {"versi": "1.6", "riwayat": ["1.6"]}
+	assert_true(bool(s.repositori.perbarui("aircrack-ng")["ok"]))
+	assert_eq(s.repositori.versi("aircrack-ng"), "1.7")
+	assert_eq(s.repositori.riwayat("aircrack-ng"), ["1.6", "1.7"])
+	assert_false(bool(s.repositori.perbarui("aircrack-ng")["ok"]), "sudah terbaru")
 
 func test_perintah_software_hanya_tersedia_setelah_dipasang() -> void:
 	var s := _sesi()
 	assert_true(_teks(s.jalankan("airodump-ng wlan0mon")).contains("tidak ditemukan"))
-	s.repositori.terpasang["airodump-ng"] = {"versi": "1.0", "riwayat": ["1.0"]}
+	s.repositori.terpasang["aircrack-ng"] = {"versi": "1.6", "riwayat": ["1.6"]}
 	assert_false(_teks(s.jalankan("airodump-ng wlan0mon")).contains("tidak ditemukan"))
 
 func test_terminal_tools_search_info_install() -> void:
 	var s := _sesi()
 	_adapter(s)
-	assert_true(_teks(s.jalankan("tools search airodump")).contains("airodump-ng"))
-	assert_true(_teks(s.jalankan("tools info airodump-ng")).contains("driver-ar9271"))
-	assert_false(_teks(s.jalankan("tools install driver-ar9271")).contains("bash:"))
+	assert_true(_teks(s.jalankan("apt search airodump")).contains("aircrack-ng"))
+	assert_true(_teks(s.jalankan("apt show aircrack-ng")).contains("driver-ar9271"))
+	assert_false(_teks(s.jalankan("apt install -y driver-ar9271")).contains("bash:"))
 	assert_true(s.repositori.punya("driver-ar9271"))
 	assert_true(s.jaringan.progres.has("pasang:driver-ar9271"))
 
-func test_terminal_tools_galat_tanpa_argumen_lengkap() -> void:
+func test_terminal_apt_galat_tanpa_argumen_lengkap() -> void:
 	var s := _sesi()
-	assert_eq(String(s.jalankan("tools install")[0]["tipe"]), "error")
-	assert_eq(String(s.jalankan("tools bukan_subperintah")[0]["tipe"]), "error")
+	assert_true(_teks(s.jalankan("apt install")).contains("0 upgraded"), "apt install tanpa paket seperti apt asli")
+	assert_eq(String(s.jalankan("tools install driver-ar9271")[0]["tipe"]), "error", "perintah lama ditolak")
 
 func test_repositori_bertahan_saat_disimpan() -> void:
 	var s := _sesi()

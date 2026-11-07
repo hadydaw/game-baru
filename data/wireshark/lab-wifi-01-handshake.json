@@ -1,0 +1,2351 @@
+{
+ "id": "lab-wifi-01-handshake",
+ "judul": "Handshake WPA2 LAB-WIFI-01",
+ "antarmuka": "wlan0mon",
+ "deskripsi": "Pemindaian beacon, autentikasi, asosiasi, dan empat pesan 4-way handshake WPA2 dari LAB-WIFI-01 (kanal 6). Data simulasi untuk pelatihan, bukan lalu lintas nyata.",
+ "simulasi": true,
+ "paket": [
+  {
+   "no": 1,
+   "waktu": 0.0,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "802.11",
+   "panjang": 70,
+   "info": "Beacon frame, SN=2100, FN=0, Flags=........, BI=100, SSID=LAB-WIFI-01",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "wlan.ssid": "LAB-WIFI-01",
+    "wlan.channel": 6,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "ff:ff:ff:ff:ff:ff"
+   },
+   "hex": "000008000000000080000000ffffffffffff024a1c000101024a1c0001014083d20296490000000064001104000b4c41422d574946492d3031010882848b960c121824030106",
+   "rincian": [
+    {
+     "judul": "Frame 1: 70 bytes on wire (560 bits), 70 bytes captured (560 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.000000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 70 bytes (560 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Beacon frame",
+     "mulai": 8,
+     "panjang": 62,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0080 (Beacon frame)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: ff:ff:ff:ff:ff:ff",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 2100",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Timestamp: 1234567890",
+       "mulai": 32,
+       "panjang": 8
+      },
+      {
+       "teks": "Beacon Interval: 0.102400 [Seconds]",
+       "mulai": 40,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-01\"",
+       "mulai": 44,
+       "panjang": 13
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B), 6, 9, 12, 18 Mbps",
+       "mulai": 57,
+       "panjang": 10
+      },
+      {
+       "teks": "Tag: DS Parameter set: Current Channel: 6",
+       "mulai": 67,
+       "panjang": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 2,
+   "waktu": 0.102,
+   "sumber": "02:4a:1c:00:02:02",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "802.11",
+   "panjang": 70,
+   "info": "Beacon frame, SN=2100, FN=0, Flags=........, BI=100, SSID=LAB-WIFI-02",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.bssid": "02:4a:1c:00:02:02",
+    "wlan.ssid": "LAB-WIFI-02",
+    "wlan.channel": 11,
+    "wlan.sa": "02:4a:1c:00:02:02",
+    "wlan.da": "ff:ff:ff:ff:ff:ff"
+   },
+   "hex": "000008000000000080000000ffffffffffff024a1c000202024a1c0002024083429197490000000064001104000b4c41422d574946492d3032010882848b960c12182403010b",
+   "rincian": [
+    {
+     "judul": "Frame 2: 70 bytes on wire (560 bits), 70 bytes captured (560 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.102000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 70 bytes (560 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Beacon frame",
+     "mulai": 8,
+     "panjang": 62,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0080 (Beacon frame)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: ff:ff:ff:ff:ff:ff",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:02:02",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:02:02",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 2100",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Timestamp: 1234669890",
+       "mulai": 32,
+       "panjang": 8
+      },
+      {
+       "teks": "Beacon Interval: 0.102400 [Seconds]",
+       "mulai": 40,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-02\"",
+       "mulai": 44,
+       "panjang": 13
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B), 6, 9, 12, 18 Mbps",
+       "mulai": 57,
+       "panjang": 10
+      },
+      {
+       "teks": "Tag: DS Parameter set: Current Channel: 11",
+       "mulai": 67,
+       "panjang": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 3,
+   "waktu": 0.204,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "802.11",
+   "panjang": 70,
+   "info": "Beacon frame, SN=2101, FN=0, Flags=........, BI=100, SSID=LAB-WIFI-01",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "wlan.ssid": "LAB-WIFI-01",
+    "wlan.channel": 6,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "ff:ff:ff:ff:ff:ff"
+   },
+   "hex": "000008000000000080000000ffffffffffff024a1c000101024a1c0001015083b21f99490000000064001104000b4c41422d574946492d3031010882848b960c121824030106",
+   "rincian": [
+    {
+     "judul": "Frame 3: 70 bytes on wire (560 bits), 70 bytes captured (560 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.204000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 70 bytes (560 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Beacon frame",
+     "mulai": 8,
+     "panjang": 62,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0080 (Beacon frame)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: ff:ff:ff:ff:ff:ff",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 2101",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Timestamp: 1234771890",
+       "mulai": 32,
+       "panjang": 8
+      },
+      {
+       "teks": "Beacon Interval: 0.102400 [Seconds]",
+       "mulai": 40,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-01\"",
+       "mulai": 44,
+       "panjang": 13
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B), 6, 9, 12, 18 Mbps",
+       "mulai": 57,
+       "panjang": 10
+      },
+      {
+       "teks": "Tag: DS Parameter set: Current Channel: 6",
+       "mulai": 67,
+       "panjang": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 4,
+   "waktu": 0.306,
+   "sumber": "02:4a:1c:00:02:02",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "802.11",
+   "panjang": 70,
+   "info": "Beacon frame, SN=2101, FN=0, Flags=........, BI=100, SSID=LAB-WIFI-02",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.bssid": "02:4a:1c:00:02:02",
+    "wlan.ssid": "LAB-WIFI-02",
+    "wlan.channel": 11,
+    "wlan.sa": "02:4a:1c:00:02:02",
+    "wlan.da": "ff:ff:ff:ff:ff:ff"
+   },
+   "hex": "000008000000000080000000ffffffffffff024a1c000202024a1c000202508322ae9a490000000064001104000b4c41422d574946492d3032010882848b960c12182403010b",
+   "rincian": [
+    {
+     "judul": "Frame 4: 70 bytes on wire (560 bits), 70 bytes captured (560 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.306000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 70 bytes (560 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Beacon frame",
+     "mulai": 8,
+     "panjang": 62,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0080 (Beacon frame)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: ff:ff:ff:ff:ff:ff",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:02:02",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:02:02",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 2101",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Timestamp: 1234873890",
+       "mulai": 32,
+       "panjang": 8
+      },
+      {
+       "teks": "Beacon Interval: 0.102400 [Seconds]",
+       "mulai": 40,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-02\"",
+       "mulai": 44,
+       "panjang": 13
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B), 6, 9, 12, 18 Mbps",
+       "mulai": 57,
+       "panjang": 10
+      },
+      {
+       "teks": "Tag: DS Parameter set: Current Channel: 11",
+       "mulai": 67,
+       "panjang": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "waktu": 0.408,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "802.11",
+   "panjang": 70,
+   "info": "Beacon frame, SN=2102, FN=0, Flags=........, BI=100, SSID=LAB-WIFI-01",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "wlan.ssid": "LAB-WIFI-01",
+    "wlan.channel": 6,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "ff:ff:ff:ff:ff:ff"
+   },
+   "hex": "000008000000000080000000ffffffffffff024a1c000101024a1c0001016083923c9c490000000064001104000b4c41422d574946492d3031010882848b960c121824030106",
+   "rincian": [
+    {
+     "judul": "Frame 5: 70 bytes on wire (560 bits), 70 bytes captured (560 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.408000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 70 bytes (560 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Beacon frame",
+     "mulai": 8,
+     "panjang": 62,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0080 (Beacon frame)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: ff:ff:ff:ff:ff:ff",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 2102",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Timestamp: 1234975890",
+       "mulai": 32,
+       "panjang": 8
+      },
+      {
+       "teks": "Beacon Interval: 0.102400 [Seconds]",
+       "mulai": 40,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-01\"",
+       "mulai": 44,
+       "panjang": 13
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B), 6, 9, 12, 18 Mbps",
+       "mulai": 57,
+       "panjang": 10
+      },
+      {
+       "teks": "Tag: DS Parameter set: Current Channel: 6",
+       "mulai": 67,
+       "panjang": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 6,
+   "waktu": 0.51,
+   "sumber": "02:4a:1c:00:02:02",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "802.11",
+   "panjang": 70,
+   "info": "Beacon frame, SN=2102, FN=0, Flags=........, BI=100, SSID=LAB-WIFI-02",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.bssid": "02:4a:1c:00:02:02",
+    "wlan.ssid": "LAB-WIFI-02",
+    "wlan.channel": 11,
+    "wlan.sa": "02:4a:1c:00:02:02",
+    "wlan.da": "ff:ff:ff:ff:ff:ff"
+   },
+   "hex": "000008000000000080000000ffffffffffff024a1c000202024a1c000202608302cb9d490000000064001104000b4c41422d574946492d3032010882848b960c12182403010b",
+   "rincian": [
+    {
+     "judul": "Frame 6: 70 bytes on wire (560 bits), 70 bytes captured (560 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.510000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 70 bytes (560 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 70,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Beacon frame",
+     "mulai": 8,
+     "panjang": 62,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0080 (Beacon frame)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: ff:ff:ff:ff:ff:ff",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:02:02",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:02:02",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 2102",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Timestamp: 1235077890",
+       "mulai": 32,
+       "panjang": 8
+      },
+      {
+       "teks": "Beacon Interval: 0.102400 [Seconds]",
+       "mulai": 40,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-02\"",
+       "mulai": 44,
+       "panjang": 13
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B), 6, 9, 12, 18 Mbps",
+       "mulai": 57,
+       "panjang": 10
+      },
+      {
+       "teks": "Tag: DS Parameter set: Current Channel: 11",
+       "mulai": 67,
+       "panjang": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 7,
+   "waktu": 0.512,
+   "sumber": "3c:52:82:11:7a:08",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "802.11",
+   "panjang": 40,
+   "info": "Probe Request, SN=311, FN=0, Flags=........, SSID=Broadcast",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 4,
+    "wlan.sa": "3c:52:82:11:7a:08",
+    "wlan.da": "ff:ff:ff:ff:ff:ff",
+    "wlan.bssid": "ff:ff:ff:ff:ff:ff",
+    "wlan.ssid": ""
+   },
+   "hex": "000008000000000040000000ffffffffffff3c5282117a08ffffffffffff70130000010482848b96",
+   "rincian": [
+    {
+     "judul": "Frame 7: 40 bytes on wire (320 bits), 40 bytes captured (320 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 40,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.512000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 40 bytes (320 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 40,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Probe Request",
+     "mulai": 8,
+     "panjang": 32,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0040 (Probe Request)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: ff:ff:ff:ff:ff:ff",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 3c:52:82:11:7a:08",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: ff:ff:ff:ff:ff:ff",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 311",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: Broadcast",
+       "mulai": 32,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B)",
+       "mulai": 34,
+       "panjang": 6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 8,
+   "waktu": 0.518,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "3c:52:82:11:7a:08",
+   "protokol": "802.11",
+   "panjang": 66,
+   "info": "Probe Response, SN=4011, FN=0, Flags=........, BI=100, SSID=LAB-WIFI-01",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 5,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "3c:52:82:11:7a:08",
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "wlan.ssid": "LAB-WIFI-01",
+    "wlan.channel": 6
+   },
+   "hex": "0000080000000000500000003c5282117a08024a1c000101024a1c000101b0fad2d29d490000000064001104000b4c41422d574946492d3031010482848b96030106",
+   "rincian": [
+    {
+     "judul": "Frame 8: 66 bytes on wire (528 bits), 66 bytes captured (528 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 66,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.518000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 66 bytes (528 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 66,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Probe Response",
+     "mulai": 8,
+     "panjang": 58,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0050 (Probe Response)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: 3c:52:82:11:7a:08",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 4011",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Timestamp: 1235079890",
+       "mulai": 32,
+       "panjang": 8
+      },
+      {
+       "teks": "Beacon Interval: 0.102400 [Seconds]",
+       "mulai": 40,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-01\"",
+       "mulai": 44,
+       "panjang": 13
+      },
+      {
+       "teks": "Tag: Supported Rates 1(B), 2(B), 5.5(B), 11(B)",
+       "mulai": 57,
+       "panjang": 6
+      },
+      {
+       "teks": "Tag: DS Parameter set: Current Channel: 6",
+       "mulai": 63,
+       "panjang": 3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 9,
+   "waktu": 0.602,
+   "sumber": "3c:52:82:11:7a:08",
+   "tujuan": "02:4a:1c:00:01:01",
+   "protokol": "802.11",
+   "panjang": 38,
+   "info": "Authentication, SN=312, FN=0, Flags=........, Open System, Request",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 11,
+    "wlan.sa": "3c:52:82:11:7a:08",
+    "wlan.da": "02:4a:1c:00:01:01",
+    "wlan.bssid": "02:4a:1c:00:01:01"
+   },
+   "hex": "0000080000000000b0000000024a1c0001013c5282117a08024a1c0001018013000001000000",
+   "rincian": [
+    {
+     "judul": "Frame 9: 38 bytes on wire (304 bits), 38 bytes captured (304 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 38,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.602000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 38 bytes (304 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 38,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Authentication",
+     "mulai": 8,
+     "panjang": 30,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x00b0 (Authentication)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: 02:4a:1c:00:01:01",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 3c:52:82:11:7a:08",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 312",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Authentication Algorithm: Open System (0)",
+       "mulai": 32,
+       "panjang": 2
+      },
+      {
+       "teks": "Authentication SEQ: 1",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Status code: Successful (0x0000)",
+       "mulai": 36,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 10,
+   "waktu": 0.605,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "3c:52:82:11:7a:08",
+   "protokol": "802.11",
+   "panjang": 38,
+   "info": "Authentication, SN=4012, FN=0, Flags=........, Open System, Response",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 11,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "3c:52:82:11:7a:08",
+    "wlan.bssid": "02:4a:1c:00:01:01"
+   },
+   "hex": "0000080000000000b00000003c5282117a08024a1c000101024a1c000101c0fa000002000000",
+   "rincian": [
+    {
+     "judul": "Frame 10: 38 bytes on wire (304 bits), 38 bytes captured (304 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 38,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.605000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 38 bytes (304 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 38,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Authentication",
+     "mulai": 8,
+     "panjang": 30,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x00b0 (Authentication)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: 3c:52:82:11:7a:08",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 4012",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Authentication Algorithm: Open System (0)",
+       "mulai": 32,
+       "panjang": 2
+      },
+      {
+       "teks": "Authentication SEQ: 2",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Status code: Successful (0x0000)",
+       "mulai": 36,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 11,
+   "waktu": 0.611,
+   "sumber": "3c:52:82:11:7a:08",
+   "tujuan": "02:4a:1c:00:01:01",
+   "protokol": "802.11",
+   "panjang": 53,
+   "info": "Association Request, SN=313, FN=0, Flags=........, SSID=LAB-WIFI-01",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 0,
+    "wlan.sa": "3c:52:82:11:7a:08",
+    "wlan.da": "02:4a:1c:00:01:01",
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "wlan.ssid": "LAB-WIFI-01"
+   },
+   "hex": "000008000000000000000000024a1c0001013c5282117a08024a1c000101901311040a00000b4c41422d574946492d303101028284",
+   "rincian": [
+    {
+     "judul": "Frame 11: 53 bytes on wire (424 bits), 53 bytes captured (424 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 53,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.611000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 53 bytes (424 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 53,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Association Request",
+     "mulai": 8,
+     "panjang": 45,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0000 (Association Request)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: 02:4a:1c:00:01:01",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 3c:52:82:11:7a:08",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 313",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 32,
+       "panjang": 2
+      },
+      {
+       "teks": "Listen Interval: 10",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Tag: SSID parameter set: \"LAB-WIFI-01\"",
+       "mulai": 36,
+       "panjang": 13
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 12,
+   "waktu": 0.614,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "3c:52:82:11:7a:08",
+   "protokol": "802.11",
+   "panjang": 42,
+   "info": "Association Response, SN=4013, FN=0, Flags=........, Status: Successful",
+   "lapisan": [
+    "radiotap",
+    "wlan"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 1,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "3c:52:82:11:7a:08",
+    "wlan.bssid": "02:4a:1c:00:01:01"
+   },
+   "hex": "0000080000000000100000003c5282117a08024a1c000101024a1c000101d0fa1104000001c001028284",
+   "rincian": [
+    {
+     "judul": "Frame 12: 42 bytes on wire (336 bits), 42 bytes captured (336 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.614000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 42 bytes (336 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Association Response",
+     "mulai": 8,
+     "panjang": 34,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0010 (Association Response)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination address: 3c:52:82:11:7a:08",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Source address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 4013",
+       "mulai": 30,
+       "panjang": 2
+      },
+      {
+       "teks": "Capability Information: 0x0411",
+       "mulai": 32,
+       "panjang": 2
+      },
+      {
+       "teks": "Status code: Successful (0x0000)",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Association ID: 1 (0xc001)",
+       "mulai": 36,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 13,
+   "waktu": 0.802,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "3c:52:82:11:7a:08",
+   "protokol": "EAPOL",
+   "panjang": 139,
+   "info": "Key (Message 1 of 4)",
+   "lapisan": [
+    "radiotap",
+    "wlan",
+    "llc",
+    "eapol"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "3c:52:82:11:7a:08",
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "eapol.msg": 1
+   },
+   "hex": "0000080000000000080200003c5282117a08024a1c000101024a1c0001014000aaaa03000000888e0203005f02008a00100000000000000001101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 13: 139 bytes on wire (1112 bits), 139 bytes captured (1112 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 139,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.802000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 139 bytes (1112 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan:llc:eapol",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 139,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Data, Flags: .....F.",
+     "mulai": 8,
+     "panjang": 131,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0208 (Data, From DS)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Receiver address: 3c:52:82:11:7a:08",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Transmitter address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 4100",
+       "mulai": 30,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Logical-Link Control",
+     "mulai": 32,
+     "panjang": 107,
+     "bidang": [
+      {
+       "teks": "DSAP: SNAP (0xaa)",
+       "mulai": 32,
+       "panjang": 1
+      },
+      {
+       "teks": "SSAP: SNAP (0xaa)",
+       "mulai": 33,
+       "panjang": 1
+      },
+      {
+       "teks": "Control field: U, func=UI (0x03)",
+       "mulai": 34,
+       "panjang": 1
+      },
+      {
+       "teks": "Organization Code: Encapsulated Ethernet (0x000000)",
+       "mulai": 35,
+       "panjang": 3
+      },
+      {
+       "teks": "Type: 802.1X Authentication (0x888e)",
+       "mulai": 38,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "802.1X Authentication",
+     "mulai": 40,
+     "panjang": 99,
+     "bidang": [
+      {
+       "teks": "Version: 802.1X-2004 (2)",
+       "mulai": 40,
+       "panjang": 1
+      },
+      {
+       "teks": "Type: Key (3)",
+       "mulai": 41,
+       "panjang": 1
+      },
+      {
+       "teks": "Length: 95",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Descriptor Type: EAPOL RSN key (2)",
+       "mulai": 44,
+       "panjang": 1
+      },
+      {
+       "teks": "Key Information: 0x008a",
+       "mulai": 45,
+       "panjang": 2
+      },
+      {
+       "teks": "Key Length: 16",
+       "mulai": 47,
+       "panjang": 2
+      },
+      {
+       "teks": "Replay Counter: 1",
+       "mulai": 49,
+       "panjang": 8
+      },
+      {
+       "teks": "Key Nonce: 10111213...",
+       "mulai": 57,
+       "panjang": 32
+      },
+      {
+       "teks": "Key IV: 00000000...",
+       "mulai": 89,
+       "panjang": 16
+      },
+      {
+       "teks": "Key MIC: 00000000000000000000000000000000",
+       "mulai": 121,
+       "panjang": 16
+      },
+      {
+       "teks": "Key Data Length: 0",
+       "mulai": 137,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 14,
+   "waktu": 0.806,
+   "sumber": "3c:52:82:11:7a:08",
+   "tujuan": "02:4a:1c:00:01:01",
+   "protokol": "EAPOL",
+   "panjang": 161,
+   "info": "Key (Message 2 of 4)",
+   "lapisan": [
+    "radiotap",
+    "wlan",
+    "llc",
+    "eapol"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.sa": "3c:52:82:11:7a:08",
+    "wlan.da": "02:4a:1c:00:01:01",
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "eapol.msg": 2
+   },
+   "hex": "000008000000000008020000024a1c0001013c5282117a08024a1c0001015000aaaa03000000888e0203007502010a00100000000000000001505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f00000000000000000000000000000000000000000000000000000000000000008e2c51d7a0f3b9c64d1e27a58f09b3c2001630140100000fac040100000fac040100000fac020c00",
+   "rincian": [
+    {
+     "judul": "Frame 14: 161 bytes on wire (1288 bits), 161 bytes captured (1288 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 161,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.806000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 161 bytes (1288 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan:llc:eapol",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 161,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Data, Flags: .....F.",
+     "mulai": 8,
+     "panjang": 153,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0208 (Data, From DS)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Receiver address: 02:4a:1c:00:01:01",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Transmitter address: 3c:52:82:11:7a:08",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 4101",
+       "mulai": 30,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Logical-Link Control",
+     "mulai": 32,
+     "panjang": 129,
+     "bidang": [
+      {
+       "teks": "DSAP: SNAP (0xaa)",
+       "mulai": 32,
+       "panjang": 1
+      },
+      {
+       "teks": "SSAP: SNAP (0xaa)",
+       "mulai": 33,
+       "panjang": 1
+      },
+      {
+       "teks": "Control field: U, func=UI (0x03)",
+       "mulai": 34,
+       "panjang": 1
+      },
+      {
+       "teks": "Organization Code: Encapsulated Ethernet (0x000000)",
+       "mulai": 35,
+       "panjang": 3
+      },
+      {
+       "teks": "Type: 802.1X Authentication (0x888e)",
+       "mulai": 38,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "802.1X Authentication",
+     "mulai": 40,
+     "panjang": 121,
+     "bidang": [
+      {
+       "teks": "Version: 802.1X-2004 (2)",
+       "mulai": 40,
+       "panjang": 1
+      },
+      {
+       "teks": "Type: Key (3)",
+       "mulai": 41,
+       "panjang": 1
+      },
+      {
+       "teks": "Length: 117",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Descriptor Type: EAPOL RSN key (2)",
+       "mulai": 44,
+       "panjang": 1
+      },
+      {
+       "teks": "Key Information: 0x010a",
+       "mulai": 45,
+       "panjang": 2
+      },
+      {
+       "teks": "Key Length: 16",
+       "mulai": 47,
+       "panjang": 2
+      },
+      {
+       "teks": "Replay Counter: 1",
+       "mulai": 49,
+       "panjang": 8
+      },
+      {
+       "teks": "Key Nonce: 50515253...",
+       "mulai": 57,
+       "panjang": 32
+      },
+      {
+       "teks": "Key IV: 00000000...",
+       "mulai": 89,
+       "panjang": 16
+      },
+      {
+       "teks": "Key MIC: 8e2c51d7a0f3b9c64d1e27a58f09b3c2",
+       "mulai": 121,
+       "panjang": 16
+      },
+      {
+       "teks": "Key Data Length: 22",
+       "mulai": 137,
+       "panjang": 2
+      },
+      {
+       "teks": "Key Data: 22 bytes",
+       "mulai": 139,
+       "panjang": 22
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 15,
+   "waktu": 0.811,
+   "sumber": "02:4a:1c:00:01:01",
+   "tujuan": "3c:52:82:11:7a:08",
+   "protokol": "EAPOL",
+   "panjang": 161,
+   "info": "Key (Message 3 of 4)",
+   "lapisan": [
+    "radiotap",
+    "wlan",
+    "llc",
+    "eapol"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.sa": "02:4a:1c:00:01:01",
+    "wlan.da": "3c:52:82:11:7a:08",
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "eapol.msg": 3
+   },
+   "hex": "0000080000000000080200003c5282117a08024a1c000101024a1c0001016000aaaa03000000888e020300750213ca00100000000000000002101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f00000000000000000000000000000000000000000000000000000000000000001d7f03b6e925a41c8b3f6e02d9c74a58001630140100000fac040100000fac040100000fac020c00",
+   "rincian": [
+    {
+     "judul": "Frame 15: 161 bytes on wire (1288 bits), 161 bytes captured (1288 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 161,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.811000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 161 bytes (1288 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan:llc:eapol",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 161,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Data, Flags: .....F.",
+     "mulai": 8,
+     "panjang": 153,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0208 (Data, From DS)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Receiver address: 3c:52:82:11:7a:08",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Transmitter address: 02:4a:1c:00:01:01",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 4102",
+       "mulai": 30,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Logical-Link Control",
+     "mulai": 32,
+     "panjang": 129,
+     "bidang": [
+      {
+       "teks": "DSAP: SNAP (0xaa)",
+       "mulai": 32,
+       "panjang": 1
+      },
+      {
+       "teks": "SSAP: SNAP (0xaa)",
+       "mulai": 33,
+       "panjang": 1
+      },
+      {
+       "teks": "Control field: U, func=UI (0x03)",
+       "mulai": 34,
+       "panjang": 1
+      },
+      {
+       "teks": "Organization Code: Encapsulated Ethernet (0x000000)",
+       "mulai": 35,
+       "panjang": 3
+      },
+      {
+       "teks": "Type: 802.1X Authentication (0x888e)",
+       "mulai": 38,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "802.1X Authentication",
+     "mulai": 40,
+     "panjang": 121,
+     "bidang": [
+      {
+       "teks": "Version: 802.1X-2004 (2)",
+       "mulai": 40,
+       "panjang": 1
+      },
+      {
+       "teks": "Type: Key (3)",
+       "mulai": 41,
+       "panjang": 1
+      },
+      {
+       "teks": "Length: 117",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Descriptor Type: EAPOL RSN key (2)",
+       "mulai": 44,
+       "panjang": 1
+      },
+      {
+       "teks": "Key Information: 0x13ca",
+       "mulai": 45,
+       "panjang": 2
+      },
+      {
+       "teks": "Key Length: 16",
+       "mulai": 47,
+       "panjang": 2
+      },
+      {
+       "teks": "Replay Counter: 2",
+       "mulai": 49,
+       "panjang": 8
+      },
+      {
+       "teks": "Key Nonce: 10111213...",
+       "mulai": 57,
+       "panjang": 32
+      },
+      {
+       "teks": "Key IV: 00000000...",
+       "mulai": 89,
+       "panjang": 16
+      },
+      {
+       "teks": "Key MIC: 1d7f03b6e925a41c8b3f6e02d9c74a58",
+       "mulai": 121,
+       "panjang": 16
+      },
+      {
+       "teks": "Key Data Length: 22",
+       "mulai": 137,
+       "panjang": 2
+      },
+      {
+       "teks": "Key Data: 22 bytes",
+       "mulai": 139,
+       "panjang": 22
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 16,
+   "waktu": 0.815,
+   "sumber": "3c:52:82:11:7a:08",
+   "tujuan": "02:4a:1c:00:01:01",
+   "protokol": "EAPOL",
+   "panjang": 139,
+   "info": "Key (Message 4 of 4)",
+   "lapisan": [
+    "radiotap",
+    "wlan",
+    "llc",
+    "eapol"
+   ],
+   "fitur": {
+    "wlan.fc.type_subtype": 8,
+    "wlan.sa": "3c:52:82:11:7a:08",
+    "wlan.da": "02:4a:1c:00:01:01",
+    "wlan.bssid": "02:4a:1c:00:01:01",
+    "eapol.msg": 4
+   },
+   "hex": "000008000000000008020000024a1c0001013c5282117a08024a1c0001017000aaaa03000000888e0203005f02030a0010000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f40a2b93c17e58d02a6b9c4e31d7f8050000",
+   "rincian": [
+    {
+     "judul": "Frame 16: 139 bytes on wire (1112 bits), 139 bytes captured (1112 bits) on interface wlan0mon, id 0",
+     "mulai": 0,
+     "panjang": 139,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.815000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 139 bytes (1112 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: radiotap:wlan:llc:eapol",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Radiotap Header v0, Length 8",
+     "mulai": 0,
+     "panjang": 139,
+     "bidang": [
+      {
+       "teks": "Header revision: 0",
+       "mulai": 0,
+       "panjang": 1
+      },
+      {
+       "teks": "Header length: 8 bytes",
+       "mulai": 2,
+       "panjang": 2
+      },
+      {
+       "teks": "Present flags: 0x00000000",
+       "mulai": 4,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "IEEE 802.11 Data, Flags: .....F.",
+     "mulai": 8,
+     "panjang": 131,
+     "bidang": [
+      {
+       "teks": "Frame Control: 0x0208 (Data, From DS)",
+       "mulai": 8,
+       "panjang": 2
+      },
+      {
+       "teks": "Duration: 0 microseconds",
+       "mulai": 10,
+       "panjang": 2
+      },
+      {
+       "teks": "Receiver address: 02:4a:1c:00:01:01",
+       "mulai": 12,
+       "panjang": 6
+      },
+      {
+       "teks": "Transmitter address: 3c:52:82:11:7a:08",
+       "mulai": 18,
+       "panjang": 6
+      },
+      {
+       "teks": "BSS Id: 02:4a:1c:00:01:01",
+       "mulai": 24,
+       "panjang": 6
+      },
+      {
+       "teks": "Sequence number: 4103",
+       "mulai": 30,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Logical-Link Control",
+     "mulai": 32,
+     "panjang": 107,
+     "bidang": [
+      {
+       "teks": "DSAP: SNAP (0xaa)",
+       "mulai": 32,
+       "panjang": 1
+      },
+      {
+       "teks": "SSAP: SNAP (0xaa)",
+       "mulai": 33,
+       "panjang": 1
+      },
+      {
+       "teks": "Control field: U, func=UI (0x03)",
+       "mulai": 34,
+       "panjang": 1
+      },
+      {
+       "teks": "Organization Code: Encapsulated Ethernet (0x000000)",
+       "mulai": 35,
+       "panjang": 3
+      },
+      {
+       "teks": "Type: 802.1X Authentication (0x888e)",
+       "mulai": 38,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "802.1X Authentication",
+     "mulai": 40,
+     "panjang": 99,
+     "bidang": [
+      {
+       "teks": "Version: 802.1X-2004 (2)",
+       "mulai": 40,
+       "panjang": 1
+      },
+      {
+       "teks": "Type: Key (3)",
+       "mulai": 41,
+       "panjang": 1
+      },
+      {
+       "teks": "Length: 95",
+       "mulai": 42,
+       "panjang": 2
+      },
+      {
+       "teks": "Descriptor Type: EAPOL RSN key (2)",
+       "mulai": 44,
+       "panjang": 1
+      },
+      {
+       "teks": "Key Information: 0x030a",
+       "mulai": 45,
+       "panjang": 2
+      },
+      {
+       "teks": "Key Length: 16",
+       "mulai": 47,
+       "panjang": 2
+      },
+      {
+       "teks": "Replay Counter: 2",
+       "mulai": 49,
+       "panjang": 8
+      },
+      {
+       "teks": "Key Nonce: 00000000...",
+       "mulai": 57,
+       "panjang": 32
+      },
+      {
+       "teks": "Key IV: 00000000...",
+       "mulai": 89,
+       "panjang": 16
+      },
+      {
+       "teks": "Key MIC: f40a2b93c17e58d02a6b9c4e31d7f805",
+       "mulai": 121,
+       "panjang": 16
+      },
+      {
+       "teks": "Key Data Length: 0",
+       "mulai": 137,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

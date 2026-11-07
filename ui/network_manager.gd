@@ -381,7 +381,7 @@ func _isi_detail() -> void:
 	_isi.add_child(_teks(Bahasa.t("netmgr.lewat_terminal"), Tema.TEKS_REDUP, 18))
 
 func _analisis(ssid: String) -> void:
-	_jalankan("security analyze " + ssid)
+	_jalankan("network-analyzer analyze " + ssid)
 	_tab = "analisis"
 	_bangun_tab()
 

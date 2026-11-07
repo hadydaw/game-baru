@@ -1,5 +1,10 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
+func before_each() -> void:
+	Bahasa.kode = "id"
+
 # Tahap 3c: Crypt Decoder (decode dan penolakan cat), Password Analyzer tingkat 1 (analyze),
 # dan data harga tool sesuai rentang di dokumen rancangan.
 
@@ -41,25 +46,25 @@ func test_cat_berkas_terenkripsi_minta_tingkat_lebih_tinggi() -> void:
 
 func test_decode_tanpa_kepemilikan_tidak_ditemukan() -> void:
 	var s := _sesi()
-	assert_true(_teks(s.jalankan("decode rahasia.enc")).contains("perintah tidak ditemukan"))
+	assert_true(_teks(UA.alat(s, "decode", ["rahasia.enc"])).contains("perintah tidak ditemukan"))
 
 func test_decode_dengan_tingkat_cukup_menampilkan_isi_asli() -> void:
 	var s := _sesi()
 	s.inventory.miliki("crypt_decoder", "black_market", 2)
-	var hasil := s.jalankan("decode rahasia.enc")
+	var hasil := UA.alat(s, "decode", ["rahasia.enc"])
 	assert_false(_galat(hasil))
 	assert_true(_teks(hasil).contains("Kode: 7731"))
 
 func test_decode_tingkat_kurang_ditolak() -> void:
 	var s := _sesi()
 	s.inventory.miliki("crypt_decoder", "awal", 1)
-	assert_true(_galat(s.jalankan("decode rahasia.enc")))
+	assert_true(_galat(UA.alat(s, "decode", ["rahasia.enc"])))
 
 func test_decode_berkas_biasa_dan_banyak_argumen_ditolak() -> void:
 	var s := _sesi()
 	s.inventory.miliki("crypt_decoder", "awal", 3)
-	assert_true(_teks(s.jalankan("decode catatan.txt")).contains("tidak terenkripsi"))
-	assert_true(_teks(s.jalankan("decode rahasia.enc catatan.txt")).contains("satu berkas"))
+	assert_true(_teks(UA.alat(s, "decode", ["catatan.txt"])).contains("tidak terenkripsi"))
+	assert_true(_teks(UA.alat(s, "decode", ["rahasia.enc", "catatan.txt"])).contains("satu berkas"))
 
 func test_cat_berkas_biasa_tetap_bisa_dibaca() -> void:
 	var s := _sesi()
@@ -67,24 +72,24 @@ func test_cat_berkas_biasa_tetap_bisa_dibaca() -> void:
 
 func test_analyze_tanpa_kepemilikan_tidak_ditemukan() -> void:
 	var s := _sesi()
-	assert_true(_teks(s.jalankan("analyze sampel.txt")).contains("perintah tidak ditemukan"))
+	assert_true(_teks(UA.alat(s, "analyze", ["sampel.txt"])).contains("perintah tidak ditemukan"))
 
 func test_analyze_hash_tanpa_salt() -> void:
 	var s := _sesi()
 	s.inventory.miliki("password_analyzer", "awal", 1)
-	var t := _teks(s.jalankan("analyze sampel.txt"))
+	var t := _teks(UA.alat(s, "analyze", ["sampel.txt"]))
 	assert_true(t.contains("Jenis hash: sha256"))
 	assert_true(t.contains("Salt: tidak ada."))
 
 func test_analyze_hash_dengan_salt_tidak_dapat_dianalisis() -> void:
 	var s := _sesi()
 	s.inventory.miliki("password_analyzer", "awal", 1)
-	assert_true(_teks(s.jalankan("analyze bergaram.txt")).contains("tidak dapat dianalisis"))
+	assert_true(_teks(UA.alat(s, "analyze", ["bergaram.txt"])).contains("tidak dapat dianalisis"))
 
 func test_analyze_berkas_tanpa_hash() -> void:
 	var s := _sesi()
 	s.inventory.miliki("password_analyzer", "awal", 1)
-	assert_true(_teks(s.jalankan("analyze catatan.txt")).contains("Tidak ada hash"))
+	assert_true(_teks(UA.alat(s, "analyze", ["catatan.txt"])).contains("Tidak ada hash"))
 
 func test_firewall_bypass_bisa_dimiliki_tanpa_perintah() -> void:
 	var inv := Inventory.baru()

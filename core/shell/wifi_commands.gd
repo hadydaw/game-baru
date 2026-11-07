@@ -2,7 +2,7 @@ class_name WifiCommands
 extends RefCounted
 
 # Perintah pengujian Wi-Fi laboratorium: airmon-ng (monitor mode), airodump-ng (pemindaian dan pemilihan target),
-# security analyze|verify, dan audit auth|run. Setiap perintah memeriksa tahap sebelumnya,
+# network-analyzer analyze|verify, dan password-auditor auth|run. Setiap perintah memeriksa tahap sebelumnya,
 # perangkat yang terpasang, dan data yang dihasilkannya (WifiLab). Tidak ada perintah yang
 # langsung memberi akses: kata sandi harus ditemukan lewat audit lalu diverifikasi.
 
@@ -270,10 +270,10 @@ static func security(s: ShellSession, p: Dictionary) -> Array:
 				return [s.galat_kunci("security", "err.butuh_argumen")]
 			var ssid := String(args[1])
 			if not s.wifi.dianalisis.has(ssid):
-				return [s.baris("error", Bahasa.dua("security report: jalankan 'security analyze %s' dulu." % ssid, "security report: run 'security analyze %s' first." % ssid))]
+				return [s.baris("error", Bahasa.dua("network-analyzer report: jalankan 'network-analyzer analyze %s' dulu." % ssid, "network-analyzer report: run 'network-analyzer analyze %s' first." % ssid))]
 			var path := "%s/laporan/%s.txt" % [s.home, ssid]
 			s.tulis_berkas(path, _laporan(s, ssid))
-			_catat(s, "security report %s: saved to %s" % [ssid, path])
+			_catat(s, "network-analyzer report %s: saved to %s" % [ssid, path])
 			s.jaringan.buka("wifi:laporan:" + ssid)
 			return [s.baris("info", Bahasa.dua("Laporan disimpan di %s" % path, "Report saved to %s" % path))]
 		"analyze":
@@ -292,7 +292,7 @@ static func security(s: ShellSession, p: Dictionary) -> Array:
 				s.baris_kunci("info", "wifi.analisis_" + enkripsi.to_lower(), []),
 			]
 			var daftar := WifiLab.kelemahan(ssid)
-			_catat(s, "security analyze %s: risk=%s findings=%d" % [ssid, WifiLab.tingkat_pair(WifiLab.tingkat_risiko(ssid))[1], daftar.size()])
+			_catat(s, "network-analyzer analyze %s: risk=%s findings=%d" % [ssid, WifiLab.tingkat_pair(WifiLab.tingkat_risiko(ssid))[1], daftar.size()])
 			if daftar.is_empty():
 				hasil.append(s.baris("info", Bahasa.dua("  Tidak ditemukan kelemahan utama.", "  No major weakness found.")))
 			for k in daftar:
@@ -309,10 +309,10 @@ static func security(s: ShellSession, p: Dictionary) -> Array:
 			if not s.wifi.kata_sandi_ditemukan.has(ssid):
 				return [s.galat_kunci("security", "wifi.belum_audit")]
 			if String(s.wifi.kata_sandi_ditemukan[ssid]) != kata:
-				_catat(s, "security verify %s: REJECTED" % ssid)
+				_catat(s, "network-analyzer verify %s: REJECTED" % ssid)
 				return [s.galat_kunci("security", "wifi.kata_sandi_salah", [ssid])]
 			s.wifi.terakses[ssid] = true
-			_catat(s, "security verify %s: ACCEPTED, lab access granted" % ssid)
+			_catat(s, "network-analyzer verify %s: ACCEPTED, lab access granted" % ssid)
 			s.jaringan.buka("wifi:akses:" + ssid)
 			return [s.baris_kunci("info", "wifi.akses", [ssid])]
 	return [s.galat_kunci("security", "wifi.usage_security")]
@@ -329,14 +329,14 @@ static func audit(s: ShellSession, p: Dictionary) -> Array:
 			var j := WifiLab.jaringan(ssid)
 			var chipset := Perangkat.chipset_adapter(s.perangkat.adapter())
 			if not WifiLab.mendukung_monitor(chipset):
-				_catat(s, "audit auth %s: FAILED adapter chipset %s has no monitor mode" % [ssid, chipset])
-				return [s.baris("error", Bahasa.dua("audit auth: adapter %s tidak mendukung monitor mode, handshake tidak bisa ditangkap.", "audit auth: adapter %s does not support monitor mode, the handshake cannot be captured.", [chipset]))]
+				_catat(s, "password-auditor auth %s: FAILED adapter chipset %s has no monitor mode" % [ssid, chipset])
+				return [s.baris("error", Bahasa.dua("password-auditor auth: adapter %s tidak mendukung monitor mode, handshake tidak bisa ditangkap.", "password-auditor auth: adapter %s does not support monitor mode, the handshake cannot be captured.", [chipset]))]
 			var sinyal_efektif := int(j["sinyal"]) + _bonus_antena(s)
 			if sinyal_efektif < WifiLab.ambang_handshake():
-				_catat(s, "audit auth %s: FAILED effective signal %d dBm < threshold %d dBm" % [ssid, sinyal_efektif, WifiLab.ambang_handshake()])
-				return [s.baris("error", Bahasa.dua("audit auth: handshake tidak lengkap. Sinyal efektif %d dBm di bawah ambang %d dBm. Tingkatkan antena atau dekatkan perangkat.", "audit auth: handshake incomplete. Effective signal %d dBm is below the %d dBm threshold. Upgrade the antenna or move closer.", [sinyal_efektif, WifiLab.ambang_handshake()]))]
+				_catat(s, "password-auditor auth %s: FAILED effective signal %d dBm < threshold %d dBm" % [ssid, sinyal_efektif, WifiLab.ambang_handshake()])
+				return [s.baris("error", Bahasa.dua("password-auditor auth: handshake tidak lengkap. Sinyal efektif %d dBm di bawah ambang %d dBm. Tingkatkan antena atau dekatkan perangkat.", "password-auditor auth: handshake incomplete. Effective signal %d dBm is below the %d dBm threshold. Upgrade the antenna or move closer.", [sinyal_efektif, WifiLab.ambang_handshake()]))]
 			s.wifi.handshake[ssid] = true
-			_catat(s, "audit auth %s: handshake captured (signal %d dBm)" % [ssid, sinyal_efektif])
+			_catat(s, "password-auditor auth %s: handshake captured (signal %d dBm)" % [ssid, sinyal_efektif])
 			s.jaringan.buka("wifi:auth:" + ssid)
 			var enkripsi := String(j["enkripsi"])
 			var kunci := "wifi.handshake_wpa" if enkripsi == "WPA2" else "wifi.iv_wep"
@@ -346,10 +346,10 @@ static func audit(s: ShellSession, p: Dictionary) -> Array:
 				return [s.galat_kunci("audit", "wifi.belum_auth")]
 			var kata := String(WifiLab.jaringan(ssid)["kata_sandi"])
 			if not WifiLab.kamus().has(kata):
-				_catat(s, "audit run %s: NOT FOUND in dictionary (%d words tried)" % [ssid, WifiLab.kamus().size()])
+				_catat(s, "password-auditor run %s: NOT FOUND in dictionary (%d words tried)" % [ssid, WifiLab.kamus().size()])
 				return [s.baris_kunci("error", "wifi.tidak_ada_kamus", [])]
 			s.wifi.kata_sandi_ditemukan[ssid] = kata
-			_catat(s, "audit run %s: key recovered from dictionary (%d words tried), strength=weak" % [ssid, WifiLab.kamus().size()])
+			_catat(s, "password-auditor run %s: key recovered from dictionary (%d words tried), strength=weak" % [ssid, WifiLab.kamus().size()])
 			s.jaringan.buka("wifi:audit:" + ssid)
 			return [s.baris_kunci("info", "wifi.kunci_ditemukan", [ssid, kata])]
 	return [s.galat_kunci("audit", "wifi.usage_audit")]

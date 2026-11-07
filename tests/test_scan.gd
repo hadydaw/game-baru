@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Uji perintah scan: identifikasi perangkat lewat IP, pemisahan dari ssh/ping/nmap, dan penyimpanan.
 
 const BERKAS := "user://test_scan_fs.json"
@@ -23,7 +25,7 @@ func _galat(hasil: Array) -> bool:
 
 func test_scan_arsip_menemukan_dan_menampilkan_identitas():
 	var s := _sesi()
-	var hasil := s.jalankan("scan 10.7.0.8")
+	var hasil := UA.alat(s, "scan", ["10.7.0.8"])
 	assert_false(_galat(hasil))
 	var t := _teks(hasil)
 	assert_true(t.contains("Perangkat ditemukan: arsip"))
@@ -33,19 +35,19 @@ func test_scan_arsip_menemukan_dan_menampilkan_identitas():
 
 func test_scan_ip_tidak_dikenal_galat():
 	var s := _sesi()
-	var hasil := s.jalankan("scan 10.9.9.9")
+	var hasil := UA.alat(s, "scan", ["10.9.9.9"])
 	assert_true(_galat(hasil))
 	assert_true(_teks(hasil).contains("Tidak ada perangkat yang ditemukan pada 10.9.9.9"))
 	assert_false(s.jaringan.dikenal("arsip"))
 
 func test_scan_tanpa_argumen_dan_format_salah_galat():
 	var s := _sesi()
-	assert_true(_galat(s.jalankan("scan")))
-	assert_true(_teks(s.jalankan("scan arsip")).contains("masukkan alamat IP"))
+	assert_true(_galat(UA.alat(s, "scan", [])))
+	assert_true(_teks(UA.alat(s, "scan", ["arsip"])).contains("masukkan alamat IP"))
 
 func test_scan_tidak_memberi_akses_ssh():
 	var s := _sesi()
-	s.jalankan("scan 10.7.0.8")
+	UA.alat(s, "scan", ["10.7.0.8"])
 	assert_false(s.jaringan.progres.has("ssh:arsip"), "scan tidak menandai login")
 	assert_true(s.jaringan.progres.has("pindai:arsip"), "scan menandai pemindaian")
 
@@ -53,7 +55,7 @@ func test_trace_tidak_membuka_node_scan_sebelum_scan():
 	var s := _sesi()
 	s.inventory.miliki("signal_tracer", "awal", 3)
 	s.jalankan("ping -c 1 gerbang")
-	var t := _teks(s.jalankan("trace gerbang"))
+	var t := _teks(UA.alat(s, "trace", ["gerbang"]))
 	assert_false(t.contains("arsip"), "trace tidak menampilkan node scan")
 	assert_false(s.jaringan.dikenal("arsip"))
 
@@ -72,7 +74,7 @@ func test_migrasi_idempoten_dan_tidak_mengubah_progres_lain():
 
 func test_hasil_scan_bertahan_setelah_simpan_dan_muat():
 	var s := _sesi()
-	s.jalankan("scan 10.7.0.8")
+	UA.alat(s, "scan", ["10.7.0.8"])
 	assert_true(Penyimpanan.simpan_sesi(s, BERKAS))
 	var pulih := ShellSession.dari_dict(Penyimpanan.muat(BERKAS)["data"])
 	assert_true(pulih.jaringan.dikenal("arsip"), "penemuan tersimpan")

@@ -10,8 +10,8 @@ signal tutup_diminta
 
 const KATEGORI := [
     {"kunci": "sistem", "teks": "kategori.sistem", "apl": ["terminal", "berkas", "log", "perangkat", "inventaris"]},
-    {"kunci": "jaringan", "teks": "kategori.jaringan", "apl": ["peta", "netmgr", "tools"]},
-    {"kunci": "pasar", "teks": "kategori.pasar", "apl": ["pasar", "misi"]},
+    {"kunci": "jaringan", "teks": "kategori.jaringan", "apl": ["peta", "netmgr", "alat", "tools"]},
+    {"kunci": "pasar", "teks": "kategori.pasar", "apl": ["pasar", "toko", "dompet", "misi"]},
     {"kunci": "komunitas", "teks": "kategori.komunitas", "apl": ["forum", "email"]},
 ]
 const IKON_CARI := "res://assets/ikon/menu/menu_cari.png"

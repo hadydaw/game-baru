@@ -7,18 +7,6 @@ extends RefCounted
 const BATAS_LOG_T1 := 24
 const ALAMAT_DISAMARKAN := "***.***.***.***"
 
-static func tools(s: ShellSession) -> Array:
-    var inv := s.inventory
-    if inv.milik.is_empty():
-        return [s.baris("info", Bahasa.dua("Tidak ada tool yang dimiliki.", "No tools owned."))]
-    var hasil: Array = [s.baris("info", Bahasa.dua("Tool yang dimiliki:", "Tools owned:"))]
-    var ids := inv.milik.keys()
-    ids.sort()
-    for id in ids:
-        hasil.append(s.baris("info", Bahasa.dua("  %-18s tingkat %d/%d  (%s)", "  %-18s level %d/%d  (%s)", [ToolDefs.nama(String(id)), inv.tingkat(String(id)), ToolDefs.maks(String(id)), inv.sumber(String(id))])))
-    return hasil
-
-# inspeksi <host>: membaca log transfer node yang sudah pernah dipindai nmap.
 static func inspeksi(s: ShellSession, p: Dictionary) -> Array:
     if p["argumen"].is_empty():
         return [s.galat("inspeksi", Teks.t("err.butuh_argumen"))]

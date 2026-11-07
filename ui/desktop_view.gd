@@ -18,6 +18,9 @@ const APLIKASI := [
     {"id": "log", "nama": "app.log", "ikon": "res://assets/ikon/aplikasi/app_log.png"},
     {"id": "email", "nama": "app.email", "ikon": "res://assets/ikon/aplikasi/app_email.png"},
     {"id": "perangkat", "nama": "app.perangkat", "ikon": "res://assets/ikon/ikon_wifi.png"},
+    {"id": "toko", "nama": "app.toko", "ikon": "res://assets/ikon/ikon_wifi.png"},
+    {"id": "dompet", "nama": "app.dompet", "ikon": "res://assets/ikon/aplikasi/app_pasar.png"},
+    {"id": "alat", "nama": "app.alat", "ikon": "res://assets/ikon/aplikasi/app_tools.png"},
     {"id": "netmgr", "nama": "app.netmgr", "ikon": "res://assets/ikon/aplikasi/app_peta.png"},
     {"id": "inventaris", "nama": "app.inventaris", "ikon": "res://assets/ikon/icon_tools.png"},
 ]
@@ -36,14 +39,19 @@ const TAHAN_DETIK := 0.4
 # Area aman perangkat: kiri, atas, kanan, bawah (diisi oleh MainController).
 var aman := Vector4.ZERO
 
+# Aplikasi yang hanya dibuka dari Terminal (tidak punya ikon di desktop).
+const APLIKASI_TERSEMBUNYI := [
+    {"id": "wireshark", "nama": "app.wireshark", "ikon": "res://assets/ikon/aplikasi/app_tools.png"},
+]
+
 static func nama_aplikasi(id: String) -> String:
-    for a in APLIKASI:
+    for a in APLIKASI + APLIKASI_TERSEMBUNYI:
         if a["id"] == id:
             return Bahasa.t(a["nama"])
     return id
 
 static func ikon_aplikasi(id: String) -> String:
-    for a in APLIKASI:
+    for a in APLIKASI + APLIKASI_TERSEMBUNYI:
         if a["id"] == id:
             return a["ikon"]
     return ""

@@ -30,8 +30,8 @@
       {
         "judul": "Tahap 2: Memeriksa Perangkatmu",
         "judul_en": "Stage 2: Checking Your Devices",
-        "pesan": "Ketik 'device list' untuk melihat perangkat yang kamu miliki sekarang. — Agensi",
-        "pesan_en": "Type 'device list' to see the devices you have right now. — Agency",
+        "pesan": "Ketik 'lsusb' untuk melihat perangkat USB yang tersambung sekarang. Komponen lain bisa kamu lihat di aplikasi Perangkat. — Agensi",
+        "pesan_en": "Type 'lsusb' to see the USB devices connected right now. You can see other components in the Devices app. — Agency",
         "alasan": "Kamu harus tahu apa yang sudah ada sebelum membeli sesuatu.",
         "alasan_en": "You should know what you already have before buying anything.",
         "pengetahuan": "Pentester selalu memulai dengan inventaris: apa yang tersedia, apa yang kurang.",
@@ -40,8 +40,8 @@
       {
         "judul": "Tahap 3: Membeli USB Wireless Adapter",
         "judul_en": "Stage 3: Buying a USB Wireless Adapter",
-        "pesan": "Beli USB Wireless Adapter lewat 'toko' di Terminal atau aplikasi Pasar. Adapter ini yang akan menangkap sinyal Wi-Fi. — Agensi",
-        "pesan_en": "Buy a USB Wireless Adapter through 'toko' in the Terminal or the Market app. This adapter will capture Wi-Fi signals. — Agency",
+        "pesan": "Beli USB Wireless Adapter lewat aplikasi Toko Perangkat. Adapter ini yang akan menangkap sinyal Wi-Fi. — Agensi",
+        "pesan_en": "Buy a USB Wireless Adapter in the Hardware Shop app. This adapter will capture Wi-Fi signals. — Agency",
         "alasan": "Kartu Wi-Fi bawaan laptop biasanya tidak bisa menangkap paket dari jaringan lain.",
         "alasan_en": "A laptop's built-in Wi-Fi card usually cannot capture packets from other networks.",
         "pengetahuan": "Pentester Wi-Fi memakai adapter khusus. Adapter ini harus mendukung mode yang dibutuhkan alat pengujian.",
@@ -70,8 +70,8 @@
       {
         "judul": "Tahap 6: Merakit Perangkat",
         "judul_en": "Stage 6: Assembling the Device",
-        "pesan": "Gabungkan komponen dengan 'device rakit'. — Agensi",
-        "pesan_en": "Combine the components with 'device rakit'. — Agency",
+        "pesan": "Gabungkan komponen dengan tombol Rakit di aplikasi Perangkat. — Agensi",
+        "pesan_en": "Combine the components with the Assemble button in the Devices app. — Agency",
         "alasan": "Semua komponen harus bersatu sebelum bisa dipakai.",
         "alasan_en": "All the components must come together before they can be used.",
         "pengetahuan": "Chipset adalah otak adapter. Chipset menentukan driver mana yang bisa dipakai, dan apakah mendukung monitor mode.",
@@ -80,8 +80,8 @@
       {
         "judul": "Tahap 7: Mencari Driver",
         "judul_en": "Stage 7: Searching for a Driver",
-        "pesan": "Cari driver yang cocok dengan chipset adaptermu: 'tools search driver'. — Agensi",
-        "pesan_en": "Search for a driver that matches your adapter's chipset: 'tools search driver'. — Agency",
+        "pesan": "Cari driver yang cocok dengan chipset adaptermu: 'apt search driver'. — Agensi",
+        "pesan_en": "Search for a driver that matches your adapter's chipset: 'apt search driver'. — Agency",
         "alasan": "Driver yang salah membuat perangkat terlihat terpasang tetapi tidak bekerja.",
         "alasan_en": "A wrong driver makes the device look installed while it does not work.",
         "pengetahuan": "Driver menerjemahkan perintah sistem ke perangkat keras. Selalu cocokkan driver dengan chipset, bukan dengan merek.",
@@ -90,8 +90,8 @@
       {
         "judul": "Tahap 8: Memasang Driver",
         "judul_en": "Stage 8: Installing the Driver",
-        "pesan": "Pasang driver-ar9271 dari Tools Repository: 'tools install driver-ar9271'. — Agensi",
-        "pesan_en": "Install driver-ar9271 from the Tools Repository: 'tools install driver-ar9271'. — Agency",
+        "pesan": "Pasang driver-ar9271: 'apt install driver-ar9271'. — Agensi",
+        "pesan_en": "Install driver-ar9271: 'apt install driver-ar9271'. — Agency",
         "alasan": "Driver menghubungkan adapter dengan sistem sehingga perangkat bisa dipakai.",
         "alasan_en": "The driver connects the adapter to the system so the device can be used.",
         "pengetahuan": "Driver bisa bergantung pada library lain (dependensi). Pemasangan yang lengkap memastikan semua bagian ikut terpasang.",
@@ -100,20 +100,20 @@
       {
         "judul": "Tahap 9: Menghubungkan Perangkat",
         "judul_en": "Stage 9: Connecting the Device",
-        "pesan": "Hubungkan perangkat dengan 'device hubungkan'. — Agensi",
-        "pesan_en": "Connect the device with 'device hubungkan'. — Agency",
+        "pesan": "Hubungkan perangkat dengan tombol Hubungkan di aplikasi Perangkat. — Agensi",
+        "pesan_en": "Connect the device with the Connect button in the Devices app. — Agency",
         "alasan": "Perangkat harus aktif di sistem sebelum bisa memindai jaringan.",
         "alasan_en": "The device must be active in the system before it can scan networks.",
         "pengetahuan": "Indikator status di Network Manager menunjukkan apakah adapter aktif, terputus, atau bermasalah.",
         "pengetahuan_en": "The status indicator in Network Manager shows whether the adapter is active, disconnected, or has a problem."
       },
       {
-        "judul": "Tahap 10: Memasang Airodump-ng",
-        "judul_en": "Stage 10: Installing Airodump-ng",
-        "pesan": "Pasang Airodump-ng dari Tools Repository: 'tools install airodump-ng'. — Agensi",
-        "pesan_en": "Install Airodump-ng from the Tools Repository: 'tools install airodump-ng'. — Agency",
-        "alasan": "Airodump-ng adalah alat untuk melihat access point di sekitarmu.",
-        "alasan_en": "Airodump-ng is the tool for seeing the access points around you.",
+        "judul": "Tahap 10: Memasang Aircrack-ng",
+        "judul_en": "Stage 10: Installing Aircrack-ng",
+        "pesan": "Pasang paket Aircrack-ng: 'apt install aircrack-ng'. Paket ini berisi airmon-ng dan airodump-ng. — Agensi",
+        "pesan_en": "Install the Aircrack-ng package: 'apt install aircrack-ng'. It contains airmon-ng and airodump-ng. — Agency",
+        "alasan": "Airodump-ng adalah alat untuk melihat access point di sekitarmu, dan ia dipasang bersama airmon-ng.",
+        "alasan_en": "Airodump-ng is the tool for seeing the access points around you, and it is installed together with airmon-ng.",
         "pengetahuan": "Setiap jaringan punya nama (SSID) dan alamat perangkat unik (BSSID). Nama bisa sama, tetapi BSSID selalu berbeda.",
         "pengetahuan_en": "Every network has a name (SSID) and a unique device address (BSSID). Names can be the same, but BSSIDs are always different."
       },
@@ -150,8 +150,8 @@
       {
         "judul": "Tahap 14: Memasang Network Analyzer",
         "judul_en": "Stage 14: Installing the Network Analyzer",
-        "pesan": "Pasang Network Analyzer: 'tools install network-analyzer'. — Agensi",
-        "pesan_en": "Install the Network Analyzer: 'tools install network-analyzer'. — Agency",
+        "pesan": "Pasang Network Analyzer: 'apt install network-analyzer'. — Agensi",
+        "pesan_en": "Install the Network Analyzer: 'apt install network-analyzer'. — Agency",
         "alasan": "Analisis butuh alat khusus untuk membaca konfigurasi keamanan.",
         "alasan_en": "Analysis needs a special tool to read the security configuration.",
         "pengetahuan": "Jenis enkripsi menentukan seberapa kuat jaringan melindungi datanya. WEP sudah usang, WPA2 umum dipakai, dan WPA3 lebih kuat.",
@@ -160,8 +160,8 @@
       {
         "judul": "Tahap 15: Menganalisis Keamanan",
         "judul_en": "Stage 15: Analyzing Security",
-        "pesan": "Jalankan 'security analyze LAB-WIFI-01' untuk memeriksa konfigurasi keamanannya. — Agensi",
-        "pesan_en": "Run 'security analyze LAB-WIFI-01' to check its security configuration. — Agency",
+        "pesan": "Jalankan 'network-analyzer analyze LAB-WIFI-01' untuk memeriksa konfigurasi keamanannya. — Agensi",
+        "pesan_en": "Run 'network-analyzer analyze LAB-WIFI-01' to check its security configuration. — Agency",
         "alasan": "Kamu harus tahu kelemahan jaringan sebelum mengujinya.",
         "alasan_en": "You need to know a network's weaknesses before testing it.",
         "pengetahuan": "WPS yang aktif dan kata sandi pendek menambah risiko. Analisis mencatat semua temuan ini.",
@@ -180,18 +180,18 @@
       {
         "judul": "Tahap 17: Memasang Password Auditor",
         "judul_en": "Stage 17: Installing Password Auditor",
-        "pesan": "Pasang Password Auditor dari Tools Repository: 'tools install password-auditor'. — Agensi",
-        "pesan_en": "Install Password Auditor from the Tools Repository: 'tools install password-auditor'. — Agency",
+        "pesan": "Pasang Password Auditor: 'apt install password-auditor'. — Agensi",
+        "pesan_en": "Install Password Auditor: 'apt install password-auditor'. — Agency",
         "alasan": "Alat ini dibutuhkan untuk tahap audit kata sandi nanti.",
         "alasan_en": "This tool is needed for the password audit stage later.",
-        "pengetahuan": "Tools Repository adalah tempat mencari, memasang, dan memperbarui software.",
-        "pengetahuan_en": "The Tools Repository is where you find, install, and update software."
+        "pengetahuan": "apt adalah pengelola paket untuk mencari, memasang, dan memperbarui software.",
+        "pengetahuan_en": "apt is the package manager for finding, installing, and updating software."
       },
       {
         "judul": "Tahap 18: Memastikan Alat Terpasang",
         "judul_en": "Stage 18: Confirming the Tool Is Installed",
-        "pesan": "Cek daftar alat yang terpasang dengan 'tools list'. Password Auditor harus muncul di sana. — Agensi",
-        "pesan_en": "Check the installed tools with 'tools list'. Password Auditor should appear there. — Agency",
+        "pesan": "Cek daftar paket yang terpasang dengan 'apt list --installed'. Password Auditor harus muncul di sana. — Agensi",
+        "pesan_en": "Check the installed packages with 'apt list --installed'. Password Auditor should appear there. — Agency",
         "alasan": "Kamu harus memastikan alat benar-benar siap sebelum dipakai.",
         "alasan_en": "You must make sure the tool is really ready before using it.",
         "pengetahuan": "Alat yang terlihat terpasang tetapi tidak muncul di daftar biasanya menandakan pemasangan belum selesai.",
@@ -200,8 +200,8 @@
       {
         "judul": "Tahap 19: Memahami Data Autentikasi",
         "judul_en": "Stage 19: Understanding Authentication Data",
-        "pesan": "Pelajari apa itu data autentikasi dengan 'man handshake'. — Agensi",
-        "pesan_en": "Learn what authentication data is with 'man handshake'. — Agency",
+        "pesan": "Pelajari apa itu data autentikasi dengan 'man aircrack-ng'. — Agensi",
+        "pesan_en": "Learn what authentication data is with 'man aircrack-ng'. — Agency",
         "alasan": "Data ini adalah bahan yang akan diuji oleh Password Auditor.",
         "alasan_en": "This data is what Password Auditor will test.",
         "pengetahuan": "Saat perangkat terhubung ke WPA2, keduanya bertukar empat pesan (four-way handshake) untuk membuktikan kunci tanpa mengirim kata sandi.",
@@ -210,8 +210,8 @@
       {
         "judul": "Tahap 20: Mengambil Data Autentikasi",
         "judul_en": "Stage 20: Capturing Authentication Data",
-        "pesan": "Jalankan 'audit auth LAB-WIFI-01' untuk mengambil data autentikasi dari jaringan laboratorium. — Agensi",
-        "pesan_en": "Run 'audit auth LAB-WIFI-01' to capture authentication data from the lab network. — Agency",
+        "pesan": "Jalankan 'password-auditor auth LAB-WIFI-01' untuk mengambil data autentikasi dari jaringan laboratorium. — Agensi",
+        "pesan_en": "Run 'password-auditor auth LAB-WIFI-01' to capture authentication data from the lab network. — Agency",
         "alasan": "Tanpa data ini, kata sandi tidak bisa diuji.",
         "alasan_en": "Without this data, the password cannot be tested.",
         "pengetahuan": "Tangkapan yang lemah, misalnya karena sinyal rendah, bisa tidak lengkap. Antena penguat membantu menutup selisih sinyal.",
@@ -220,8 +220,8 @@
       {
         "judul": "Tahap 21: Membaca Hasil Tangkapan",
         "judul_en": "Stage 21: Reading the Capture Result",
-        "pesan": "Baca arti hasil tangkapan dengan 'man hasil-handshake'. Status handshake juga tampil di Network Manager. — Agensi",
-        "pesan_en": "Read what the capture means with 'man hasil-handshake'. The handshake status also shows in Network Manager. — Agency",
+        "pesan": "Baca arti hasil tangkapan dengan 'man airodump-ng'. Status handshake juga tampil di Network Manager. — Agensi",
+        "pesan_en": "Read what the capture means with 'man airodump-ng'. The handshake status also shows in Network Manager. — Agency",
         "alasan": "Kamu harus paham arti data yang berhasil diambil.",
         "alasan_en": "You need to understand what the captured data means.",
         "pengetahuan": "Data handshake belum berisi kata sandi. Kata sandi hanya bisa diketahui setelah diuji.",
@@ -230,8 +230,8 @@
       {
         "judul": "Tahap 22: Mempelajari Password Audit",
         "judul_en": "Stage 22: Learning Password Audit",
-        "pesan": "Pelajari cara kerja audit kata sandi dengan 'man audit'. — Agensi",
-        "pesan_en": "Learn how password auditing works with 'man audit'. — Agency",
+        "pesan": "Pelajari cara kerja audit kata sandi dengan 'man john'. — Agensi",
+        "pesan_en": "Learn how password auditing works with 'man john'. — Agency",
         "alasan": "Kamu perlu tahu bagaimana kata sandi diuji sebelum menjalankannya.",
         "alasan_en": "You need to know how the password is tested before running it.",
         "pengetahuan": "Audit membandingkan kandidat kata sandi dengan data handshake, satu per satu. Kandidat yang cocok berarti kata sandi ditemukan.",
@@ -240,8 +240,8 @@
       {
         "judul": "Tahap 23: Menguji Kata Sandi",
         "judul_en": "Stage 23: Testing the Password",
-        "pesan": "Jalankan 'audit run LAB-WIFI-01' untuk menguji kata sandi pada dataset simulasi. — Agensi",
-        "pesan_en": "Run 'audit run LAB-WIFI-01' to test the password against the simulated dataset. — Agency",
+        "pesan": "Jalankan 'password-auditor run LAB-WIFI-01' untuk menguji kata sandi pada dataset simulasi. — Agensi",
+        "pesan_en": "Run 'password-auditor run LAB-WIFI-01' to test the password against the simulated dataset. — Agency",
         "alasan": "Di sinilah kelemahan kata sandi jaringan ditemukan.",
         "alasan_en": "This is where the network's password weakness is found.",
         "pengetahuan": "Kata sandi yang ada di daftar umum cepat ditemukan. Kata sandi panjang dan acak tidak akan ditemukan dengan cara ini.",
@@ -250,8 +250,8 @@
       {
         "judul": "Tahap 24: Membaca Kesimpulan Audit",
         "judul_en": "Stage 24: Reading the Audit Conclusion",
-        "pesan": "Baca kesimpulan audit dengan 'man kesimpulan-audit'. Hasilnya juga tampil di Network Manager. — Agensi",
-        "pesan_en": "Read the audit conclusion with 'man kesimpulan-audit'. The result also appears in Network Manager. — Agency",
+        "pesan": "Baca kesimpulan audit dengan 'man network-analyzer'. Hasilnya juga tampil di Network Manager. — Agensi",
+        "pesan_en": "Read the audit conclusion with 'man network-analyzer'. The result also appears in Network Manager. — Agency",
         "alasan": "Hasil audit harus dipahami agar bisa dijelaskan kepada pemilik jaringan.",
         "alasan_en": "The audit result must be understood so it can be explained to the network owner.",
         "pengetahuan": "Laporan pentester berisi temuan, tingkat risiko, dan rekomendasi perbaikan. Pengujian belum selesai sebelum laporan dibuat.",
@@ -260,8 +260,8 @@
       {
         "judul": "Tahap 25: Memverifikasi Akses",
         "judul_en": "Stage 25: Verifying Access",
-        "pesan": "Masukkan kata sandi yang ditemukan dengan 'security verify LAB-WIFI-01 <kata_sandi>'. Jika benar, akses akan terbuka. — Agensi",
-        "pesan_en": "Enter the password you found with 'security verify LAB-WIFI-01 <password>'. If it is correct, access opens. — Agency",
+        "pesan": "Masukkan kata sandi yang ditemukan dengan 'network-analyzer verify LAB-WIFI-01 <kata_sandi>'. Jika benar, akses akan terbuka. — Agensi",
+        "pesan_en": "Enter the password you found with 'network-analyzer verify LAB-WIFI-01 <password>'. If it is correct, access opens. — Agency",
         "alasan": "Verifikasi membuktikan temuanmu tanpa menyalahgunakan akses.",
         "alasan_en": "Verification proves your finding without misusing the access.",
         "pengetahuan": "Pentester hanya membuktikan temuan dengan cara yang paling sedikit mengganggu, lalu mencatat semuanya.",
@@ -270,8 +270,8 @@
       {
         "judul": "Tahap 26: Penyelesaian",
         "judul_en": "Stage 26: Completion",
-        "pesan": "Kamu berhasil menembus jaringan laboratorium pertamamu. Tulis laporan temuanmu dengan 'security report LAB-WIFI-01'. — Agensi",
-        "pesan_en": "You have breached your first laboratory network. Write your findings with 'security report LAB-WIFI-01'. — Agency",
+        "pesan": "Kamu berhasil menembus jaringan laboratorium pertamamu. Tulis laporan temuanmu dengan 'network-analyzer report LAB-WIFI-01'. — Agensi",
+        "pesan_en": "You have breached your first laboratory network. Write your findings with 'network-analyzer report LAB-WIFI-01'. — Agency",
         "alasan": "Temuan yang tidak dicatat tidak bisa diperiksa ulang atau diperbaiki. Laporan adalah bukti hasil pengujianmu.",
         "alasan_en": "Findings that are not recorded cannot be reviewed again or fixed. The report is the evidence of your test.",
         "pengetahuan": "Pengujian keamanan yang baik selalu berakhir dengan laporan dan rekomendasi.",
@@ -288,6 +288,21 @@
         "teks": "Jaringan WPA2 perlu handshake sebelum kata sandinya bisa diuji.",
         "flag": "wifi:analisis:LAB-WIFI-01",
         "teks_en": "A WPA2 network needs a handshake before its password can be tested."
+      },
+      {
+        "teks": "Wireshark bisa membuka paket contoh dari Terminal. Coba 'wireshark -r /usr/share/wireshark/samples/lab-jaringan-umum.simcap' lalu tulis filter 'http' di kolom filter.",
+        "flag": "wireshark:buka",
+        "teks_en": "Wireshark can open sample packets from the Terminal. Try 'wireshark -r /usr/share/wireshark/samples/lab-jaringan-umum.simcap', then type the filter 'http' in the filter field."
+      },
+      {
+        "teks": "Filter 'eapol' menampilkan empat pesan handshake WPA2. Dari pesan itu kata sandi tidak terlihat langsung, sehingga harus diuji dengan kamus.",
+        "flag": "wireshark:handshake",
+        "teks_en": "The filter 'eapol' shows the four WPA2 handshake messages. The password is not visible in them, so it must be tested with a wordlist."
+      },
+      {
+        "teks": "Login lewat HTTP biasa mengirim kata sandi tanpa enkripsi. Pilih paket POST /login untuk melihat field password di rincian.",
+        "flag": "wireshark:kredensial",
+        "teks_en": "Plain HTTP login sends the password without encryption. Select the POST /login packet to see the password field in the details."
       }
     ],
     "tujuan": [
@@ -298,9 +313,9 @@
         "tahap": 1
       },
       {
-        "teks": "Ketik 'device list' di Terminal",
-        "teks_en": "Type 'device list' in the Terminal",
-        "flag": "cmd:device",
+        "teks": "Ketik 'lsusb' di Terminal",
+        "teks_en": "Type 'lsusb' in the Terminal",
+        "flag": "cmd:lsusb",
         "tahap": 2
       },
       {
@@ -322,33 +337,33 @@
         "tahap": 5
       },
       {
-        "teks": "Rakit perangkat dengan 'device rakit'",
-        "teks_en": "Assemble the device with 'device rakit'",
+        "teks": "Rakit perangkat lewat tombol Rakit di aplikasi Perangkat",
+        "teks_en": "Assemble the device with the Assemble button in the Devices app",
         "flag": "rakit:wifi_kit",
         "tahap": 6
       },
       {
-        "teks": "Cari driver lewat 'tools search driver'",
-        "teks_en": "Search for a driver with 'tools search driver'",
+        "teks": "Pasang driver-ar9271 lewat 'apt install'",
+        "teks_en": "Install driver-ar9271 with 'apt install'",
         "flag": "cari:driver",
         "tahap": 7
       },
       {
-        "teks": "Pasang driver-ar9271 dari Tools Repository",
-        "teks_en": "Install driver-ar9271 from the Tools Repository",
+        "teks": "Pasang driver-ar9271 lewat 'apt install'",
+        "teks_en": "Install driver-ar9271 with 'apt install'",
         "flag": "pasang:driver-ar9271",
         "tahap": 8
       },
       {
-        "teks": "Hubungkan perangkat dengan 'device hubungkan'",
-        "teks_en": "Connect the device with 'device hubungkan'",
+        "teks": "Hubungkan perangkat lewat tombol Hubungkan di aplikasi Perangkat",
+        "teks_en": "Connect the device with the Connect button in the Devices app",
         "flag": "device:terhubung",
         "tahap": 9
       },
       {
-        "teks": "Pasang Airodump-ng",
-        "teks_en": "Install Airodump-ng",
-        "flag": "pasang:airodump-ng",
+        "teks": "Pasang Aircrack-ng (berisi airmon-ng dan airodump-ng)",
+        "teks_en": "Install Aircrack-ng (contains airmon-ng and airodump-ng)",
+        "flag": "pasang:aircrack-ng",
         "tahap": 10
       },
       {
@@ -382,8 +397,8 @@
         "tahap": 14
       },
       {
-        "teks": "Analisis keamanan dengan 'security analyze'",
-        "teks_en": "Analyze security with 'security analyze'",
+        "teks": "Analisis keamanan dengan 'network-analyzer analyze'",
+        "teks_en": "Analyze security with 'network-analyzer analyze'",
         "flag": "wifi:analisis:LAB-WIFI-01",
         "tahap": 15
       },
@@ -394,62 +409,62 @@
         "tahap": 16
       },
       {
-        "teks": "Pasang Password Auditor dari Tools Repository",
-        "teks_en": "Install Password Auditor from the Tools Repository",
+        "teks": "Pasang Password Auditor lewat 'apt install'",
+        "teks_en": "Install Password Auditor with 'apt install'",
         "flag": "pasang:password-auditor",
         "tahap": 17
       },
       {
-        "teks": "Cek daftar dengan 'tools list'",
-        "teks_en": "Check the list with 'tools list'",
-        "flag": "tools:list",
+        "teks": "Cek daftar dengan 'apt list --installed'",
+        "teks_en": "Check the list with 'apt list --installed'",
+        "flag": "apt:list",
         "tahap": 18
       },
       {
-        "teks": "Baca 'man handshake'",
-        "teks_en": "Read 'man handshake'",
-        "flag": "man:handshake",
+        "teks": "Baca 'man aircrack-ng'",
+        "teks_en": "Read 'man aircrack-ng'",
+        "flag": "man:aircrack-ng",
         "tahap": 19
       },
       {
-        "teks": "Tangkap autentikasi dengan 'audit auth'",
-        "teks_en": "Capture authentication with 'audit auth'",
+        "teks": "Tangkap autentikasi dengan 'password-auditor auth'",
+        "teks_en": "Capture authentication with 'password-auditor auth'",
         "flag": "wifi:auth:LAB-WIFI-01",
         "tahap": 20
       },
       {
-        "teks": "Baca 'man hasil-handshake'",
-        "teks_en": "Read 'man hasil-handshake'",
-        "flag": "man:hasil-handshake",
+        "teks": "Baca 'man airodump-ng'",
+        "teks_en": "Read 'man airodump-ng'",
+        "flag": "man:airodump-ng",
         "tahap": 21
       },
       {
-        "teks": "Baca 'man audit'",
-        "teks_en": "Read 'man audit'",
-        "flag": "man:audit",
+        "teks": "Baca 'man john'",
+        "teks_en": "Read 'man john'",
+        "flag": "man:john",
         "tahap": 22
       },
       {
-        "teks": "Uji kata sandi dengan 'audit run'",
-        "teks_en": "Test the password with 'audit run'",
+        "teks": "Uji kata sandi dengan 'password-auditor run'",
+        "teks_en": "Test the password with 'password-auditor run'",
         "flag": "wifi:audit:LAB-WIFI-01",
         "tahap": 23
       },
       {
-        "teks": "Baca 'man kesimpulan-audit'",
-        "teks_en": "Read 'man kesimpulan-audit'",
-        "flag": "man:kesimpulan-audit",
+        "teks": "Baca 'man network-analyzer'",
+        "teks_en": "Read 'man network-analyzer'",
+        "flag": "man:network-analyzer",
         "tahap": 24
       },
       {
-        "teks": "Verifikasi dengan 'security verify'",
-        "teks_en": "Verify with 'security verify'",
+        "teks": "Verifikasi dengan 'network-analyzer verify'",
+        "teks_en": "Verify with 'network-analyzer verify'",
         "flag": "wifi:akses:LAB-WIFI-01",
         "tahap": 25
       },
       {
-        "teks": "Tulis laporan dengan 'security report LAB-WIFI-01'",
-        "teks_en": "Write the report with 'security report LAB-WIFI-01'",
+        "teks": "Tulis laporan dengan 'network-analyzer report LAB-WIFI-01'",
+        "teks_en": "Write the report with 'network-analyzer report LAB-WIFI-01'",
         "flag": "wifi:laporan:LAB-WIFI-01",
         "tahap": 26
       }

@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Intro pemain baru: data lokasi, pemilihan negara dan kota, penyimpanan lokasi,
 # IP unik per node yang stabil setelah dimuat ulang, dan pergantian bahasa.
 
@@ -90,7 +92,7 @@ func test_ip_stabil_setelah_muat_ulang() -> void:
 func test_scan_memakai_ip_acak_node() -> void:
 	var s := _sesi_baru()
 	var ip := s.jaringan.ip("arsip")
-	var hasil := s.jalankan("scan %s" % ip)
+	var hasil := UA.alat(s, "scan", [ip])
 	var teks := ""
 	for b in hasil:
 		teks += String(b.get("teks", ""))

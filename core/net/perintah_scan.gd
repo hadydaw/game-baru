@@ -10,7 +10,7 @@ static func scan(s: ShellSession, p: Dictionary) -> Array:
 		return [s.galat("scan", Teks.t("err.butuh_argumen"))]
 	var ip := String(p["argumen"][0])
 	if not ip_valid(ip):
-		return [s.galat("scan", Bahasa.dua("masukkan alamat IP, contoh: scan 10.7.0.8", "enter an IP address, example: scan 10.7.0.8"))]
+		return [s.galat("scan", Bahasa.dua("masukkan alamat IP, contoh: 10.7.0.8", "enter an IP address, example: 10.7.0.8"))]
 	var j := s.jaringan
 	var id := j.cari_ip(ip)
 	if id == "":

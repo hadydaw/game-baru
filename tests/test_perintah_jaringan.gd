@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Uji perintah ping, nmap, ssh, dan exit terhadap jaringan virtual dan filesystem nyata.
 
 const DIR := "user://test_jaringan"
@@ -109,7 +111,7 @@ func test_nmap_node_terkunci_galat():
 func test_nmap_node_tidak_aktif_melaporkan_tidak_aktif():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.jaringan.data["arsip"]["status"] = "tidak_aktif"
     assert_true(_teks(s.jalankan("nmap arsip")).contains("tampaknya tidak aktif"))
 
@@ -118,7 +120,7 @@ func test_nmap_node_tidak_aktif_melaporkan_tidak_aktif():
 func test_ssh_berhasil_dengan_kunci_yang_benar():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     var hasil := s.jalankan("ssh operator@arsip")
     assert_false(_ada_galat(hasil), _teks(hasil))
     assert_true(_teks(hasil).contains("Terhubung ke arsip"))
@@ -127,7 +129,7 @@ func test_ssh_berhasil_dengan_kunci_yang_benar():
 func test_ssh_di_dalam_sesi_jarak_jauh_perintah_berjalan_di_node():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.jalankan("ssh arsip")
     assert_eq(_teks(s.jalankan("pwd")), "/home/operator", "pwd di node")
     assert_true(_teks(s.jalankan("ls")).contains("catatan.txt"), "isi node, bukan isi lokal")
@@ -136,7 +138,7 @@ func test_ssh_di_dalam_sesi_jarak_jauh_perintah_berjalan_di_node():
 func test_exit_keluar_dari_ssh_ke_terminal_lokal():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.jalankan("ssh arsip")
     var hasil := s.jalankan("exit")
     assert_false(_ada_galat(hasil))
@@ -147,7 +149,7 @@ func test_exit_keluar_dari_ssh_ke_terminal_lokal():
 func test_ssh_ditolak_user_salah():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     var hasil := s.jalankan("ssh admin@arsip")
     assert_true(_ada_galat(hasil))
     assert_true(_teks(hasil).contains("Permission denied"))
@@ -156,7 +158,7 @@ func test_ssh_ditolak_user_salah():
 func test_ssh_ditolak_tanpa_kunci():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.fs.ambil("/home/operator/dokumen")["isi"].erase("kunci_arsip.txt")
     var hasil := s.jalankan("ssh operator@arsip")
     assert_true(_teks(hasil).contains("Permission denied"), "kunci hilang berarti ditolak")
@@ -164,7 +166,7 @@ func test_ssh_ditolak_tanpa_kunci():
 func test_ssh_ditolak_kunci_salah():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.fs.ambil("/home/operator/dokumen/kunci_arsip.txt")["isi"] = "salah"
     assert_true(_teks(s.jalankan("ssh operator@arsip")).contains("Permission denied"))
 
@@ -184,7 +186,7 @@ func test_ssh_port_22_tertutup_ditolak():
 func test_ssh_di_dalam_sesi_jarak_jauh_ditolak():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.jalankan("ssh arsip")
     var hasil := s.ssh_aktif.jalankan("ssh gerbang")
     assert_true(_ada_galat(hasil), "tidak boleh bersarang")
@@ -197,7 +199,7 @@ func test_exit_tanpa_ssh_galat():
 func test_perubahan_di_node_tidak_mengubah_filesystem_lokal():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.jalankan("ssh arsip")
     s.jalankan("touch dari_node.txt")
     s.jalankan("exit")
@@ -207,7 +209,7 @@ func test_perubahan_di_node_tidak_mengubah_filesystem_lokal():
 func test_status_jaringan_tersimpan_dan_dipulihkan():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.jaringan.buka("misi_relay")
     s.jalankan("ssh arsip")
     s.jalankan("touch hasil.txt")  # dijalankan di node, bukan di lokal

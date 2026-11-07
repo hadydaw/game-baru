@@ -17,7 +17,7 @@ func test_email_tahap_tidak_berulang_setelah_muat_ulang() -> void:
 	Misi.perbarui(s)
 	Misi.terima(s, "misi_1")
 	s.jalankan("help")
-	s.jalankan("device list")
+	s.jalankan("lsusb")
 	_baca_tahap_aktif(s)
 	var d = JSON.parse_string(JSON.stringify(s.to_dict()))
 	var s2 := ShellSession.dari_dict(d)

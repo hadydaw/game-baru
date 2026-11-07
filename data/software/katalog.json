@@ -15,25 +15,6 @@
     "perintah": [],
     "deskripsi_kunci": "sw.desk.driver-ar9271"
   },
-  "airodump-ng": {
-    "nama": "Airodump-ng",
-    "tipe": "aplikasi",
-    "kategori": "Nirkabel",
-    "versi_awal": "1.0",
-    "versi": "1.1",
-    "ukuran": "3.4 MB",
-    "harga": 60,
-    "deps": [
-      "driver-ar9271"
-    ],
-    "butuh_adapter": true,
-    "chipset": [],
-    "perintah": [
-      "airodump-ng",
-      "airmon-ng"
-    ],
-    "deskripsi_kunci": "sw.desk.airodump-ng"
-  },
   "network-analyzer": {
     "nama": "Network Analyzer",
     "tipe": "aplikasi",
@@ -43,12 +24,12 @@
     "ukuran": "5.1 MB",
     "harga": 120,
     "deps": [
-      "airodump-ng"
+      "aircrack-ng"
     ],
     "butuh_adapter": false,
     "chipset": [],
     "perintah": [
-      "security"
+      "network-analyzer"
     ],
     "deskripsi_kunci": "sw.desk.network-analyzer"
   },
@@ -66,8 +47,92 @@
     "butuh_adapter": false,
     "chipset": [],
     "perintah": [
-      "audit"
+      "password-auditor"
     ],
     "deskripsi_kunci": "sw.desk.password-auditor"
+  },
+  "aircrack-ng": {
+    "nama": "Aircrack-ng",
+    "tipe": "aplikasi",
+    "kategori": "Nirkabel",
+    "versi_awal": "1.6",
+    "versi": "1.7",
+    "ukuran": "5.5 MB",
+    "harga": 60,
+    "deps": [
+      "driver-ar9271"
+    ],
+    "butuh_adapter": true,
+    "chipset": [],
+    "perintah": [
+      "aircrack-ng",
+      "airodump-ng",
+      "airmon-ng"
+    ],
+    "deskripsi_kunci": "sw.desk.aircrack-ng"
+  },
+  "hashcat": {
+    "nama": "Hashcat",
+    "tipe": "aplikasi",
+    "kategori": "Autentikasi",
+    "versi_awal": "6.2.5",
+    "versi": "6.2.6",
+    "ukuran": "12.4 MB",
+    "harga": 150,
+    "deps": [],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [
+      "hashcat"
+    ],
+    "deskripsi_kunci": "sw.desk.hashcat"
+  },
+  "john": {
+    "nama": "John the Ripper",
+    "tipe": "aplikasi",
+    "kategori": "Autentikasi",
+    "versi_awal": "1.9.0",
+    "versi": "1.9.0",
+    "ukuran": "8.7 MB",
+    "harga": 110,
+    "deps": [],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [
+      "john"
+    ],
+    "deskripsi_kunci": "sw.desk.john"
+  },
+  "wireshark": {
+    "nama": "Wireshark",
+    "tipe": "aplikasi",
+    "kategori": "Lalu lintas",
+    "versi_awal": "4.6.4",
+    "versi": "4.6.6",
+    "ukuran": "46.0 MB",
+    "harga": 120,
+    "deps": [],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [
+      "wireshark"
+    ],
+    "deskripsi_kunci": "sw.desk.wireshark"
+  },
+  "tshark": {
+    "nama": "TShark",
+    "tipe": "aplikasi",
+    "kategori": "Lalu lintas",
+    "versi_awal": "4.6.4",
+    "versi": "4.6.5",
+    "ukuran": "4.5 MB",
+    "harga": 60,
+    "deps": [],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [
+      "tshark"
+    ],
+    "deskripsi_kunci": "sw.desk.tshark"
   }
 }

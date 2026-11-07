@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Uji rencana animasi pemrosesan perintah. Setiap baris output harus sama dengan hasil asli, berurutan.
 
 func _sesi() -> ShellSession:
@@ -78,7 +80,7 @@ func test_ping_empat_paket_satu_status_per_paket():
 func test_ping_node_tidak_aktif_tampilkan_timeout_per_paket():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     s.jaringan.data["arsip"]["status"] = "tidak_aktif"
     var rencana := _kirim(s, "ping -c 3 arsip")
     assert_eq(_baris(rencana).filter(func(t): return t.begins_with("Request timeout")).size(), 3, "tiga timeout")
@@ -96,7 +98,7 @@ func test_ping_node_terkunci_galat_tanpa_status_paket():
 func test_ssh_berhasil_lalu_membuka_sesi():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     var rencana := _kirim(s, "ssh operator@arsip")
     assert_eq(_status(rencana), ["Resolving hostname...", "Connecting to remote host...", "Establishing connection...", "Authenticating public key...", "Authentication successful.", "Membuka sesi terminal remote..."])
     assert_true(_baris(rencana).has("Terhubung ke arsip (10.7.0.8)."))
@@ -104,7 +106,7 @@ func test_ssh_berhasil_lalu_membuka_sesi():
 func test_ssh_ditolak_menampilkan_autentikasi_lalu_galat():
     var s := _sesi()
     s.jalankan("nmap gerbang")
-    s.jalankan("scan 10.7.0.8")
+    UA.alat(s, "scan", ["10.7.0.8"])
     var rencana := _kirim(s, "ssh admin@arsip")
     assert_eq(_status(rencana).size(), 4, "empat tahap sampai autentikasi")
     assert_false(_status(rencana).has("Authentication successful."), "tidak boleh sukses saat ditolak")

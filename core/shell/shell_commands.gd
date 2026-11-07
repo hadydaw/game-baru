@@ -4,8 +4,37 @@ extends RefCounted
 # Dispatch perintah dan handler tahap A (navigasi dan berkas).
 # Setiap handler menerima sesi dan hasil parse, lalu mengembalikan Array of {tipe, teks}.
 
+# Perintah lama dari versi game sebelum Terminal dibuat seperti Kali. Sementara, nama lama tidak
+# dianggap "tidak ditemukan" melainkan menunjuk pengganti. Logika game-nya sudah pindah ke aplikasi,
+# jadi nama lama tidak menjalankan apa pun. Save lama tetap terbaca lewat ShellSession.PENGGANTI_FLAG.
+# Hapus tabel ini hanya setelah pemberitahuan versi dan tanpa dampak pada save.
+const PERINTAH_LAMA := {
+    "device": {"ganti": "lsusb", "aplikasi": "Device Manager"},
+    "tools": {"ganti": "apt"},
+    "security": {"ganti": "network-analyzer"},
+    "audit": {"ganti": "password-auditor"},
+    "toko": {"aplikasi": "Toko Perangkat"},
+    "bm": {"aplikasi": "Pasar"},
+    "wallet": {"aplikasi": "Dompet"},
+    "scan": {"aplikasi": "Alat Lapangan"},
+    "inspeksi": {"aplikasi": "Alat Lapangan"},
+    "trace": {"aplikasi": "Alat Lapangan"},
+    "decode": {"aplikasi": "Alat Lapangan"},
+    "analyze": {"aplikasi": "Alat Lapangan"},
+}
+
+static func _pesan_perintah_lama(nama: String) -> String:
+    var info: Dictionary = PERINTAH_LAMA[nama]
+    if info.has("ganti"):
+        var ganti := String(info["ganti"])
+        return Bahasa.dua("perintah ini sudah diganti. Gunakan '%s'" % ganti, "this command was replaced. Use '%s'" % ganti)
+    var aplikasi := String(info["aplikasi"])
+    return Bahasa.dua("perintah ini sudah dipindah ke aplikasi %s di desktop" % aplikasi, "this command moved to the %s app on the desktop" % aplikasi)
+
 static func jalankan(s: ShellSession, p: Dictionary) -> Array:
     var nama := String(p["nama"])
+    if PERINTAH_LAMA.has(nama):
+        return [s.galat(nama, _pesan_perintah_lama(nama))]
     # Perintah milik tool yang belum dimiliki diperlakukan seperti perintah yang tidak ada.
     if not CommandRegistry.tersedia(s, nama):
         return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
@@ -16,18 +45,17 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "clear": return [s.baris("clear", "")]
         "history": return _history(s)
         "help": return _help(s)
-        "tools": return RepositoriCommands.tools(s, p)
-        "device": return PerangkatCommands.device(s, p)
+        "apt": return AptCommands.jalankan(s, p)
+        "lsusb": return _lsusb(s)
         "airodump-ng": return WifiCommands.airodump(s, p)
         "airmon-ng": return WifiCommands.airmon(s, p)
-        "security": return WifiCommands.security(s, p)
-        "audit": return WifiCommands.audit(s, p)
-        "toko": return PerangkatCommands.toko(s, p)
-        "inspeksi": return ToolCommands.inspeksi(s, p)
-        "trace": return ToolCommands.trace(s, p)
-        "decode": return AnalisisCommands.decode(s, p)
-        "analyze": return AnalisisCommands.analyze(s, p)
-        "bm": return PasarCommands.jalankan(s, p)
+        "network-analyzer": return WifiCommands.security(s, p)
+        "password-auditor": return WifiCommands.audit(s, p)
+        "aircrack-ng": return CrackerCommands.aircrack(s, p)
+        "hashcat": return CrackerCommands.hashcat(s, p)
+        "john": return CrackerCommands.john(s, p)
+        "wireshark": return WiresharkCommands.wireshark(s, p)
+        "tshark": return WiresharkCommands.tshark(s, p)
         "man": return _man(s, p)
         "ls": return _ls(s, p)
         "cd": return _cd(s, p)
@@ -38,25 +66,29 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "find": return ShellSearch.find(s, p)
         "ping": return PerintahJaringan.ping(s, p)
         "nmap": return PerintahJaringan.nmap(s, p)
-        "scan": return PerintahScan.scan(s, p)
         "ssh": return PerintahJaringan.ssh(s, p)
         "exit": return [s.galat("exit", Bahasa.dua("tidak ada sesi SSH aktif", "no active SSH session"))]
-        "wallet": return _wallet(s)
         _: return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]
 
-# Saldo dan reputasi pemain. Hanya membaca keadaan; perubahan dilakukan oleh sistem permainan.
-static func _wallet(s: ShellSession) -> Array:
-    var hasil: Array = [s.baris("info", Bahasa.dua("Saldo: %d %s", "Balance: %d %s", [s.economy.saldo, String(Economy.data_ekonomi().get("mata_uang", "Kr"))]))]
-    hasil.append(s.baris("info", "XP: %d" % s.xp))
-    hasil.append(s.baris("info", Bahasa.dua("Reputasi:", "Reputation:")))
-    var grup: Dictionary = Economy.data_ekonomi().get("grup", {})
-    var ids := grup.keys()
+# lsusb: daftar perangkat USB. ID vendor:produk adalah ID asli chipset adapter di katalog perangkat.
+const USB_ADAPTER := {
+	"usb_wireless_adapter": ["0cf3:9271", "Qualcomm Atheros Communications AR9271 802.11n"],
+	"usb_wireless_adapter_rt": ["148f:5370", "Ralink Technology, Corp. RT5370 Wireless Adapter"],
+}
+
+static func _lsusb(s: ShellSession) -> Array:
+    var hasil: Array = [s.baris("info", "Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub")]
+    var ids := USB_ADAPTER.keys()
     ids.sort()
+    var nomor := 2
     for id in ids:
-        var nilai := s.reputation.get_nilai(String(id))
-        hasil.append(s.baris("info", "  %s: %d (%s)" % [Reputation.nama_grup(String(id)), nilai, Reputation.tingkat_teks(nilai)]))
+        if s.perangkat.jumlah(String(id)) > 0:
+            var u: Array = USB_ADAPTER[id]
+            hasil.append(s.baris("info", "Bus 001 Device %03d: ID %s %s" % [nomor, u[0], u[1]]))
+            nomor += 1
     return hasil
 
+# Saldo dan reputasi pemain. Hanya membaca keadaan; perubahan dilakukan oleh sistem permainan.
 static func _history(s: ShellSession) -> Array:
     var hasil: Array = []
     for i in range(s.riwayat.size()):
@@ -66,6 +98,8 @@ static func _history(s: ShellSession) -> Array:
 static func _help(s: ShellSession) -> Array:
     var hasil: Array = [{"tipe": "info", "teks": Teks.t("help.judul")}]
     for nama in Teks.MAN.keys():
+        if AlatCommands.NAMA.has(String(nama)):
+            continue
         if CommandRegistry.tersedia(s, String(nama)):
             hasil.append({"tipe": "info", "teks": "  " + nama})
     return hasil

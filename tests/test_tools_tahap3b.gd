@@ -1,5 +1,10 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
+func before_each() -> void:
+	Bahasa.kode = "id"
+
 # Tahap 3b: inventaris tool, perintah yang dibatasi tool, nmap -sV dan firewall, inspeksi, dan trace.
 
 func _sesi() -> ShellSession:
@@ -45,23 +50,24 @@ func test_inventaris_bertahan_lewat_to_dict() -> void:
 
 func test_perintah_tool_tanpa_kepemilikan_tidak_ditemukan() -> void:
 	var s := _sesi()
-	var hasil := s.jalankan("inspeksi gerbang")
+	var hasil := UA.alat(s, "inspeksi", ["gerbang"])
 	assert_true(_galat(hasil))
 	assert_true(_teks(hasil).contains("perintah tidak ditemukan"))
 	assert_false(_teks(s.jalankan("help")).contains("inspeksi"), "help tidak menampilkan perintah yang belum aktif")
 
-func test_help_menampilkan_perintah_tool_yang_dimiliki() -> void:
+func test_perintah_tool_dikenali_setelah_dimiliki() -> void:
+	# Perintah Alat dikenali setelah tool-nya dimiliki; help Terminal hanya memuat perintah Linux.
 	var s := _sesi()
+	assert_false(CommandRegistry.tersedia(s, "trace"))
 	s.inventory.miliki("signal_tracer", "misi")
-	assert_true(_teks(s.jalankan("help")).contains("trace"))
+	assert_true(CommandRegistry.tersedia(s, "trace"))
 
-func test_tools_menampilkan_daftar() -> void:
+func test_tools_terminal_ditolak_dan_inventaris_tetap() -> void:
+	# Daftar tool sekarang ada di aplikasi Tools; perintah "tools" tidak lagi ada di Terminal.
 	var s := _sesi()
 	s.inventory.miliki("network_scanner", "awal", 1)
-	assert_true(_teks(s.jalankan("tools")).contains("Network Scanner"))
-	var kosong := _sesi()
-	kosong.inventory = Inventory.new()
-	assert_true(_teks(kosong.jalankan("tools")).contains("Tidak ada tool"))
+	assert_true(_galat(s.jalankan("tools")))
+	assert_true(s.inventory.punya("network_scanner"))
 
 func test_nmap_sv_butuh_scanner_tingkat_2() -> void:
 	var s := _sesi()
@@ -86,16 +92,16 @@ func test_inspeksi_butuh_host_sudah_dipindai() -> void:
 	var s := _sesi()
 	s.inventory.miliki("packet_inspector", "awal")
 	s.jalankan("ping -c 1 gerbang")
-	assert_true(_teks(s.jalankan("inspeksi gerbang")).contains("belum dipindai"))
+	assert_true(_teks(UA.alat(s, "inspeksi", ["gerbang"])).contains("belum dipindai"))
 	s.jalankan("nmap gerbang")
-	assert_true(_teks(s.jalankan("inspeksi gerbang")).contains("Log transfer gerbang"))
+	assert_true(_teks(UA.alat(s, "inspeksi", ["gerbang"])).contains("Log transfer gerbang"))
 
 func test_inspeksi_tingkat_1_menyamarkan_alamat_tujuan() -> void:
 	var s := _sesi()
 	s.inventory.miliki("packet_inspector", "awal", 1)
 	s.jalankan("ping -c 1 gerbang")
 	s.jalankan("nmap gerbang")
-	var t := _teks(s.jalankan("inspeksi gerbang"))
+	var t := _teks(UA.alat(s, "inspeksi", ["gerbang"]))
 	assert_true(t.contains("***.***.***.***"))
 	assert_false(t.contains("10.7.0.8"))
 
@@ -104,13 +110,13 @@ func test_inspeksi_tingkat_2_menampilkan_alamat() -> void:
 	s.inventory.miliki("packet_inspector", "awal", 2)
 	s.jalankan("ping -c 1 gerbang")
 	s.jalankan("nmap gerbang")
-	assert_true(_teks(s.jalankan("inspeksi gerbang")).contains("10.7.0.8"))
+	assert_true(_teks(UA.alat(s, "inspeksi", ["gerbang"])).contains("10.7.0.8"))
 
 func test_trace_tingkat_1_menampilkan_satu_hop_dan_menemukan_node() -> void:
 	var s := _sesi()
 	s.inventory.miliki("signal_tracer", "awal", 1)
 	s.jalankan("ping -c 1 gerbang")
-	var t := _teks(s.jalankan("trace gerbang"))
+	var t := _teks(UA.alat(s, "trace", ["gerbang"]))
 	assert_true(t.contains("relay"))
 	assert_true(s.jaringan.dikenal("relay"), "node satu hop biasa menjadi terlihat")
 	assert_false(t.contains("arsip"), "node khusus scan tidak tampil sebelum scan")
@@ -121,8 +127,8 @@ func test_trace_tingkat_3_menampilkan_seluruh_jaringan_dan_menyamarkan_terkunci(
 	var s := _sesi()
 	s.inventory.miliki("signal_tracer", "awal", 3)
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("scan 10.7.0.8")
-	var t := _teks(s.jalankan("trace gerbang"))
+	UA.alat(s, "scan", ["10.7.0.8"])
+	var t := _teks(UA.alat(s, "trace", ["gerbang"]))
 	assert_true(t.contains("server_kota"))
 	assert_true(t.contains("terkunci"))
 	assert_false(s.jaringan.dikenal("server_kota"), "node terkunci tidak terungkap")

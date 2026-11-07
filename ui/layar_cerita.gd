@@ -237,7 +237,7 @@ class IlustrasiCerita extends Control:
 		draw_rect(layar, Color(0.02, 0.04, 0.05, 1.0))
 		draw_rect(layar, Color(Tema.TEAL, 0.7), false, 3.0)
 		var font := ThemeDB.fallback_font
-		var baris := ["$ whoami", "operator", "$ scan 10.x.x.x", "1 perangkat ditemukan", "$ _"]
+		var baris := ["$ whoami", "operator", "$ nmap 10.x.x.x", "1 perangkat ditemukan", "$ _"]
 		for i in baris.size():
 			draw_string(font, layar.position + Vector2(24, 52 + i * 46), baris[i], HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Tema.TEAL if i % 2 == 0 else Tema.TEKS)
 		if fmod(_waktu, 1.0) < 0.5:

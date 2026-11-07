@@ -1,9 +1,14 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Tahap 3a: saldo Kr, reputasi grup, perintah wallet, dan penyimpanan keadaan ekonomi.
 
 func _sesi() -> ShellSession:
 	return ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}))
+
+func _galat(hasil: Array) -> bool:
+	return hasil.size() > 0 and String(hasil[0]["tipe"]) == "error"
 
 func _teks(hasil: Array) -> String:
 	var t := ""
@@ -62,16 +67,15 @@ func test_reputasi_awal_nol_untuk_grup_data() -> void:
 	assert_eq(Reputation.baru().get_nilai("kolektif_senja"), 0)
 	assert_eq(Bahasa.pilih(Reputation.nama_grup("kolektif_senja")), "Kolektif Senja")
 
-func test_wallet_menampilkan_saldo_dan_reputasi() -> void:
+func test_dompet_membaca_saldo_dan_reputasi_dari_sesi() -> void:
+	# Saldo dan reputasi kini ditampilkan oleh aplikasi Dompet; datanya sama dengan sesi.
 	var s := _sesi()
 	s.reputation.ubah("kolektif_senja", 30)
-	var t := _teks(s.jalankan("wallet"))
-	assert_true(t.contains("Saldo: 500 Kr"))
-	assert_true(t.contains("Kolektif Senja: 30 (anggota)"))
+	assert_eq(s.economy.saldo, 500)
+	assert_eq(s.reputation.get_nilai("kolektif_senja"), 30)
 
-func test_wallet_ada_di_manual() -> void:
-	assert_true(_teks(_sesi().jalankan("man wallet")).contains("wallet"))
-	assert_true(_teks(_sesi().jalankan("help")).contains("wallet"))
+func test_wallet_pindah_ke_aplikasi_dompet() -> void:
+	assert_true(_galat(_sesi().jalankan("wallet")), "wallet ditolak di Terminal")
 
 func test_keadaan_ekonomi_bertahan_lewat_to_dict() -> void:
 	var s := _sesi()
@@ -101,7 +105,7 @@ func test_sesi_ssh_memakai_saldo_yang_sama() -> void:
 		"isi": {"home": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {"operator": operator}}}}
 	var s := ShellSession.new(Vfs.new(akar))
 	s.jalankan("ping -c 1 gerbang")
-	s.jalankan("scan 10.7.0.8")
+	UA.alat(s, "scan", ["10.7.0.8"])
 	s.jalankan("ssh operator@arsip")
 	assert_not_null(s.ssh_aktif, "ssh berhasil dengan kunci di filesystem uji")
 	s.ssh_aktif.economy.bayar(100)

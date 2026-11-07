@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Tahap 4: Tutorial Misi 1 dari awal sampai akhir, hanya lewat Terminal, Pasar, Device Manager,
 # dan Tools Repository. Setiap tahap memberi umpan balik sekali, hadiah diberikan sekali, dan
 # progres bertahan saat disimpan.
@@ -11,7 +13,7 @@ func _sesi() -> ShellSession:
 	return s
 
 func _jalan(s: ShellSession, perintah: String) -> Array:
-	var hasil := s.jalankan(perintah)
+	var hasil := UA.jalan(s, perintah)
 	_baca_tahap_aktif(s)
 	return hasil
 
@@ -47,42 +49,42 @@ func test_alur_lengkap_sampai_hadiah() -> void:
 	var s := _sesi()
 	# Tahap 1: terminal
 	_jalan(s, "help")
-	_jalan(s, "device list")
+	_jalan(s, "lsusb")
 	# Tahap 2: hardware dari Pasar atau toko
-	_jalan(s, "toko beli usb_wireless_adapter")
-	_jalan(s, "toko beli antena_eksternal")
-	_jalan(s, "toko beli kabel_usb")
+	_jalan(s, "__beli__usb_wireless_adapter")
+	_jalan(s, "__beli__antena_eksternal")
+	_jalan(s, "__beli__kabel_usb")
 	# Tahap 3: rakit
-	assert_false(_galat(_jalan(s, "device rakit")))
+	assert_false(_galat(_jalan(s, "__rakit__")))
 	# Tahap 4: driver dan koneksi
-	_jalan(s, "tools search driver")
-	assert_false(_galat(_jalan(s, "tools install driver-ar9271")))
-	assert_false(_galat(_jalan(s, "device hubungkan")))
+	_jalan(s, "apt search driver")
+	assert_false(_galat(_jalan(s, "apt install -y driver-ar9271")))
+	assert_false(_galat(_jalan(s, "__hubungkan__")))
 	# Tahap 5-6: software dan pemindaian
-	_jalan(s, "tools install airodump-ng")
+	_jalan(s, "apt install -y aircrack-ng")
 	_jalan(s, "airmon-ng start wlan0")
 	assert_false(_galat(_jalan(s, "airodump-ng wlan0mon")))
 	s.jaringan.buka("ui:netmgr")
 	Misi.perbarui(s)
 	# Tahap 7: analisis
-	_jalan(s, "tools install network-analyzer")
+	_jalan(s, "apt install -y network-analyzer")
 	_jalan(s, "airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
-	_jalan(s, "security analyze LAB-WIFI-01")
+	_jalan(s, "network-analyzer analyze LAB-WIFI-01")
 	# Tahap 8: pengujian keamanan
 	_jalan(s, "man password-auditor")
-	_jalan(s, "tools install password-auditor")
-	_jalan(s, "tools list")
-	_jalan(s, "man handshake")
-	_jalan(s, "audit auth LAB-WIFI-01")
-	_jalan(s, "man hasil-handshake")
-	_jalan(s, "man audit")
-	_jalan(s, "audit run LAB-WIFI-01")
-	_jalan(s, "man kesimpulan-audit")
+	_jalan(s, "apt install -y password-auditor")
+	_jalan(s, "apt list --installed")
+	_jalan(s, "man aircrack-ng")
+	_jalan(s, "password-auditor auth LAB-WIFI-01")
+	_jalan(s, "man airodump-ng")
+	_jalan(s, "man john")
+	_jalan(s, "password-auditor run LAB-WIFI-01")
+	_jalan(s, "man network-analyzer")
 	# Tahap 9: verifikasi akses
-	assert_false(_galat(_jalan(s, "security verify LAB-WIFI-01 senja1234")))
+	assert_false(_galat(_jalan(s, "network-analyzer verify LAB-WIFI-01 senja1234")))
 	# Tahap 26: laporan temuan menyelesaikan misi
 	assert_eq(String(s.misi["misi_1"]), "aktif", "belum selesai sebelum laporan")
-	_jalan(s, "security report LAB-WIFI-01")
+	_jalan(s, "network-analyzer report LAB-WIFI-01")
 	assert_eq(String(s.misi["misi_1"]), "selesai")
 	assert_eq(s.xp, 100)
 	assert_eq(s.perangkat.jumlah("wifi_hacking_kit"), 1)
@@ -93,45 +95,45 @@ func test_alur_lengkap_sampai_hadiah() -> void:
 func test_umpan_balik_tahap_sekali_per_tahap() -> void:
 	var s := _sesi()
 	_jalan(s, "help")
-	_jalan(s, "device list")
+	_jalan(s, "lsusb")
 	var judul := []
 	for p in s.pesan_misi:
 		judul.append(Bahasa.pilih(String(p["subjek"])))
 	assert_true(judul.has("Tahap 1: Membuka Daftar Perintah"))
 	var n := s.pesan_misi.size()
-	_jalan(s, "device list")
+	_jalan(s, "lsusb")
 	assert_eq(s.pesan_misi.size(), n, "tidak diulang")
 
 func test_hadiah_tidak_ganda_setelah_dimuat_ulang() -> void:
 	var s := _sesi()
 	_jalan(s, "help")
-	_jalan(s, "device list")
-	_jalan(s, "toko beli usb_wireless_adapter")
-	_jalan(s, "toko beli antena_eksternal")
-	_jalan(s, "toko beli kabel_usb")
-	_jalan(s, "device rakit")
-	_jalan(s, "tools search driver")
-	_jalan(s, "tools install driver-ar9271")
-	_jalan(s, "device hubungkan")
-	_jalan(s, "tools install airodump-ng")
+	_jalan(s, "lsusb")
+	_jalan(s, "__beli__usb_wireless_adapter")
+	_jalan(s, "__beli__antena_eksternal")
+	_jalan(s, "__beli__kabel_usb")
+	_jalan(s, "__rakit__")
+	_jalan(s, "apt search driver")
+	_jalan(s, "apt install -y driver-ar9271")
+	_jalan(s, "__hubungkan__")
+	_jalan(s, "apt install -y aircrack-ng")
 	_jalan(s, "airmon-ng start wlan0")
 	_jalan(s, "airodump-ng wlan0mon")
 	s.jaringan.buka("ui:netmgr")
 	Misi.perbarui(s)
-	_jalan(s, "tools install network-analyzer")
+	_jalan(s, "apt install -y network-analyzer")
 	_jalan(s, "airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
-	_jalan(s, "security analyze LAB-WIFI-01")
+	_jalan(s, "network-analyzer analyze LAB-WIFI-01")
 	_jalan(s, "man password-auditor")
-	_jalan(s, "tools install password-auditor")
-	_jalan(s, "tools list")
-	_jalan(s, "man handshake")
-	_jalan(s, "audit auth LAB-WIFI-01")
-	_jalan(s, "man hasil-handshake")
-	_jalan(s, "man audit")
-	_jalan(s, "audit run LAB-WIFI-01")
-	_jalan(s, "man kesimpulan-audit")
-	_jalan(s, "security verify LAB-WIFI-01 senja1234")
-	_jalan(s, "security report LAB-WIFI-01")
+	_jalan(s, "apt install -y password-auditor")
+	_jalan(s, "apt list --installed")
+	_jalan(s, "man aircrack-ng")
+	_jalan(s, "password-auditor auth LAB-WIFI-01")
+	_jalan(s, "man airodump-ng")
+	_jalan(s, "man john")
+	_jalan(s, "password-auditor run LAB-WIFI-01")
+	_jalan(s, "man network-analyzer")
+	_jalan(s, "network-analyzer verify LAB-WIFI-01 senja1234")
+	_jalan(s, "network-analyzer report LAB-WIFI-01")
 	assert_eq(String(s.misi["misi_1"]), "selesai")
 	var saldo := s.economy.saldo
 	var pulih := ShellSession.dari_dict(s.to_dict())
@@ -145,7 +147,7 @@ func test_hadiah_tidak_ganda_setelah_dimuat_ulang() -> void:
 func test_progres_tahap_bertahan_setelah_disimpan() -> void:
 	var s := _sesi()
 	_jalan(s, "help")
-	_jalan(s, "device list")
+	_jalan(s, "lsusb")
 	var pulih := ShellSession.dari_dict(s.to_dict())
 	var progres := Misi.tahap_progres(pulih, Misi.temukan("misi_1"))
 	assert_true(bool(progres[0]["selesai"]), "tahap 1 tetap selesai")

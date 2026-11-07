@@ -1,5 +1,7 @@
 extends SceneTree
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Smoke test Peta Jaringan: instansiasi, pilih node, dan perubahan dari sesi Terminal tercermin.
 
 var _gagal := 0
@@ -28,7 +30,7 @@ func _initialize() -> void:
 	sesi.jalankan("ping -c 1 gerbang")
 	await process_frame
 	_cek(peta.jumlah_node_terlihat() == 2, "gerbang dan relay tampil, arsip (node scan) belum tampil di peta")
-	sesi.jalankan("scan 10.7.0.8")
+	UA.alat(sesi, "scan", ["10.7.0.8"])
 	sesi.jalankan("ping -c 1 arsip")
 	_cek(SesiUtama.ambil().jaringan.dikenal("server_kota"), "server_kota terlihat setelah arsip dijangkau")
 

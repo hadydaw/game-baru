@@ -18,9 +18,9 @@ func test_kategori_sistem_default() -> void:
 
 func test_pindah_kategori_menampilkan_aplikasinya() -> void:
 	m._pilih_kategori("jaringan")
-	assert_eq(m.daftar_terlihat(), ["peta", "netmgr", "tools"])
+	assert_eq(m.daftar_terlihat(), ["peta", "netmgr", "alat", "tools"])
 	m._pilih_kategori("pasar")
-	assert_eq(m.daftar_terlihat(), ["pasar", "misi"])
+	assert_eq(m.daftar_terlihat(), ["pasar", "toko", "dompet", "misi"])
 	m._pilih_kategori("komunitas")
 	assert_eq(m.daftar_terlihat(), ["forum", "email"])
 

@@ -1,5 +1,7 @@
 extends SceneTree
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Playtest penuh lewat antarmuka: tombol ditekan dan perintah diketik ke Terminal sungguhan.
 # Mode "baru": mulai sesi baru sampai tahap 13, simpan, lalu keluar.
 # Mode "lanjut": muat simpanan, selesaikan tahap 14-26, lalu uji hal-hal di luar alur.
@@ -96,6 +98,8 @@ func _tunggu_node(nama: String, batas := 15.0) -> Node:
 
 func _teks_node(node: Node) -> String:
 	var t := ""
+	if node is Button:
+		t += (node as Button).text + "\n"
 	if node is Label:
 		t += (node as Label).text + "\n"
 	if node is RichTextLabel:
@@ -354,7 +358,7 @@ func _probe_terminal() -> void:
 	_log("== PROBE TERMINAL ==")
 	await _buka_app("terminal")
 	var term := _cari_berkas(root_app, "terminal_screen.gd")
-	var uji := ["", "   ", "xyz", "airodump-ng", "airodump-ng -c", "airodump-ng -c abc wlan0mon", "airodump-ng -t FOO wlan0mon", "airodump-ng -d xx wlan0mon", "airodump-ng wlan0", "airodump-ng -z wlan0mon", "airmon-ng", "airmon-ng stop wlan0mon", "airmon-ng start wlan1", "security", "security report", "security report LAB-WIFI-99", "security verify", "audit", "audit run", "tools", "tools install", "toko beli", "toko beli xyz", "device", "man", "man xyz", "help", "help", "help", "security report LAB-WIFI-01", "wifi", "ls", "cd /", "pwd", "echo %s"]
+	var uji := ["", "   ", "xyz", "airodump-ng", "airodump-ng -c", "airodump-ng -c abc wlan0mon", "airodump-ng -t FOO wlan0mon", "airodump-ng -d xx wlan0mon", "airodump-ng wlan0", "airodump-ng -z wlan0mon", "airmon-ng", "airmon-ng stop wlan0mon", "airmon-ng start wlan1", "security", "network-analyzer report", "network-analyzer report LAB-WIFI-99", "network-analyzer verify", "audit", "password-auditor run", "tools", "tools install", "toko beli", "__beli__xyz", "device", "man", "man xyz", "help", "help", "help", "network-analyzer report LAB-WIFI-01", "wifi", "ls", "cd /", "pwd", "echo %s"]
 	for c in uji:
 		await _ketik(term, c)
 	await _shot("terminal_uji_salah")
@@ -369,12 +373,12 @@ func _probe_terminal() -> void:
 	await _secs(1.2)
 	_log("  live setelah pindah aplikasi dan kembali: %s" % str(term.get("_live")))
 	await _shot("live_setelah_pindah_app")
-	await _ketik(term, "tools list")
+	await _ketik(term, "apt list --installed")
 	await _ctrl_c(term)
 	await _secs(0.5)
 	_log("  setelah Ctrl+C: live=%s busy=%s" % [str(term.get("_live")), str(term.get("_busy"))])
 	await _ctrl_c(term)
-	await _ketik(term, "device list")
+	await _ketik(term, "lsusb")
 	await _shot("terminal_setelah_probe")
 	var f := FileAccess.open("/tmp/claude-0/-home-claude/8b937400-0bc0-5d55-a30f-257755c5fbe4/scratchpad/playtest/terminal_probe_%s.txt" % ukuran, FileAccess.WRITE)
 	f.store_string((term.get("_keluaran") as RichTextLabel).get_parsed_text())
@@ -383,15 +387,15 @@ func _probe_terminal() -> void:
 
 # Setiap tahap: ketik perintah sesuai email tugas, lalu cek tahap berikutnya.
 var PERINTAH := {
-	1: ["help"], 2: ["device list"], 3: ["toko beli usb_wireless_adapter"], 4: ["toko beli antena_eksternal"],
-	5: ["toko beli kabel_usb"], 6: ["device rakit"], 7: ["tools search driver"], 8: ["tools install driver-ar9271"],
-	9: ["device hubungkan"], 10: ["tools install airodump-ng"],
+	1: ["help"], 2: ["lsusb"], 3: ["__beli__usb_wireless_adapter"], 4: ["__beli__antena_eksternal"],
+	5: ["__beli__kabel_usb"], 6: ["__rakit__"], 7: ["apt search driver"], 8: ["apt install -y driver-ar9271"],
+	9: ["__hubungkan__"], 10: ["apt install -y aircrack-ng"],
 	11: ["airmon-ng start wlan0", "airodump-ng wlan0mon"], 12: ["__netmgr__"],
-	13: ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"], 14: ["tools install network-analyzer"],
-	15: ["security analyze LAB-WIFI-01"], 16: ["man password-auditor"], 17: ["tools install password-auditor"],
-	18: ["tools list"], 19: ["man handshake"], 20: ["audit auth LAB-WIFI-01"], 21: ["man hasil-handshake"],
-	22: ["man audit"], 23: ["audit run LAB-WIFI-01"], 24: ["man kesimpulan-audit"],
-	25: ["security verify LAB-WIFI-01 senja1234"], 26: ["security report LAB-WIFI-01"],
+	13: ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"], 14: ["apt install -y network-analyzer"],
+	15: ["network-analyzer analyze LAB-WIFI-01"], 16: ["man password-auditor"], 17: ["apt install -y password-auditor"],
+	18: ["apt list --installed"], 19: ["man aircrack-ng"], 20: ["password-auditor auth LAB-WIFI-01"], 21: ["man airodump-ng"],
+	22: ["man john"], 23: ["password-auditor run LAB-WIFI-01"], 24: ["man network-analyzer"],
+	25: ["network-analyzer verify LAB-WIFI-01 senja1234"], 26: ["network-analyzer report LAB-WIFI-01"],
 }
 
 func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
@@ -450,6 +454,20 @@ func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 			if c == "__netmgr__":
 				await _buka_app("netmgr")
 				await _shot("netmgr_tahap12")
+				continue
+			# Aksi aplikasi: Beli lewat aplikasi Toko, Rakit dan Hubungkan lewat Device Manager.
+			if c.begins_with("__beli__"):
+				await _buka_app("toko")
+				var toko := _cari_berkas(root_app, "toko_screen.gd")
+				toko.call("_beli", c.substr("__beli__".length()))
+				await _frames(5)
+				continue
+			if c == "__rakit__" or c == "__hubungkan__":
+				await _buka_app("perangkat")
+				var dm := _cari_berkas(root_app, "device_manager.gd")
+				var kunci := "perangkat.rakit" if c == "__rakit__" else "perangkat.hubungkan"
+				await _klik_baris(dm, Bahasa.t(kunci))
+				await _frames(5)
 				continue
 			await _ketik(term, c)
 			await _secs(0.2)

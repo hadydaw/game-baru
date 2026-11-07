@@ -7,7 +7,8 @@ extends RefCounted
 
 const DATA := "res://data/software/katalog.json"
 
-var terpasang: Dictionary = {}  # id -> {versi, riwayat: Array}
+var terpasang: Dictionary = {}  # id -> {versi, riwayat: Array, auto: bool}. auto = terpasang sebagai dependensi (apt autoremove)
+var konfig: Dictionary = {}  # id -> versi. File konfigurasi yang tersisa setelah remove, dihapus oleh purge
 
 static func katalog(path: String = DATA) -> Dictionary:
 	var parser := JSON.new()
@@ -60,7 +61,7 @@ func perintah_aktif() -> Array:
 
 # Pemasangan: item harus ada, belum terpasang, dependensinya sudah terpasang, persyaratan adapter terpenuhi,
 # dan saldo mencukupi. Saldo hanya berkurang bila semua syarat terpenuhi.
-func pasang(id: String, ekonomi: Economy, perangkat: Perangkat) -> Dictionary:
+func pasang(id: String, ekonomi: Economy, perangkat: Perangkat, auto: bool = false) -> Dictionary:
 	var it := item(id)
 	if it.is_empty():
 		return _gagal("sw.tidak_ada", [id])
@@ -76,8 +77,85 @@ func pasang(id: String, ekonomi: Economy, perangkat: Perangkat) -> Dictionary:
 		return _gagal("sw.saldo_kurang", [harga, ekonomi.saldo])
 	ekonomi.bayar(harga)
 	var v := String(it["versi_awal"])
-	terpasang[id] = {"versi": v, "riwayat": [v]}
+	terpasang[id] = {"versi": v, "riwayat": [v], "auto": auto}
 	return _ok("sw.dipasang", [String(it["nama"]), v])
+
+# Penghapusan: paket dilepas dari daftar terpasang. Tidak ada pengembalian saldo, seperti di Linux.
+# remove menyisakan file konfigurasi; purge ikut menghapusnya.
+func hapus(id: String, purge: bool = false) -> bool:
+	if not punya(id):
+		return false
+	if purge:
+		konfig.erase(id)
+	else:
+		konfig[id] = versi(id)
+	terpasang.erase(id)
+	return true
+
+# Paket yang sudah dilepas dengan remove tetapi konfigurasinya masih ada.
+func punya_konfig(id: String) -> bool:
+	return konfig.has(id)
+
+func versi_konfig(id: String) -> String:
+	return String(konfig.get(id, ""))
+
+# Membersihkan konfigurasi tersisa (purge pada paket yang sudah tidak terpasang).
+func bersihkan_konfig(id: String) -> void:
+	konfig.erase(id)
+
+# Paket terpasang yang bergantung langsung atau tidak langsung pada id (ikut terhapus saat id dihapus).
+func dependen(id: String) -> Array:
+	var hasil: Array = []
+	var cari := [id]
+	while not cari.is_empty():
+		var cur := String(cari.pop_front())
+		for k in terpasang:
+			var kid := String(k)
+			if hasil.has(kid) or kid == id:
+				continue
+			if Array(item(kid).get("deps", [])).has(cur):
+				hasil.append(kid)
+				cari.append(kid)
+	hasil.sort()
+	return hasil
+
+# Dependensi yang dibutuhkan untuk memasang id dan belum terpasang, urutan dari yang paling dasar.
+func rencana_pasang(id: String, hasil: Array = [], sedang: Array = []) -> Array:
+	if punya(id) or hasil.has(id) or sedang.has(id):
+		return hasil
+	sedang.append(id)
+	for d in item(id).get("deps", []):
+		rencana_pasang(String(d), hasil, sedang)
+	hasil.append(id)
+	return hasil
+
+# Paket otomatis yang tidak lagi dibutuhkan oleh paket yang dipasang manual.
+func kandidat_autoremove() -> Array:
+	var dibutuhkan := {}
+	for k in terpasang:
+		if not bool(Dictionary(terpasang[k]).get("auto", false)):
+			for d in _tutup_deps(String(k)):
+				dibutuhkan[d] = true
+	var hasil: Array = []
+	for k in terpasang:
+		if bool(Dictionary(terpasang[k]).get("auto", false)) and not dibutuhkan.has(String(k)):
+			hasil.append(String(k))
+	hasil.sort()
+	return hasil
+
+func _tutup_deps(id: String) -> Array:
+	var hasil: Array = []
+	var cari := [id]
+	while not cari.is_empty():
+		var cur := String(cari.pop_front())
+		for d in item(cur).get("deps", []):
+			if not hasil.has(String(d)):
+				hasil.append(String(d))
+				cari.append(String(d))
+	return hasil
+
+func auto(id: String) -> bool:
+	return bool(Dictionary(terpasang.get(id, {})).get("auto", false))
 
 # Pembaruan: menaikkan versi terpasang ke versi terbaru di katalog.
 func perbarui(id: String) -> Dictionary:
@@ -89,7 +167,7 @@ func perbarui(id: String) -> Dictionary:
 		return _gagal("sw.sudah_terbaru", [String(it["nama"])])
 	var r := riwayat(id)
 	r.append(terbaru)
-	terpasang[id] = {"versi": terbaru, "riwayat": r}
+	terpasang[id] = {"versi": terbaru, "riwayat": r, "auto": auto(id)}
 	return _ok("sw.diperbarui", [String(it["nama"]), terbaru])
 
 # Driver terpasang yang mendukung chipset tertentu; kosong bila tidak ada.
@@ -107,12 +185,13 @@ func _gagal(kunci: String, args: Array) -> Dictionary:
 	return {"ok": false, "kunci": kunci, "args": args}
 
 func to_dict() -> Dictionary:
-	return {"terpasang": terpasang.duplicate(true)}
+	return {"terpasang": terpasang.duplicate(true), "konfig": konfig.duplicate(true)}
 
 func terapkan(d: Dictionary) -> void:
 	terpasang = {}
+	konfig = Dictionary(d.get("konfig", {})).duplicate(true)
 	var t: Dictionary = d.get("terpasang", {})
 	for id in t:
 		if not item(String(id)).is_empty():
 			var e: Dictionary = t[id]
-			terpasang[String(id)] = {"versi": String(e.get("versi", "")), "riwayat": Array(e.get("riwayat", [])).duplicate()}
+			terpasang[String(id)] = {"versi": String(e.get("versi", "")), "riwayat": Array(e.get("riwayat", [])).duplicate(), "auto": bool(e.get("auto", false))}

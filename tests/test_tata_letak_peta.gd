@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 const AREA := Rect2(0, 64, 1080, 1200)
 
 func before_each() -> void:
@@ -49,7 +51,7 @@ func test_sidik_berubah_setelah_ping() -> void:
 func test_sidik_berubah_setelah_nmap() -> void:
 	var sesi := SesiUtama.ambil()
 	sesi.jalankan("ping -c 1 gerbang")
-	sesi.jalankan("scan 10.7.0.8")
+	UA.alat(sesi, "scan", ["10.7.0.8"])
 	var sebelum := TataLetakPeta.sidik(sesi.jaringan)
 	sesi.jalankan("nmap 10.7.0.8")
 	var sesudah := TataLetakPeta.sidik(sesi.jaringan)
@@ -71,5 +73,5 @@ func test_perubahan_terminal_terlihat_di_peta() -> void:
 	var sesudah := TataLetakPeta.sidik(SesiUtama.ambil().jaringan)
 	assert_ne(sebelum, sesudah)
 	assert_false(SesiUtama.ambil().jaringan.dikenal("arsip"), "arsip belum terlihat: hanya lewat scan")
-	SesiUtama.ambil().jalankan("scan 10.7.0.8")
+	UA.alat(SesiUtama.ambil(), "scan", ["10.7.0.8"])
 	assert_true(SesiUtama.ambil().jaringan.dikenal("arsip"), "arsip terlihat setelah scan")

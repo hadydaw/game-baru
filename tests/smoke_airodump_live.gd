@@ -1,5 +1,7 @@
 extends SceneTree
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Smoke Terminal: airodump-ng berjalan sebagai mode live di layar HP, bingkai diperbarui,
 # dan Ctrl+C (aksi "batal") menghentikannya tanpa mengubah monitor mode atau progres.
 var _gagal := 0
@@ -26,8 +28,8 @@ func _initialize() -> void:
 	for i in range(3):
 		await process_frame
 	var s: ShellSession = layar.get("_sesi")
-	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install airodump-ng", "airmon-ng start wlan0"]:
-		s.jalankan(c)
+	for c in ["__beli__usb_wireless_adapter", "__beli__antena_eksternal", "__beli__kabel_usb", "__rakit__", "apt install -y driver-ar9271", "__hubungkan__", "apt install -y aircrack-ng", "airmon-ng start wlan0"]:
+		UA.jalan(s, c)
 	layar.call("_kirim", "airodump-ng wlan0mon")
 	layar.call("_selesaikan_cepat")
 	for i in range(3):
@@ -69,8 +71,8 @@ func _initialize() -> void:
 	for i in range(3):
 		await process_frame
 	var s2: ShellSession = layar2.get("_sesi")
-	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install airodump-ng", "airmon-ng start wlan0"]:
-		s2.jalankan(c)
+	for c in ["__beli__usb_wireless_adapter", "__beli__antena_eksternal", "__beli__kabel_usb", "__rakit__", "apt install -y driver-ar9271", "__hubungkan__", "apt install -y aircrack-ng", "airmon-ng start wlan0"]:
+		UA.jalan(s2, c)
 	layar2.call("_kirim", "airodump-ng wlan0mon")
 	_cek(bool(layar2.get("_busy")) and not bool(layar2.get("_live")), "animasi pembuka berjalan sebelum live")
 	layar2.call("_jalankan_aksi", "batal")

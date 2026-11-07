@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Tahap 1: perangkat keras. Pemain mulai tanpa adapter, membeli komponen, merakit, dan menghubungkan
 # perangkat. Semua lewat Perangkat, PerangkatCommands, dan sesi yang sama dengan Terminal.
 
@@ -99,24 +101,23 @@ func test_wifi_hacking_kit_menaikkan_antena() -> void:
 	assert_eq(s.perangkat.jumlah("wifi_hacking_kit"), 1)
 	assert_eq(s.perangkat.antena(), 2)
 
-func test_terminal_device_list_dan_detect() -> void:
+func test_terminal_lsusb_menampilkan_adapter_yang_dimiliki() -> void:
 	var s := _sesi()
-	assert_true(_teks(s.jalankan("device list")).contains("Belum dirakit"))
-	assert_true(_teks(s.jalankan("device detect")).contains("Tidak ada perangkat"))
-	s.jalankan("toko beli usb_wireless_adapter")
-	assert_true(_teks(s.jalankan("device detect")).contains("belum dirakit"))
+	assert_false(_teks(s.jalankan("lsusb")).contains("0cf3:9271"), "belum ada adapter")
+	UA.jalan(s, "__beli__usb_wireless_adapter")
+	assert_true(_teks(s.jalankan("lsusb")).contains("0cf3:9271"), "adapter yang dibeli tampil di lsusb")
 
 func test_terminal_toko_beli_dan_rakit() -> void:
 	var s := _sesi()
-	s.jalankan("toko beli usb_wireless_adapter")
-	s.jalankan("toko beli antena_eksternal")
-	s.jalankan("toko beli kabel_usb")
-	var t := _teks(s.jalankan("device rakit"))
-	assert_true(t.contains("dirakit"))
+	UA.jalan(s, "__beli__usb_wireless_adapter")
+	UA.jalan(s, "__beli__antena_eksternal")
+	UA.jalan(s, "__beli__kabel_usb")
+	var t := _teks(UA.jalan(s, "__rakit__"))
+	assert_true(t.contains("Dirakit"))
 	assert_true(s.jaringan.progres.has("rakit:wifi_kit"))
 	assert_true(s.jaringan.progres.has("beli:usb_wireless_adapter"))
 
-func test_terminal_galat_jika_argumen_kurang() -> void:
+func test_perintah_game_lama_ditolak_di_terminal() -> void:
 	var s := _sesi()
 	assert_eq(String(s.jalankan("device upgrade")[0]["tipe"]), "error")
 	assert_eq(String(s.jalankan("toko beli")[0]["tipe"]), "error")
@@ -134,8 +135,11 @@ func test_perangkat_bertahan_saat_disimpan() -> void:
 	assert_eq(pulih.perangkat.adapter(), "usb_wireless_adapter")
 	assert_true(pulih.repositori.punya("driver-ar9271"))
 
-func test_pasar_komponen_tidak_menampilkan_kit() -> void:
-	var s := _sesi()
-	var t := _teks(s.jalankan("toko"))
-	assert_true(t.contains("usb_wireless_adapter"))
-	assert_false(t.contains("wifi_hacking_kit"))
+func test_toko_komponen_tidak_menampilkan_kit() -> void:
+	# Daftar Toko Perangkat sama dengan semua perangkat yang tidak ditandai tidak_dijual.
+	var dijual: Array = []
+	for id in Perangkat.semua_id():
+		if not bool(Perangkat.info(String(id)).get("tidak_dijual", false)):
+			dijual.append(id)
+	assert_true(dijual.has("usb_wireless_adapter"))
+	assert_false(dijual.has("wifi_hacking_kit"))

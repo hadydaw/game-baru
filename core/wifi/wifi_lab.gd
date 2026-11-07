@@ -9,10 +9,10 @@ const DATA := "res://data/wifi/lab.json"
 
 var ditemukan: Array = []                # SSID hasil airodump-ng wlan0mon
 var terpilih: String = ""                # SSID target hasil airodump-ng --bssid
-var dianalisis: Dictionary = {}          # SSID -> true (security analyze)
-var handshake: Dictionary = {}           # SSID -> true (audit auth)
-var kata_sandi_ditemukan: Dictionary = {}  # SSID -> kata sandi hasil audit run
-var terakses: Dictionary = {}            # SSID -> true (security verify)
+var dianalisis: Dictionary = {}          # SSID -> true (network-analyzer analyze)
+var handshake: Dictionary = {}           # SSID -> true (password-auditor auth)
+var kata_sandi_ditemukan: Dictionary = {}  # SSID -> kata sandi hasil password-auditor run
+var terakses: Dictionary = {}            # SSID -> true (network-analyzer verify)
 var riwayat: Array = []                  # tiap pemindaian, terbaru di depan: {waktu, perangkat, jumlah, jaringan, dipilih, analisis}
 var waktu_lihat: Dictionary = {}         # SSID -> waktu terakhir ditemukan oleh pemindaian
 var monitor: String = ""                 # nama interface monitor hasil airmon-ng start (kosong bila belum aktif)

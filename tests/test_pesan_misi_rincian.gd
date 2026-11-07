@@ -25,7 +25,7 @@ func test_email_masuk_memuat_rincian() -> void:
 func test_email_tahap_memuat_tujuan_tahap() -> void:
 	var s := _sesi()
 	s.jalankan("help")
-	s.jalankan("device list")
+	s.jalankan("lsusb")
 	_baca_tahap_aktif(s)
 	var isi := ""
 	for p in s.pesan_misi:
@@ -59,7 +59,7 @@ func test_email_tahap_datang_berurutan() -> void:
 	_baca_tahap_aktif(s)
 	assert_true(_ada_subjek(s, "Tahap 2"), "tahap 2 datang setelah tahap 1 selesai")
 	assert_false(_ada_subjek(s, "Tahap 3"), "tahap 3 belum datang sebelum tahap 2 selesai")
-	s.jalankan("device list")
+	s.jalankan("lsusb")
 	_baca_tahap_aktif(s)
 	assert_true(_ada_subjek(s, "Tahap 3"), "tahap 3 datang setelah tahap 2 selesai")
 	assert_false(_ada_subjek(s, "Tahap 4"), "tahap 4 belum datang")

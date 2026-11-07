@@ -101,33 +101,15 @@ func test_stok_bertahan_lewat_to_dict() -> void:
 	assert_eq(pulih.market.sisa("a2"), 4)
 	assert_eq(pulih.economy.saldo, s.economy.saldo)
 
-func test_bm_daftar_penjual_menampilkan_status() -> void:
-	var t := _teks(_sesi().jalankan("bm"))
-	assert_true(t.contains("Penjual A"))
-	assert_true(t.contains("[butuh reputasi 50]"))
+func test_bm_tidak_lagi_perintah_terminal() -> void:
+	# Black Market sekarang berada di aplikasi Pasar; Terminal hanya menerima perintah Linux/Kali.
+	assert_true(_galat(_sesi().jalankan("bm")), "bm ditolak di Terminal")
+	assert_true(_galat(_sesi().jalankan("bm beli a1")), "pembelian lewat Terminal ditolak")
 
-func test_bm_katalog_dan_info() -> void:
+func test_pembelian_pasar_memakai_jalur_yang_sama_dengan_logika() -> void:
 	var s := _sesi()
-	assert_true(_teks(s.jalankan("bm a")).contains("Packet Inspector"))
-	assert_true(_teks(s.jalankan("bm info a1")).contains("Harga: 400 Kr"))
-
-func test_bm_penjual_terkunci_tidak_menampilkan_katalog() -> void:
-	assert_true(_teks(_sesi().jalankan("bm c")).contains("Belum terbuka"))
-
-func test_bm_beli_lewat_terminal() -> void:
-	var s := _sesi()
-	var hasil := s.jalankan("bm beli a1")
-	assert_false(_galat(hasil))
-	assert_true(_teks(hasil).contains("Dibeli"))
+	s.economy.tambah(1000)
+	var hasil: Dictionary = s.market.beli("a1", s)
+	assert_true(bool(hasil["ok"]))
+	assert_true(String(hasil["pesan"]) != "", "pesan hasil tersedia untuk aplikasi Pasar")
 	assert_true(s.inventory.punya("packet_inspector"))
-
-func test_bm_beli_gagal_menampilkan_galat() -> void:
-	var s := _sesi()
-	assert_true(_galat(s.jalankan("bm beli c1")))
-	assert_true(_galat(s.jalankan("bm beli tidak_ada")))
-
-func test_bm_penjual_tidak_dikenal() -> void:
-	assert_true(_galat(_sesi().jalankan("bm xyz")))
-
-func test_perintah_bm_tersedia_tanpa_tool() -> void:
-	assert_true(_teks(_sesi().jalankan("help")).contains("bm"))

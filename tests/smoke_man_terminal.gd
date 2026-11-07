@@ -21,7 +21,7 @@ func _initialize() -> void:
 		root.add_child(layar)
 		await process_frame
 		await process_frame
-		for perintah in ["man handsake", "man handshake", "man audit"]:
+		for perintah in ["man handsake", "man aircrack-ng", "man john"]:
 			layar.call("_kirim", perintah)
 			var lanjut := 0
 			while bool(layar.get("_busy")) and lanjut < 20000:
@@ -35,13 +35,13 @@ func _initialize() -> void:
 		if kode == "id":
 			_cek(teks.contains("Tidak ada entri manual untuk handsake"), "[id] galat man handsake dalam Indonesia")
 			_cek(not teks.contains("No manual entry"), "[id] galat tidak memuat teks Inggris")
-			_cek(teks.contains("pertukaran empat pesan"), "[id] man handshake dalam Indonesia")
-			_cek(not teks.contains("four-message"), "[id] man handshake tidak memuat teks Inggris")
+			_cek(teks.contains("uji kunci WPA"), "[id] man aircrack-ng dalam Indonesia")
+			_cek(not teks.contains("test WPA keys"), "[id] man aircrack-ng tidak memuat teks Inggris")
 		else:
 			_cek(teks.contains("No manual entry for handsake"), "[en] galat man handsake dalam Inggris")
 			_cek(not teks.contains("Tidak ada entri"), "[en] galat tidak memuat teks Indonesia")
-			_cek(teks.contains("four-message exchange"), "[en] man handshake dalam Inggris")
-			_cek(not teks.contains("pertukaran empat pesan"), "[en] man handshake tidak memuat teks Indonesia")
+			_cek(teks.contains("test WPA keys"), "[en] man aircrack-ng dalam Inggris")
+			_cek(not teks.contains("uji kunci WPA"), "[en] man aircrack-ng tidak memuat teks Indonesia")
 		get_root().get_texture().get_image().save_png("user://man_%s.png" % kode)
 		layar.queue_free()
 		await process_frame

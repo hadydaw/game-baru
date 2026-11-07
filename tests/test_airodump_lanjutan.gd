@@ -1,12 +1,14 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Airmon-ng dan airodump-ng: nama interface monitor dari airmon-ng, filter -c daftar kanal,
 # validasi opsi, tampilan ringkas di layar sempit, dan mode live yang dihentikan Ctrl+C.
 
 func _sesi_adapter(chipset_ok := true) -> ShellSession:
 	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
-	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install airodump-ng"]:
-		s.jalankan(c)
+	for c in ["__beli__usb_wireless_adapter", "__beli__antena_eksternal", "__beli__kabel_usb", "__rakit__", "apt install -y driver-ar9271", "__hubungkan__", "apt install -y aircrack-ng"]:
+		UA.jalan(s, c)
 	return s
 
 func _teks(hasil: Array) -> String:

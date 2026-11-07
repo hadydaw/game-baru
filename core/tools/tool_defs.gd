@@ -1,8 +1,9 @@
 class_name ToolDefs
 extends RefCounted
 
-# Definisi tool sebagai data. Efeknya dihitung oleh core simulator (ShellCommands, ToolCommands,
-# PerintahJaringan), bukan menjalankan kode sistem. Harga per tingkat dalam Kr.
+# Definisi tool sebagai data. Efeknya dihitung oleh core simulator (AlatCommands, ToolCommands,
+# AnalisisCommands), bukan menjalankan kode sistem. Harga per tingkat dalam Kr. Perintah di sini
+# adalah nama di aplikasi Alat, yang hanya dikenali setelah tool-nya dimiliki.
 
 const DEFS := {
 	"network_scanner": {

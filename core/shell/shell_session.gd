@@ -51,7 +51,9 @@ func live_langkah() -> Array:
 
 func live_hentikan() -> void:
     WifiCommands.live_hentikan(self)
+var konfirmasi_tertunda: Callable = Callable()  # aksi yang menunggu jawaban Y/n (apt)
 var permintaan_aplikasi: String = ""             # aplikasi yang diminta dibuka setelah perintah (tidak disimpan)
+var wireshark_perintah: Dictionary = {}          # data untuk aplikasi Wireshark yang baru dibuka (tidak disimpan)
 var misi_tahap: Dictionary = {}               # id misi -> Array nomor tahap yang sudah diberi umpan balik
 
 func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) -> void:
@@ -73,6 +75,10 @@ func to_dict() -> Dictionary:
 # Simpanan lama memakai WiFi Scanner (wifi-scanner). Nama itu diganti airodump-ng, dan progres
 # pemain tetap dipertahankan: pemasangan, flag misi, dan teks email yang sudah tersimpan ikut diganti.
 const GANTI_NAMA_AIRODUMP := [
+    ["Pasang Airodump-ng: 'apt install airodump-ng'. — Agensi", "Pasang paket Aircrack-ng: 'apt install aircrack-ng'. Paket ini berisi airmon-ng dan airodump-ng. — Agensi"],
+    ["Install Airodump-ng: 'apt install airodump-ng'. — Agency", "Install the Aircrack-ng package: 'apt install aircrack-ng'. It contains airmon-ng and airodump-ng. — Agency"],
+    ["Tahap 10: Memasang Airodump-ng", "Tahap 10: Memasang Aircrack-ng"],
+    ["Stage 10: Installing Airodump-ng", "Stage 10: Installing Aircrack-ng"],
     ["pasang:wifi-scanner", "pasang:airodump-ng"],
     ["Jalankan 'wifi-scanner --scan' untuk melihat jaringan di sekitarmu.", "Aktifkan monitor mode dengan 'airmon-ng start wlan0', lalu jalankan 'airodump-ng wlan0mon' untuk melihat access point di sekitarmu."],
     ["Run 'wifi-scanner --scan' to see the networks around you.", "Enable monitor mode with 'airmon-ng start wlan0', then run 'airodump-ng wlan0mon' to see the access points around you."],
@@ -85,6 +91,56 @@ const GANTI_NAMA_AIRODUMP := [
     ["Jalankan 'airodump-ng wlan0mon' untuk melihat access point di sekitarmu.", "Aktifkan monitor mode dengan 'airmon-ng start wlan0', lalu jalankan 'airodump-ng wlan0mon' untuk melihat access point di sekitarmu."],
     ["Run 'airodump-ng wlan0mon' to see the access points around you.", "Enable monitor mode with 'airmon-ng start wlan0', then run 'airodump-ng wlan0mon' to see the access points around you."],
 ]
+
+# Save lama memakai nama perintah game. Flag tersebut dipetakan ke perintah Kali yang sekarang,
+# supaya progres pemain tetap utuh setelah Terminal memakai perintah Linux/Kali.
+const PENGGANTI_FLAG := {
+    "pasang:airodump-ng": "pasang:aircrack-ng",
+    "cmd:device": "cmd:lsusb",
+    "cmd:tools": "cmd:apt",
+    "cmd:security": "cmd:network-analyzer",
+    "cmd:audit": "cmd:password-auditor",
+    "tools:list": "apt:list",
+    "man:handshake": "man:aircrack-ng",
+    "man:hasil-handshake": "man:airodump-ng",
+    "man:audit": "man:john",
+    "man:kesimpulan-audit": "man:network-analyzer",
+}
+
+static func _migrasi_perintah(d: Dictionary) -> Dictionary:
+    var hasil := d.duplicate(true)
+    if typeof(hasil.get("jaringan")) == TYPE_DICTIONARY and hasil["jaringan"].has("progres"):
+        var baru: Array = []
+        for f in Array(hasil["jaringan"]["progres"]):
+            var nama := String(PENGGANTI_FLAG.get(String(f), String(f)))
+            if not baru.has(nama):
+                baru.append(nama)
+        hasil["jaringan"]["progres"] = baru
+    return hasil
+
+# Airodump-ng sekarang bagian dari paket aircrack-ng (seperti Kali). Simpanan yang memasang
+# airodump-ng sebagai paket terpisah dipindahkan ke aircrack-ng; bila aircrack-ng sudah ada, itu dipertahankan.
+static func _migrasi_paket_aircrack(d: Dictionary) -> Dictionary:
+    var hasil := d.duplicate(true)
+    if typeof(hasil.get("repositori")) != TYPE_DICTIONARY:
+        return hasil
+    var repo: Dictionary = hasil["repositori"]
+    if typeof(repo.get("terpasang")) == TYPE_DICTIONARY:
+        var terpasang: Dictionary = repo["terpasang"]
+        if terpasang.has("airodump-ng"):
+            if not terpasang.has("aircrack-ng"):
+                var lama: Dictionary = Dictionary(terpasang["airodump-ng"]).duplicate(true)
+                lama["versi"] = "1.7"
+                lama["riwayat"] = ["1.7"]
+                terpasang["aircrack-ng"] = lama
+            terpasang.erase("airodump-ng")
+    if typeof(repo.get("konfig")) == TYPE_DICTIONARY:
+        var konfig: Dictionary = repo["konfig"]
+        if konfig.has("airodump-ng"):
+            if not konfig.has("aircrack-ng"):
+                konfig["aircrack-ng"] = konfig["airodump-ng"]
+            konfig.erase("airodump-ng")
+    return hasil
 
 static func _migrasi_airodump(d: Dictionary) -> Dictionary:
     var hasil := d.duplicate(true)
@@ -126,6 +182,8 @@ static func _ganti_teks(v: Variant) -> Variant:
 
 static func dari_dict(d: Dictionary) -> ShellSession:
     d = _migrasi_airodump(d)
+    d = _migrasi_perintah(d)
+    d = _migrasi_paket_aircrack(d)
     var j := Jaringan.muat()
     if typeof(d.get("jaringan")) == TYPE_DICTIONARY:
         j.terapkan(d["jaringan"])
@@ -205,6 +263,11 @@ func prompt() -> String:
 # Menjalankan perintah lalu memperbarui misi bila ada flag baru. Keluaran perintah tidak diubah;
 # pesan misi baru ditampilkan Terminal lewat notifikasi_misi(). Remote (SSH) tidak memperbarui misi.
 func jalankan(masukan: String) -> Array:
+    # Konfirmasi tertunda (mis. apt "Do you want to continue? [Y/n]") menerima baris berikutnya.
+    if konfirmasi_tertunda.is_valid():
+        var f := konfirmasi_tertunda
+        konfirmasi_tertunda = Callable()
+        return f.call(masukan)
     var sebelum := jaringan.progres.size()
     var keluaran := _jalankan_dasar(masukan)
     if host != LOKAL:
@@ -360,3 +423,10 @@ func _pastikan_direktori(abs_path: String) -> void:
         if not fs.ada(sekarang):
             fs.tambah(induk, bagian, {"tipe": "dir", "pemilik": user, "grup": user, "izin": "rwxr-x---", "isi": {}})
 
+
+# Ctrl+C saat prompt Y/n: prompt dibatalkan, tidak ada paket yang dipasang atau dihapus (seperti apt asli).
+func batalkan_konfirmasi() -> bool:
+    if not konfirmasi_tertunda.is_valid():
+        return false
+    konfirmasi_tertunda = Callable()
+    return true

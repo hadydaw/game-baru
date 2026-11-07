@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Network Manager baru: riwayat pemindaian, status antarmuka, dan layar tanpa checklist.
 
 var _nm: NetworkManager
@@ -18,8 +20,8 @@ func _sesi_terpasang() -> ShellSession:
 	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
 	Misi.perbarui(s)
 	Misi.terima(s, "misi_1")
-	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install airodump-ng", "tools install network-analyzer", "tools install password-auditor"]:
-		s.jalankan(c)
+	for c in ["__beli__usb_wireless_adapter", "__beli__antena_eksternal", "__beli__kabel_usb", "__rakit__", "apt install -y driver-ar9271", "__hubungkan__", "apt install -y aircrack-ng", "apt install -y network-analyzer", "apt install -y password-auditor"]:
+		UA.jalan(s, c)
 	return s
 
 func test_scan_mencatat_riwayat() -> void:
@@ -37,7 +39,7 @@ func test_pilih_dan_analisis_tercatat_di_riwayat() -> void:
 	s.jalankan("airmon-ng start wlan0")
 	s.jalankan("airodump-ng wlan0mon")
 	s.jalankan("airodump-ng --bssid 02:4A:1C:00:02:02 wlan0mon")
-	s.jalankan("security analyze LAB-WIFI-02")
+	s.jalankan("network-analyzer analyze LAB-WIFI-02")
 	var e: Dictionary = s.wifi.riwayat[0]
 	assert_eq(String(e["dipilih"]), "LAB-WIFI-02", "jaringan yang dipilih tercatat")
 	assert_eq(String(e["analisis"]["LAB-WIFI-02"]), "tinggi", "tingkat risiko hasil analisis tercatat")
@@ -116,7 +118,7 @@ func test_semua_tab_meneruskan_sentuhan_geser() -> void:
 	s.jalankan("airmon-ng start wlan0")
 	s.jalankan("airodump-ng wlan0mon")
 	s.jalankan("airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
-	s.jalankan("security analyze LAB-WIFI-01")
+	s.jalankan("network-analyzer analyze LAB-WIFI-01")
 	SesiUtama.sesi = s
 	_nm = NetworkManager.new()
 	add_child(_nm)

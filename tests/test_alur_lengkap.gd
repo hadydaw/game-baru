@@ -1,5 +1,7 @@
 extends GutTest
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 # Uji alur utuh sebagai satu permainan: dari sesi baru sampai Tutorial 1 selesai, lalu disimpan,
 # dimuat ulang lewat jalur aplikasi (SesiUtama), dan diperiksa tidak ada hadiah ganda.
 # Juga memeriksa bahwa keluaran Terminal dalam bahasa Inggris tidak memuat kata Indonesia.
@@ -7,35 +9,32 @@ extends GutTest
 const JALUR := "user://test_alur_lengkap.json"
 const LANGKAH := [
 	"help",
-	"device list",
-	"toko beli usb_wireless_adapter",
-	"toko beli antena_eksternal",
-	"toko beli kabel_usb",
-	"device rakit",
-	"tools search driver",
-	"tools install driver-ar9271",
-	"device hubungkan",
-	"tools install airodump-ng",
+	"lsusb",
+	"__beli__usb_wireless_adapter",
+	"__beli__antena_eksternal",
+	"__beli__kabel_usb",
+	"__rakit__",
+	"apt search driver",
+	"apt install -y driver-ar9271",
+	"__hubungkan__",
+	"apt install -y aircrack-ng",
 	"airmon-ng start wlan0", "airodump-ng wlan0mon",
 	"__netmgr__",
-	"tools install network-analyzer",
+	"apt install -y network-analyzer",
 	"airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon",
-	"security analyze LAB-WIFI-01",
+	"network-analyzer analyze LAB-WIFI-01",
 	"man password-auditor",
-	"tools install password-auditor",
-	"tools list",
-	"man handshake",
-	"audit auth LAB-WIFI-01",
-	"man hasil-handshake",
-	"man audit",
-	"audit run LAB-WIFI-01",
-	"man kesimpulan-audit",
-	"security verify LAB-WIFI-01 senja1234",
-	"security report LAB-WIFI-01",
-	"device list",
-	"tools",
-	"toko",
-	"wallet",
+	"apt install -y password-auditor",
+	"apt list --installed",
+	"man aircrack-ng",
+	"password-auditor auth LAB-WIFI-01",
+	"man airodump-ng",
+	"man john",
+	"password-auditor run LAB-WIFI-01",
+	"man network-analyzer",
+	"network-analyzer verify LAB-WIFI-01 senja1234",
+	"network-analyzer report LAB-WIFI-01",
+	"lsusb",
 ]
 
 func before_each() -> void:
@@ -61,7 +60,7 @@ func _jalankan_asli(s: ShellSession, cmd: String) -> Array:
 		s.jaringan.buka("ui:netmgr")
 		Misi.perbarui(s)
 		return teks
-	for b in s.jalankan(cmd):
+	for b in UA.jalan(s, cmd):
 		teks.append(ShellSession.teks_baris(b))
 	return teks
 
@@ -93,7 +92,7 @@ func test_tutorial_selesai_lalu_bertahan_setelah_dimuat_ulang() -> void:
 	assert_eq(s2.economy.saldo, saldo, "saldo tetap setelah dimuat")
 	assert_eq(s2.xp, xp, "XP tetap setelah dimuat")
 	assert_true(s2.perangkat.terhubung(), "perangkat tetap terhubung")
-	assert_true(s2.repositori.punya("airodump-ng"), "software tetap terpasang")
+	assert_true(s2.repositori.punya("aircrack-ng"), "software tetap terpasang")
 	assert_true(s2.wifi.terakses.has("LAB-WIFI-01"), "akses jaringan tetap terbuka")
 
 	# Mengulang pemuatan atau membuka misi lagi tidak boleh memberi hadiah ganda.

@@ -1,11 +1,13 @@
 extends SceneTree
 
+const UA := preload("res://tests/uji_aplikasi.gd")
+
 const CMDS := [
-	["help"], ["device list"], ["toko beli usb_wireless_adapter"], ["toko beli antena_eksternal"], ["toko beli kabel_usb"],
-	["device rakit"], ["tools search driver"], ["tools install driver-ar9271"], ["device hubungkan"],
-	["tools install airodump-ng"], ["airmon-ng start wlan0", "airodump-ng wlan0mon"], ["__netmgr__"], ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"],
-	["tools install network-analyzer"], ["security analyze LAB-WIFI-01"], ["man password-auditor"],
-	["tools install password-auditor"],
+	["help"], ["lsusb"], ["__beli__usb_wireless_adapter"], ["__beli__antena_eksternal"], ["__beli__kabel_usb"],
+	["__rakit__"], ["apt search driver"], ["apt install -y driver-ar9271"], ["__hubungkan__"],
+	["apt install -y aircrack-ng"], ["airmon-ng start wlan0", "airodump-ng wlan0mon"], ["__netmgr__"], ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"],
+	["apt install -y network-analyzer"], ["network-analyzer analyze LAB-WIFI-01"], ["man password-auditor"],
+	["apt install -y password-auditor"],
 ]
 const SHOTS := "user://"
 
@@ -64,7 +66,7 @@ func _initialize() -> void:
 			if c == "__netmgr__":
 				s.jaringan.buka("ui:netmgr")
 			else:
-				s.jalankan(c)
+				UA.jalan(s, c)
 			Misi.perbarui(s)
 	SesiUtama.sesi = s
 	var env := (OS.get_environment("UKURAN_HP") if OS.get_environment("UKURAN_HP") != "" else "360x640")
@@ -130,7 +132,7 @@ func _initialize() -> void:
 	_cek(Misi.tahap_aktif(s, Misi.temukan("misi_1")) == 18, "KEMBALI tidak mengubah tahap aktif (masih 18 sebelum tugas)")
 
 	# Jalankan tugas tahap 18: email tahap 19 harus datang tanpa KEMBALI.
-	s.jalankan("tools list")
+	s.jalankan("apt list --installed")
 	Misi.perbarui(s)
 	var ada19 := false
 	for p in s.pesan_misi:

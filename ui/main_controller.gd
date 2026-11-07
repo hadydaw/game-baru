@@ -297,8 +297,16 @@ func _buat_konten(id: String) -> Control:
             return EmailApp.new()
         "perangkat":
             return DeviceManager.new()
+        "toko":
+            return TokoScreen.new()
+        "dompet":
+            return DompetScreen.new()
+        "alat":
+            return AlatScreen.new()
         "netmgr":
             return NetworkManager.new()
+        "wireshark":
+            return WiresharkApp.new()
         "inventaris":
             return InventarisApp.new()
         "tools":

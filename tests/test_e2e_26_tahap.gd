@@ -3,15 +3,14 @@ extends GutTest
 # Tutorial Misi 1 dari awal sampai akhir: 26 tahap berurutan, muat ulang di setiap tahap, email tepat sekali.
 
 const CMDS := [
-	["help"], ["device list"], ["toko beli usb_wireless_adapter"], ["toko beli antena_eksternal"], ["toko beli kabel_usb"],
-	["device rakit"], ["tools search driver"], ["tools install driver-ar9271"], ["device hubungkan"],
-	["tools install airodump-ng"], ["airmon-ng start wlan0", "airodump-ng wlan0mon"], ["__netmgr__"], ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"],
-	["tools install network-analyzer"], ["security analyze LAB-WIFI-01"], ["man password-auditor"],
-	["tools install password-auditor"], ["tools list"], ["man handshake"], ["audit auth LAB-WIFI-01"],
-	["man hasil-handshake"], ["man audit"], ["audit run LAB-WIFI-01"], ["man kesimpulan-audit"],
-	["security verify LAB-WIFI-01 senja1234"], ["security report LAB-WIFI-01"],
+	["help"], ["lsusb"], ["__beli__usb_wireless_adapter"], ["__beli__antena_eksternal"], ["__beli__kabel_usb"],
+	["__rakit__"], ["apt search driver"], ["apt install -y driver-ar9271"], ["__hubungkan__"],
+	["apt install -y aircrack-ng"], ["airmon-ng start wlan0", "airodump-ng wlan0mon"], ["__netmgr__"], ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"],
+	["apt install -y network-analyzer"], ["network-analyzer analyze LAB-WIFI-01"], ["man password-auditor"],
+	["apt install -y password-auditor"], ["apt list --installed"], ["man aircrack-ng"], ["password-auditor auth LAB-WIFI-01"],
+	["man airodump-ng"], ["man john"], ["password-auditor run LAB-WIFI-01"], ["man network-analyzer"],
+	["network-analyzer verify LAB-WIFI-01 senja1234"], ["network-analyzer report LAB-WIFI-01"],
 ]
-
 var log_galat: Array = []
 
 func before_each() -> void:
@@ -38,6 +37,19 @@ func _email_tahap(s: ShellSession, n: int) -> int:
 func _jalan(s: ShellSession, c: String, tahap: int) -> void:
 	if c == "__netmgr__":
 		s.jaringan.buka("ui:netmgr")
+		return
+	# Aksi aplikasi: sama seperti tombol di Toko Perangkat dan Device Manager.
+	if c.begins_with("__beli__"):
+		var id: String = c.substr("__beli__".length())
+		s.perangkat.beli(id, s.economy)
+		s.jaringan.buka("beli:" + id)
+		return
+	if c == "__rakit__":
+		if bool(s.perangkat.rakit()["ok"]):
+			s.jaringan.buka("rakit:wifi_kit")
+		return
+	if c == "__hubungkan__":
+		PerangkatCommands.hubungkan(s)
 		return
 	for b in s.jalankan(c):
 		if String(b.get("tipe", "")) == "error":
@@ -80,7 +92,7 @@ func test_e2e_26_tahap() -> void:
 	assert_true(s.hadiah_diambil.has("misi_1"), "hadiah diberikan sekali")
 	assert_eq(_email_tahap(s, 26), 1, "email tahap 26 datang")
 	# Setelah semua muat ulang: software terpasang, perintah tetap berfungsi, dan status tahap tetap benar.
-	assert_true(s.repositori.punya("airodump-ng"), "airodump-ng tetap terpasang setelah muat ulang")
+	assert_true(s.repositori.punya("aircrack-ng"), "airodump-ng tetap terpasang setelah muat ulang")
 	assert_true(s.repositori.punya("network-analyzer"), "network-analyzer tetap terpasang")
 	assert_true(s.repositori.punya("password-auditor"), "password-auditor tetap terpasang")
 	var hasil_airodump := s.jalankan("airodump-ng wlan0mon")
