@@ -167,7 +167,8 @@ static func _ganti_teks(v: Variant) -> Variant:
         var t := String(v)
         for pasangan in GANTI_NAMA_AIRODUMP:
             t = t.replace(String(pasangan[0]), String(pasangan[1]))
-        return t
+        # Penanda dua-bahasa lama (karakter kontrol) diganti penanda cetak agar save tetap JSON standar.
+        return Bahasa.rapikan(t)
     if typeof(v) == TYPE_ARRAY:
         var a: Array = []
         for x in v:

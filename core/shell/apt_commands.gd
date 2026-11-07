@@ -114,6 +114,8 @@ static func _install(s: ShellSession, paket: Array, yes: bool) -> Array:
 			return [_err("E: Unable to locate package %s" % id)]
 		if s.repositori.punya(id):
 			lines.append(_info("%s is already the newest version (%s)." % [id, s.repositori.versi(id)]))
+			# Paket yang sudah terpasang tetap memenuhi tujuan "pasang lewat apt install" pada misi.
+			s.jaringan.buka("pasang:" + id)
 		else:
 			diminta.append(id)
 			s.repositori.rencana_pasang(id, rencana)

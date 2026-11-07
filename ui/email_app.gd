@@ -259,7 +259,9 @@ func _baris(p: Dictionary) -> Control:
 func _pasang_pengirim(label: Label, p: Dictionary) -> void:
 	Bahasa.daftar_penyegar(label, func():
 		if is_instance_valid(label):
-			label.text = "%s : %s" % [Bahasa.t("email.dari"), Bahasa.t(String(p["dari"]))])
+			# Pengirim pesan misi sudah dua-bahasa (penanda PEMBUKA/PEMISAH/PENUTUP); pesan bawaan memakai kunci.
+			var nama := Bahasa.pilih(String(p["dari"])) if bool(p.get("mentah", false)) else Bahasa.t(String(p["dari"]))
+			label.text = "%s : %s" % [Bahasa.t("email.dari"), nama])
 
 # Pesan bawaan memakai kunci bahasa; pesan misi sudah dua-bahasa dan disusun ulang saat bahasa berganti.
 func _teks_pesan(label: Label, p: Dictionary, kunci: String) -> void:

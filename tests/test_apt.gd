@@ -282,3 +282,13 @@ func test_ctrl_c_saat_prompt_membatalkan_tanpa_memasang() -> void:
 	assert_false(s.konfirmasi_tertunda.is_valid())
 	assert_false(s.batalkan_konfirmasi(), "tidak ada prompt yang dibatalkan")
 	assert_string_contains(_teks(s.jalankan("whoami")), "operator", "perintah berikutnya normal")
+
+# Paket yang sudah terpasang (mis. dari simpanan lama) tetap mencatat flag pasang, agar misi tidak macet.
+func test_install_paket_yang_sudah_ada_mencatat_flag_pasang() -> void:
+	var s := _sesi()
+	_adapter(s)
+	s.repositori.pasang("driver-ar9271", s.economy, s.perangkat, false)
+	assert_false(s.jaringan.progres.has("pasang:driver-ar9271"), "flag belum ada sebelum apt install")
+	var teks := _teks(_apt(s, "apt install driver-ar9271"))
+	assert_string_contains(teks, "already the newest version")
+	assert_true(s.jaringan.progres.has("pasang:driver-ar9271"), "flag pasang tercatat walau sudah terpasang")

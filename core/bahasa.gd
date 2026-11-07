@@ -502,9 +502,11 @@ const KAMUS := {
 
 # Teks terminal dua-bahasa: satu string membawa versi ID dan EN, dipilih saat ditampilkan.
 # Dengan begitu baris yang sudah tercetak tetap bisa dirender ulang saat bahasa diganti.
-const PEMBUKA := "\u0001"
-const PEMISAH := "\u0002"
-const PENUTUP := "\u0003"
+# Penanda berupa karakter cetak (Latin-1), agar tersimpan di save sebagai JSON standar.
+# Penanda lama (karakter kontrol \u0001-\u0003) tetap dikenali lewat rapikan().
+const PEMBUKA := "\u00ab"
+const PEMISAH := "\u00a6"
+const PENUTUP := "\u00bb"
 
 static func dua(id: String, en: String, args: Array = []) -> String:
 	var a := id % args if not args.is_empty() else id
@@ -518,9 +520,13 @@ static func kunci_dua(kunci: String, args: Array = []) -> String:
 	var id := String(entri.get("id", kunci))
 	return dua(id, String(entri.get("en", id)), args)
 
+# Mengganti penanda lama (karakter kontrol) dengan penanda baru. Dipakai saat memuat save lama.
+static func rapikan(teks: String) -> String:
+	return teks.replace("\u0001", PEMBUKA).replace("\u0002", PEMISAH).replace("\u0003", PENUTUP)
+
 static func pilih(teks: String) -> String:
 	var keluar := ""
-	var sisa := teks
+	var sisa := rapikan(teks)
 	while true:
 		var a := sisa.find(PEMBUKA)
 		if a == -1:

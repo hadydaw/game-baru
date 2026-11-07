@@ -65,14 +65,99 @@ func _semua_tombol(node: Node, hasil: Array = []) -> Array:
 		_semua_tombol(c, hasil)
 	return hasil
 
+# ---- Input nyata: klik mouse dan tombol keyboard lewat InputEvent, bukan pressed.emit() ----
+func _klik_nyata(c: Control) -> void:
+	var p := get_root().get_final_transform() * (c.get_global_transform_with_canvas() * (c.size / 2.0))
+	Input.warp_mouse(p)
+	await _frames(3)
+	var gerak := InputEventMouseMotion.new()
+	gerak.position = p
+	gerak.global_position = p
+	Input.parse_input_event(gerak)
+	await _frames(2)
+	var tekan := InputEventMouseButton.new()
+	tekan.button_index = MOUSE_BUTTON_LEFT
+	tekan.position = p
+	tekan.global_position = p
+	tekan.pressed = true
+	tekan.button_mask = MOUSE_BUTTON_MASK_LEFT
+	Input.parse_input_event(tekan)
+	await _frames(2)
+	var lepas := tekan.duplicate()
+	lepas.pressed = false
+	lepas.button_mask = 0
+	Input.parse_input_event(lepas)
+	await _frames(4)
+
+# Tombol yang terlihat dengan teks tepat, di luar cakupan node "kecuali" (mis. dialog di atas aplikasi).
+func _cari_tombol_di_luar(akar: Node, kecuali: Node, teks: String) -> Button:
+	for b in akar.find_children("*", "Button", true, false):
+		var tb := b as Button
+		if tb.is_visible_in_tree() and not tb.disabled and tb.text.strip_edges() == teks and not kecuali.is_ancestor_of(tb):
+			return tb
+	return null
+
+func _tekan(kode: int, unicode: int) -> void:
+	var k := InputEventKey.new()
+	k.keycode = kode as Key
+	k.physical_keycode = kode as Key
+	k.unicode = unicode
+	k.pressed = true
+	Input.parse_input_event(k)
+	await _frames(1)
+	var l := k.duplicate()
+	l.pressed = false
+	Input.parse_input_event(l)
+	await _frames(1)
+
+# Menggulir ScrollContainer induk dengan roda mouse sampai baris terlihat utuh.
+func _gulir_ke(baris: Control) -> void:
+	var gulir: ScrollContainer = null
+	var p: Node = baris.get_parent()
+	while p != null and gulir == null:
+		if p is ScrollContainer:
+			gulir = p
+		p = p.get_parent()
+	if gulir == null:
+		return
+	for i in range(80):
+		var area := gulir.get_global_rect()
+		var r := baris.get_global_rect()
+		if r.position.y >= area.position.y and r.end.y <= area.end.y:
+			return
+		var pusat := gulir.get_global_transform_with_canvas() * (gulir.size / 2.0)
+		var pos := get_root().get_final_transform() * pusat
+		Input.warp_mouse(pos)
+		await _frames(2)
+		var arah := MOUSE_BUTTON_WHEEL_DOWN if r.end.y > area.end.y else MOUSE_BUTTON_WHEEL_UP
+		var w := InputEventMouseButton.new()
+		w.button_index = arah
+		w.position = pos
+		w.global_position = pos
+		w.pressed = true
+		Input.parse_input_event(w)
+		await _frames(2)
+		var lepas := w.duplicate()
+		lepas.pressed = false
+		Input.parse_input_event(lepas)
+		await _frames(4)
+
+# Mengisi kolom teks dengan klik lalu ketikan keyboard (hapus isi lama dulu).
+func _isi_nyata(kolom: LineEdit, teks: String) -> void:
+	await _klik_nyata(kolom)
+	for i in range(40):
+		await _tekan(KEY_BACKSPACE, 8)
+	for ch in teks:
+		await _tekan(ch.to_upper().unicode_at(0), ch.unicode_at(0))
+
 func _klik(node: Node, teks: String) -> bool:
 	var b := _cari_tombol(node, teks)
 	if b == null:
 		_log("  [tidak ada tombol] '%s'" % teks)
 		return false
 	_log("  KLIK '%s'" % teks)
-	b.pressed.emit()
-	await _frames()
+	await _gulir_ke(b)
+	await _klik_nyata(b)
 	return true
 
 const BERKAS := {"MenuUtama": "menu_utama.gd", "LayarCerita": "layar_cerita.gd", "PilihLokasi": "pilih_lokasi.gd", "PopupSambutan": "popup_sambutan_email.gd", "PusatMisi": "pusat_misi.gd", "EmailApp": "email_app.gd", "NetworkManager": "network_manager.gd"}
@@ -108,24 +193,28 @@ func _teks_node(node: Node) -> String:
 		t += _teks_node(c)
 	return t
 
-func _klik_baris(node: Node, teks: String) -> bool:
-	for b in node.find_children("*", "Button", true, false):
-		if not (b as Button).is_visible_in_tree():
-			continue
-		if _teks_node(b).contains(teks):
-			_log("  KLIK baris '%s'" % teks)
-			(b as Button).pressed.emit()
-			await _frames()
-			return true
-	_log("  [tidak ada baris] '%s'" % teks)
+# Mencoba beberapa label (Indonesia lalu Inggris) agar uji berlaku untuk kedua bahasa.
+func _klik_baris_salah_satu(node: Node, pilihan: Array) -> bool:
+	for t in pilihan:
+		for b in node.find_children("*", "Button", true, false):
+			if (b as Button).is_visible_in_tree() and _teks_node(b).contains(String(t)):
+				_log("  KLIK baris '%s'" % String(t))
+				await _gulir_ke(b)
+				await _klik_nyata(b)
+				return true
+	_log("  [tidak ada baris] %s" % str(pilihan))
 	return false
+
+func _klik_baris(node: Node, teks: String) -> bool:
+	return await _klik_baris_salah_satu(node, [teks])
 
 func _ketik(term: Node, cmd: String) -> void:
 	_log("  KETIK> " + cmd)
 	var m: LineEdit = term.get("_masukan")
-	m.text = cmd
-	m.caret_column = cmd.length()
-	m.text_submitted.emit(cmd)
+	await _klik_nyata(m)
+	for ch in cmd:
+		await _tekan(ch.to_upper().unicode_at(0), ch.unicode_at(0))
+	await _tekan(KEY_ENTER, 10)
 	await _frames(2)
 	# Tunggu animasi keluaran selesai dan antrean kosong, seperti pemain yang menunggu layar.
 	var t := 0.0
@@ -135,8 +224,12 @@ func _ketik(term: Node, cmd: String) -> void:
 
 func _ctrl_c(term: Node) -> void:
 	_log("  KETIK> [Ctrl+C]")
-	term.call("_tekan_tombol", "Ctrl")
-	term.call("_tekan_tombol", "c")
+	var tombol_ctrl := _cari_tombol(term, "Ctrl")
+	if tombol_ctrl != null:
+		await _klik_nyata(tombol_ctrl)
+	var m: LineEdit = term.get("_masukan")
+	await _klik_nyata(m)
+	await _tekan(KEY_C, 99)
 	await _frames(3)
 
 func _tampil_terminal() -> Node:
@@ -151,14 +244,36 @@ func _cari_node_kelas(node: Node, kelas: String) -> Node:
 			return r
 	return null
 
+# Tombol X (win_close) pada jendela aplikasi yang terbuka; yang terakhir di pohon adalah yang paling atas.
+func _cari_tutup_jendela(node: Node, berkas_ikon := "win_minimize_normal.png") -> Control:
+	var h: Control = null
+	if node is TextureButton and (node as TextureButton).is_visible_in_tree() and (node as TextureButton).texture_normal != null and (node as TextureButton).texture_normal.resource_path.ends_with(berkas_ikon):
+		h = node
+	for c in node.get_children():
+		var r := _cari_tutup_jendela(c, berkas_ikon)
+		if r != null:
+			h = r
+	return h
+
+# Pemain meminimalkan jendela yang menutupi desktop sebelum membuka aplikasi lain (status aplikasi tetap).
+func _tutup_jendela_aktif() -> void:
+	for i in range(4):
+		var t := _cari_tutup_jendela(root_app)
+		if t == null:
+			return
+		_log("  KECILKAN JENDELA (–)")
+		await _klik_nyata(t)
+		await _secs(0.5)
+
 func _buka_app(id: String) -> void:
+	await _tutup_jendela_aktif()
 	var desk := _cari_berkas(root_app, "desktop_view.gd")
 	var ikon: Button = desk.call("_tombol_id", id) if desk != null else null
 	if ikon == null:
 		_bug("ikon '%s' tidak ada di desktop" % id)
 		return
 	_log("  BUKA APLIKASI '%s' (ketuk ikon)" % id)
-	ikon.pressed.emit()
+	await _klik_nyata(ikon)
 	await _frames(20)
 
 func _sesi():
@@ -204,18 +319,20 @@ func _alur_baru() -> void:
 	if _cari_tombol(menu, Bahasa.t("menu.sesi_baru")) == null or _cari_tombol(menu, "> New Session") == null:
 		_bug("setelah ganti ke English dan kembali, label menu utama belum English")
 	await _klik(menu, Bahasa.t("menu.pengaturan"))
-	await _klik(menu, Bahasa.NAMA["id"])
+	# Bahasa akhir permainan: BAHASA_UJI=en untuk menguji English, default Indonesia.
+	var bahasa_uji := OS.get_environment("BAHASA_UJI") if OS.get_environment("BAHASA_UJI") != "" else "id"
+	await _klik(menu, Bahasa.NAMA[bahasa_uji])
 	menu = await _tunggu_node("MenuUtama")
 	await _klik(menu, Bahasa.t("umum.kembali"))
-	if _cari_tombol(menu, "> Sesi Baru") == null:
-		_bug("setelah kembali ke Bahasa Indonesia, label menu belum Indonesia")
+	if _cari_tombol(menu, Bahasa.t("menu.sesi_baru")) == null:
+		_bug("setelah kembali ke bahasa %s, label menu tidak sesuai" % bahasa_uji)
 	await _klik(menu, Bahasa.t("menu.login"))
 	await _shot("login_kosong")
 	var input: LineEdit = menu.get("_input_nama")
-	input.text = "a"
+	await _isi_nyata(input, "a")
 	await _klik(menu, Bahasa.t("umum.simpan"))
 	_log("  pesan login salah: '%s'" % String(menu.get("_lbl_error_login").text))
-	input.text = "Pemain_Uji"
+	await _isi_nyata(input, "Pemain_Uji")
 	await _klik(menu, Bahasa.t("umum.simpan"))
 	_log("  nama profil tersimpan: %s" % Pengaturan.nama_profil())
 	await _klik(menu, Bahasa.t("umum.kembali"))
@@ -243,14 +360,14 @@ func _alur_baru() -> void:
 	_log("  jumlah titik negara di peta: %d" % titik.size())
 	var kode_negara := "ID" if titik.has("ID") else String(titik.keys()[0])
 	_log("  pilih negara %s (ketuk titik di peta)" % kode_negara)
-	titik[kode_negara].pressed.emit()
+	await _klik_nyata(titik[kode_negara])
 	await _frames()
 	var kota: Dictionary = pilih.get("_tombol_kota")
 	_log("  jumlah kota: %d" % kota.size())
 	if kota.size() > 0:
 		var k0 = kota.keys()[0]
 		_log("  pilih kota %s" % k0)
-		kota[k0].pressed.emit()
+		await _klik_nyata(kota[k0])
 	await _frames()
 	await _shot("lokasi_dipilih")
 	await _klik(pilih, Bahasa.t("intro.mulai"))
@@ -322,36 +439,46 @@ func _probe_email() -> void:
 		_bug("aplikasi email tidak terbuka")
 		return
 	_log("  tombol email awal: " + str(_semua_tombol(email)))
-	await _klik_baris(email, "Penting: panduan memulai")
+	await _klik_baris_salah_satu(email, ["Penting: panduan memulai", "Important: getting started"])
 	await _klik(email, Bahasa.t("email.baca"))
 	await _shot("email_baca")
 	await _klik(email, Bahasa.t("email.keluar"))
-	await _klik_baris(email, "Jangan percaya")
+	await _klik_baris_salah_satu(email, ["Jangan percaya", "Don't trust"])
 	await _klik(email, Bahasa.t("email.hapus"))
 	await _shot("email_setelah_hapus")
 	await _klik(email, Bahasa.t("email.sampah"))
 	await _shot("email_sampah")
-	await _klik_baris(email, "Jangan percaya")
+	await _klik_baris_salah_satu(email, ["Jangan percaya", "Don't trust"])
 	await _klik(email, Bahasa.t("email.baca"))
 	await _shot("email_sampah_baca")
 	await _klik(email, Bahasa.t("email.pulihkan"))
 	await _shot("email_pulih")
-	_log("  setelah pulihkan, ada di Masuk: %s" % str(_teks_node(email).contains("Jangan percaya")))
-	await _klik(email, Bahasa.t("email.sampah"))
-	await _klik_baris(email, "Jangan percaya")
+	# Setelah dipulihkan, pesan harus kembali ke Masuk. Dicek di tab Masuk, lalu dihapus lagi ke Sampah.
+	await _klik(email, Bahasa.t("email.tab_masuk"))
+	var masuk_ada := await _klik_baris_salah_satu(email, ["Jangan percaya", "Don't trust"])
+	_log("  setelah pulihkan, ada di Masuk: %s" % str(masuk_ada))
+	await _klik_baris_salah_satu(email, ["Jangan percaya", "Don't trust"])
 	await _klik(email, Bahasa.t("email.baca"))
 	await _klik(email, Bahasa.t("email.hapus"))
 	await _klik(email, Bahasa.t("email.sampah"))
-	await _klik_baris(email, "Jangan percaya")
+	await _klik_baris_salah_satu(email, ["Jangan percaya", "Don't trust"])
 	await _klik(email, Bahasa.t("email.baca"))
 	await _klik(email, Bahasa.t("email.hapus_permanen"))
 	await _shot("email_konfirmasi_hapus")
 	_log("  tombol konfirmasi: " + str(_semua_tombol(root_app)))
 	await _klik(root_app, Bahasa.t("umum.batal"))
-	_log("  setelah batal, pesan masih di sampah: %s" % str(_teks_node(email).contains("Jangan percaya")))
-	await _klik(root_app, Bahasa.t("email.hapus_permanen"))
+	_log("  setelah batal, pesan masih di sampah: %s" % str(_teks_node(email).contains("Jangan percaya") or _teks_node(email).contains("Don't trust")))
+	# Konfirmasi: HAPUS di dalam dialog "Hapus permanen?" (bukan tombol HAPUS di pembaca).
+	await _klik(email, Bahasa.t("email.hapus_permanen"))
+	var konfirmasi := _cari_tombol(email, Bahasa.t("email.hapus_permanen"))
+	if konfirmasi == null:
+		_bug("dialog konfirmasi hapus permanen tidak muncul")
+	else:
+		_log("  KLIK konfirmasi 'HAPUS' (dialog)")
+		await _klik_nyata(konfirmasi)
+		await _secs(0.6)
 	await _shot("email_setelah_hapus_permanen")
-	_log("  pesan 'Jangan percaya' setelah hapus permanen: %s" % str(_teks_node(email).contains("Jangan percaya")))
+	_log("  pesan 'Jangan percaya' setelah hapus permanen: %s" % str(_teks_node(email).contains("Jangan percaya") or _teks_node(email).contains("Don't trust")))
 
 # Input yang salah dan keadaan tidak wajar di Terminal, diketik seperti pemain iseng.
 func _probe_terminal() -> void:
@@ -363,7 +490,9 @@ func _probe_terminal() -> void:
 		await _ketik(term, c)
 	await _shot("terminal_uji_salah")
 	_log("  prompt setelah input salah: busy=%s live=%s" % [str(term.get("_busy")), str(term.get("_live"))])
-	# Airodump-ng live, lalu pemain membuka aplikasi lain dan kembali.
+	# Airodump-ng live, lalu pemain membuka aplikasi lain dan kembali. Mode monitor dihidupkan lagi
+	# karena daftar input salah di atas sempat mematikannya (airmon-ng stop).
+	await _ketik(term, "airmon-ng start wlan0")
 	await _ketik(term, "airodump-ng wlan0mon")
 	await _secs(1.5)
 	_log("  live awal: %s" % str(term.get("_live")))
@@ -398,6 +527,11 @@ var PERINTAH := {
 	25: ["network-analyzer verify LAB-WIFI-01 senja1234"], 26: ["network-analyzer report LAB-WIFI-01"],
 }
 
+# Catatan keadaan ekonomi: saldo Kr, XP, reputasi, inventaris, dan hadiah yang sudah diambil.
+func _snap(tag: String) -> void:
+	var s = _sesi()
+	_log("  SNAP %s: saldo=%d xp=%d reputasi=%s inventaris=%s hadiah=%s" % [tag, s.economy.saldo, s.xp, JSON.stringify(s.reputation.to_dict()), JSON.stringify(s.inventory.to_dict()), JSON.stringify(s.hadiah_diambil)])
+
 func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 	var s = _sesi()
 	var m := Misi.temukan("misi_1")
@@ -407,6 +541,7 @@ func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 		if aktif != n:
 			_bug("tahap aktif %d, seharusnya %d sebelum mengerjakan tahap %d" % [aktif, n, n])
 		_log("== TAHAP %d (aktif=%d) ==" % [n, aktif])
+		_snap("awal tahap %d" % n)
 		if n == 1:
 			await _buka_app("misi")
 			var misi_app := await _tunggu_node("PusatMisi", 3.0)
@@ -414,7 +549,8 @@ func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 				_bug("aplikasi Misi tidak terbuka")
 			else:
 				await _klik_baris(misi_app, Bahasa.t("misi.kat.tutorial"))
-				await _klik_baris(misi_app, "Tutorial Misi 1")
+				await _secs(0.6)
+				await _klik_baris_salah_satu(misi_app, ["Tutorial Misi 1", "Tutorial Mission 1"])
 				await _shot("pusat_misi_detail")
 				await _klik(misi_app, Bahasa.t("misi.tombol_pilih"))
 				await _shot("pusat_misi_terpilih")
@@ -426,8 +562,12 @@ func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 			await _buka_app("email")
 			var email := await _tunggu_node("EmailApp", 3.0)
 			if email != null:
-				await _klik_baris(email, "Tahap %d:" % n)
+				await _klik_baris_salah_satu(email, ["Tahap %d:" % n, "Stage %d:" % n])
+				await _secs(0.4)
 				await _klik(email, Bahasa.t("email.baca"))
+				await _secs(0.4)
+				_log("  TEKS EMAIL MISI tahap %d: %s" % [n, _teks_node(email).replace("\n", " | ")])
+				await _shot("email_misi_tahap_%d" % n)
 				await _klik(email, Bahasa.t("misi.tombol_belajar"))
 				await _shot("belajar_tahap_%d" % n)
 				await _klik(email, Bahasa.t("misi.tombol_kembali"))
@@ -478,6 +618,7 @@ func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 		if cek != n + 1 and not (n == 26 and cek == 0):
 			_bug("setelah tahap %d, tahap aktif = %d (diharapkan %d)" % [n, cek, n + 1])
 		await _secs(0.3)
+	_snap("akhir misi")
 	var akhir_s = _sesi()
 	_log("Akhir: misi=%s, tahap aktif=%d, hadiah=%s" % [str(akhir_s.misi.get("misi_1","")), Misi.tahap_aktif(akhir_s, m), str(akhir_s.hadiah_diambil.has("misi_1"))])
 
