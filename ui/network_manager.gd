@@ -222,6 +222,29 @@ func _teks_hitung() -> String:
 		return ""
 	return Bahasa.t("netmgr.selesai") % w.ditemukan.size()
 
+# Gembok terbuka + DIBOBOL bila kata sandi sudah ditemukan lewat password-auditor; terkunci bila belum.
+func _baris_gembok(bobol: bool) -> HBoxContainer:
+	var b := HBoxContainer.new()
+	b.add_theme_constant_override("separation", 10)
+	b.add_child(_ikon_gembok(bobol))
+	var warna := Tema.TEAL if bobol else WARNA_BAHAYA
+	b.add_child(_teks(Bahasa.t("netmgr.dibobol") if bobol else Bahasa.t("netmgr.terkunci"), warna, 19))
+	return b
+
+func _ikon_gembok(terbuka: bool) -> Control:
+	var c := Control.new()
+	c.custom_minimum_size = Vector2(26, 26)
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE  # jangan menelan geseran gulir kartu
+	var warna := Tema.TEAL if terbuka else WARNA_BAHAYA
+	c.draw.connect(func():
+		var pusat := Vector2(13, 14)
+		c.draw_rect(Rect2(pusat + Vector2(-9, -1), Vector2(18, 13)), warna)
+		# Tertutup: busur menyambung ke badan. Terbuka: busur terangkat sehingga kaki kanan lepas.
+		var y := -1.0 if not terbuka else -6.0
+		c.draw_arc(pusat + Vector2(0, y), 6.0, PI, TAU, 16, warna, 3.0, true)
+	)
+	return c
+
 func _kartu_jaringan(ssid: String) -> PanelContainer:
 	var j := WifiLab.jaringan(ssid)
 	var teks := VBoxContainer.new()
@@ -230,6 +253,7 @@ func _kartu_jaringan(ssid: String) -> PanelContainer:
 	teks.add_child(_teks(ssid, Tema.TEKS, 26))
 	teks.add_child(_teks("%s · %s %d · %s" % [String(j["bssid"]), Bahasa.t("netmgr.kol_kanal"), int(j["kanal"]), WifiLab.frekuensi(j)], Tema.TEKS_REDUP, 18))
 	teks.add_child(_teks(Bahasa.t("netmgr.kol_keamanan") + ": " + String(j["enkripsi"]), _warna_keamanan(String(j["enkripsi"])), 19))
+	teks.add_child(_baris_gembok(_sesi.wifi.kata_sandi_ditemukan.has(ssid)))
 	var waktu := String(_sesi.wifi.waktu_lihat.get(ssid, ""))
 	if waktu != "":
 		teks.add_child(_teks(Bahasa.t("netmgr.kol_terlihat") + ": " + waktu, Tema.TEKS_REDUP, 17))

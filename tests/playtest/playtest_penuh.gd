@@ -668,6 +668,9 @@ func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 	_snap("akhir misi")
 	var akhir_s = _sesi()
 	_log("Akhir: misi=%s, tahap aktif=%d, hadiah=%s" % [str(akhir_s.misi.get("misi_1","")), Misi.tahap_aktif(akhir_s, m), str(akhir_s.hadiah_diambil.has("misi_1"))])
+	await _buka_app("netmgr")
+	await _secs(0.8)
+	await _shot("netmgr_dibobol")
 
 func _email_tahap(s, n: int) -> int:
 	var k := 0

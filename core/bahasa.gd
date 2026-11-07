@@ -178,6 +178,8 @@ const KAMUS := {
 	"netmgr.kol_sinyal": {"id": "Sinyal", "en": "Signal"},
 	"netmgr.kol_keamanan": {"id": "Keamanan", "en": "Security"},
 	"netmgr.kol_terlihat": {"id": "Terakhir terlihat", "en": "Last seen"},
+	"netmgr.dibobol": {"id": "DIBOBOL", "en": "CRACKED"},
+	"netmgr.terkunci": {"id": "TERKUNCI", "en": "LOCKED"},
 	"netmgr.ketuk_detail": {"id": "Ketuk jaringan untuk melihat detail.", "en": "Tap a network to see details."},
 	"netmgr.detail_kosong": {"id": "Pilih jaringan dari tab Pindai untuk melihat detailnya.", "en": "Select a network from the Scan tab to see its details."},
 	"netmgr.d_identitas": {"id": "Identitas", "en": "Identity"},
