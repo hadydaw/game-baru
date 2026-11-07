@@ -57,6 +57,7 @@ func _jalan(s: ShellSession, c: String, tahap: int) -> void:
 
 func test_e2e_26_tahap() -> void:
 	var s: ShellSession = SesiUtama.ambil()
+	s.wifi.kunci_seed = 0  # kata sandi acak; 0 = kandidat pertama (senja1234)
 	assert_not_null(s, "sesi awal dibuat")
 	var m := Misi.temukan("misi_1")
 	assert_true(Misi.tersedia(s, m), "misi tutorial tersedia di awal")

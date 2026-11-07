@@ -86,7 +86,7 @@ func test_aircrack_tanpa_handshake() -> void:
 func test_aircrack_dengan_kamus_lab_menemukan_kunci_bila_ada_di_kamus() -> void:
 	var s := _sesi()
 	_handshake(s)
-	var kata := String(WifiLab.jaringan("LAB-WIFI-01").get("kata_sandi", ""))
+	var kata := s.wifi.kata_sandi("LAB-WIFI-01")
 	var teks := _teks(s.jalankan("aircrack-ng -w %s LAB-WIFI-01" % KAMUS))
 	if WifiLab.kamus().has(kata):
 		assert_true(teks.contains("KEY FOUND! [ %s ]" % kata))
@@ -105,7 +105,7 @@ func test_hashcat_butuh_mode_hash() -> void:
 func test_hashcat_dengan_mode_dan_kamus_lab() -> void:
 	var s := _sesi()
 	_handshake(s)
-	var kata := String(WifiLab.jaringan("LAB-WIFI-01").get("kata_sandi", ""))
+	var kata := s.wifi.kata_sandi("LAB-WIFI-01")
 	var teks := _teks(s.jalankan("hashcat -m 2500 LAB-WIFI-01 %s" % KAMUS))
 	assert_true(teks.contains("hashcat (v6.2.6) starting"))
 	assert_true(teks.contains("Hash.Mode........: 2500"))

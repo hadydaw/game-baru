@@ -75,6 +75,7 @@ func _baca_tahap_aktif(s: ShellSession) -> void:
 
 func test_tutorial_selesai_lalu_bertahan_setelah_dimuat_ulang() -> void:
 	var s := SesiUtama.ambil()
+	s.wifi.kunci_seed = 0  # kata sandi acak; 0 = senja1234
 	for cmd in LANGKAH:
 		_jalankan(s, cmd)
 		Misi.perbarui(s)
@@ -105,6 +106,7 @@ func test_tutorial_selesai_lalu_bertahan_setelah_dimuat_ulang() -> void:
 func test_keluaran_bahasa_inggris_tidak_memuat_kata_indonesia() -> void:
 	Bahasa.set_kode("en")
 	var s := ShellSession.new(Vfs.new(_fs_awal()))
+	s.wifi.kunci_seed = 0  # kata sandi acak; 0 = kandidat pertama (senja1234)
 	var semua: Array = []
 	for cmd in LANGKAH:
 		semua.append_array(_jalankan(s, cmd))

@@ -570,7 +570,7 @@ var PERINTAH := {
 	15: ["network-analyzer analyze LAB-WIFI-01"], 16: ["man password-auditor"], 17: ["apt install -y password-auditor"],
 	18: ["apt list --installed"], 19: ["man aircrack-ng"], 20: ["password-auditor auth LAB-WIFI-01"], 21: ["man airodump-ng"],
 	22: ["man john"], 23: ["password-auditor run LAB-WIFI-01"], 24: ["man network-analyzer"],
-	25: ["network-analyzer verify LAB-WIFI-01 senja1234"], 26: ["network-analyzer report LAB-WIFI-01"],
+	25: ["network-analyzer verify LAB-WIFI-01 KUNCI_UJI"], 26: ["network-analyzer report LAB-WIFI-01"],
 }
 
 # Catatan keadaan ekonomi: saldo Kr, XP, reputasi, inventaris, dan hadiah yang sudah diambil.
@@ -637,6 +637,7 @@ func _alur_misi_dan_tahap(dari: int, sampai: int) -> void:
 			await _shot("airodump_setelah_ctrl_c")
 			continue
 		for c in PERINTAH[n]:
+			c = String(c).replace("KUNCI_UJI", SesiUtama.ambil().wifi.kata_sandi("LAB-WIFI-01"))
 			if c == "__netmgr__":
 				await _buka_app("netmgr")
 				await _shot("netmgr_tahap12")

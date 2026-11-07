@@ -24,7 +24,7 @@ static func aircrack(s: ShellSession, p: Dictionary) -> Array:
 		return hasil + [_galat("No valid WPA handshakes found.")]
 	hasil.append(_info("Opening %s" % kamus))
 	hasil.append(_info("Read %d keys" % WifiLab.kamus().size()))
-	var kata := String(WifiLab.jaringan(target).get("kata_sandi", ""))
+	var kata := s.wifi.kata_sandi(target)
 	if WifiLab.kamus().has(kata):
 		s.wifi.kata_sandi_ditemukan[target] = kata
 		s.jaringan.buka("crack:aircrack-ng")
@@ -51,7 +51,7 @@ static func hashcat(s: ShellSession, p: Dictionary) -> Array:
 	if kamus != KAMUS_PATH:
 		return hasil + [_galat("Error: %s: No such file or directory" % kamus)]
 	# Label dan urutan mengikuti sesi hashcat resmi (hashcat.net/wiki). Waktu dan kecepatan tidak disimulasikan.
-	var kata := String(WifiLab.jaringan(target).get("kata_sandi", ""))
+	var kata := s.wifi.kata_sandi(target)
 	var ditemukan := WifiLab.kamus().has(kata)
 	hasil.append(_info("Session..........: hashcat"))
 	hasil.append(_info("Status...........: %s" % ("Cracked" if ditemukan else "Exhausted")))
@@ -83,7 +83,7 @@ static func john(s: ShellSession, p: Dictionary) -> Array:
 	if not s.wifi.handshake.has(target):
 		return [_galat("No password hashes loaded (see FAQ)")]
 	var hasil: Array = [_info("Loaded 1 password hash (wpapsk, WPA/WPA2 PSK)")]
-	var kata := String(WifiLab.jaringan(target).get("kata_sandi", ""))
+	var kata := s.wifi.kata_sandi(target)
 	if WifiLab.kamus().has(kata):
 		s.wifi.kata_sandi_ditemukan[target] = kata
 		s.jaringan.buka("crack:john")

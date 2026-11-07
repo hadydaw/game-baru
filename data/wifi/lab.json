@@ -5,7 +5,7 @@
       "kanal": 6,
       "sinyal": -48,
       "enkripsi": "WPA2",
-      "kata_sandi": "senja1234",
+      "kata_sandi_acak": true,
       "vendor": "Senja Networks",
       "model": "SN-R200",
       "lebar_kanal": 20,
@@ -145,13 +145,24 @@
     "rt5370": false
   },
   "ambang_handshake_dbm": -65,
+  "kata_sandi_pool": ["senja1234", "hujan2026", "kopi7788", "pagi5521", "bulan9043", "laut3317", "hutan6602", "batu8815", "embun4470", "jendela1907"],
   "kamus_audit": [
     "password",
     "12345678",
     "jtn2026",
     "senja1234",
     "0102030405",
-    "qwerty123"
+    "qwerty123",
+    "senja1234",
+    "hujan2026",
+    "kopi7788",
+    "pagi5521",
+    "bulan9043",
+    "laut3317",
+    "hutan6602",
+    "batu8815",
+    "embun4470",
+    "jendela1907"
   ],
   "airmon": {
     "ar9271": {

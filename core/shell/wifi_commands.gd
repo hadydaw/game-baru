@@ -344,7 +344,7 @@ static func audit(s: ShellSession, p: Dictionary) -> Array:
 		"run":
 			if not s.wifi.handshake.has(ssid):
 				return [s.galat_kunci("audit", "wifi.belum_auth")]
-			var kata := String(WifiLab.jaringan(ssid)["kata_sandi"])
+			var kata := s.wifi.kata_sandi(ssid)
 			if not WifiLab.kamus().has(kata):
 				_catat(s, "password-auditor run %s: NOT FOUND in dictionary (%d words tried)" % [ssid, WifiLab.kamus().size()])
 				return [s.baris_kunci("error", "wifi.tidak_ada_kamus", [])]

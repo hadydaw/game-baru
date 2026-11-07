@@ -38,6 +38,7 @@ func before_each() -> void:
 
 func _sesi() -> ShellSession:
 	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
+	s.wifi.kunci_seed = 0  # kata sandi acak; 0 = kandidat pertama (senja1234)
 	Misi.perbarui(s)
 	Misi.terima(s, "misi_1")
 	return s

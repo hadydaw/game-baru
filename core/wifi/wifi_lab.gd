@@ -16,6 +16,10 @@ var terakses: Dictionary = {}            # SSID -> true (network-analyzer verify
 var riwayat: Array = []                  # tiap pemindaian, terbaru di depan: {waktu, perangkat, jumlah, jaringan, dipilih, analisis}
 var waktu_lihat: Dictionary = {}         # SSID -> waktu terakhir ditemukan oleh pemindaian
 var monitor: String = ""                 # nama interface monitor hasil airmon-ng start (kosong bila belum aktif)
+var kunci_seed: int = 0                  # acak per simpanan; menentukan kata sandi jaringan acak
+
+func _init() -> void:
+	kunci_seed = randi()
 
 const BATAS_RIWAYAT := 50
 
@@ -30,6 +34,20 @@ static func jaringan(ssid: String) -> Dictionary:
 
 static func kamus() -> Array:
 	return Array(data().get("kamus_audit", []))
+
+static func pool_kata_sandi() -> Array:
+	return Array(data().get("kata_sandi_pool", []))
+
+# Kata sandi jaringan. Jaringan dengan "kata_sandi_acak" memakai satu kandidat dari pool,
+# dipilih dari kunci_seed milik simpanan ini, sehingga tiap pemain mendapat kunci yang berbeda.
+func kata_sandi(ssid: String) -> String:
+	var j := jaringan(ssid)
+	if bool(j.get("kata_sandi_acak", false)):
+		var pool := pool_kata_sandi()
+		if pool.is_empty():
+			return ""
+		return String(pool[posmod(kunci_seed, pool.size())])
+	return String(j.get("kata_sandi", ""))
 
 func sudah_scan() -> bool:
 	return not ditemukan.is_empty()
@@ -48,6 +66,7 @@ func to_dict() -> Dictionary:
 		"riwayat": riwayat.duplicate(true),
 		"waktu_lihat": waktu_lihat.duplicate(),
 		"monitor": monitor,
+		"kunci_seed": kunci_seed,
 	}
 
 func terapkan(d: Dictionary) -> void:
@@ -60,6 +79,7 @@ func terapkan(d: Dictionary) -> void:
 	riwayat = Array(d.get("riwayat", [])).duplicate(true)
 	waktu_lihat = Dictionary(d.get("waktu_lihat", {})).duplicate()
 	monitor = String(d.get("monitor", ""))
+	kunci_seed = int(d.get("kunci_seed", randi()))
 
 # Mencatat satu pemindaian ke riwayat. Entri terbaru ada di depan.
 func catat_scan(perangkat_id: String, ssids: Array, waktu: String) -> void:

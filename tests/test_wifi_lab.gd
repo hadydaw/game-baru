@@ -4,7 +4,9 @@ extends GutTest
 # dan tidak ada perintah tunggal yang langsung memberi akses.
 
 func _sesi() -> ShellSession:
-	return ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
+	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
+	s.wifi.kunci_seed = 0  # kata sandi acak; 0 = kandidat pertama (senja1234)
+	return s
 
 func _teks(hasil: Array) -> String:
 	var t := ""
@@ -113,3 +115,22 @@ func test_keadaan_wifi_bertahan_saat_disimpan() -> void:
 	var pulih := ShellSession.dari_dict(s.to_dict())
 	assert_true(pulih.wifi.terlihat("LAB-WIFI-01"))
 	assert_eq(pulih.wifi.terpilih, "LAB-WIFI-01")
+
+func test_kata_sandi_beda_per_simpanan() -> void:
+	var a := WifiLab.new()
+	a.kunci_seed = 0
+	var b := WifiLab.new()
+	b.kunci_seed = 1
+	var ka := a.kata_sandi("LAB-WIFI-01")
+	var kb := b.kata_sandi("LAB-WIFI-01")
+	assert_ne(ka, kb, "dua pemain punya kunci berbeda")
+	assert_true(WifiLab.kamus().has(ka), "kunci pemain ada di kamus")
+	assert_true(WifiLab.kamus().has(kb), "kunci pemain kedua ada di kamus")
+
+func test_kunci_seed_tersimpan_di_save() -> void:
+	var w := WifiLab.new()
+	w.kunci_seed = 7
+	var pulih := WifiLab.new()
+	pulih.terapkan(w.to_dict())
+	assert_eq(pulih.kunci_seed, 7)
+	assert_eq(pulih.kata_sandi("LAB-WIFI-01"), w.kata_sandi("LAB-WIFI-01"))
