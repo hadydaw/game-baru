@@ -134,5 +134,35 @@
       "tshark"
     ],
     "deskripsi_kunci": "sw.desk.tshark"
+  },
+  "nmap": {
+    "nama": "Nmap",
+    "tipe": "aplikasi",
+    "kategori": "Pemindaian",
+    "versi_awal": "7.94",
+    "versi": "7.94",
+    "ukuran": "6.1 MB",
+    "harga": 0,
+    "deps": [],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [],
+    "deskripsi_kunci": "sw.desk.nmap"
+  },
+  "netdiscover": {
+    "nama": "Netdiscover",
+    "tipe": "aplikasi",
+    "kategori": "Pemindaian",
+    "versi_awal": "0.10",
+    "versi": "0.10",
+    "ukuran": "0.2 MB",
+    "harga": 0,
+    "deps": [],
+    "butuh_adapter": false,
+    "chipset": [],
+    "perintah": [
+      "netdiscover"
+    ],
+    "deskripsi_kunci": "sw.desk.netdiscover"
   }
 }

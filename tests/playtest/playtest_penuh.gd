@@ -66,6 +66,61 @@ func _semua_tombol(node: Node, hasil: Array = []) -> Array:
 	return hasil
 
 # ---- Input nyata: klik mouse dan tombol keyboard lewat InputEvent, bukan pressed.emit() ----
+# Klik nyata pada satu baris Tree (mis. daftar paket Wireshark): cari item yang memuat teks, gulir, lalu klik titik tengahnya.
+func _klik_baris_tree(node: Node, teks: String) -> bool:
+	var tree := node.find_children("*", "Tree", true, false)
+	if tree.is_empty():
+		_log("  [tidak ada Tree] " + teks)
+		return false
+	var pohon := tree[0] as Tree
+	var item := pohon.get_root()
+	var ditemukan: TreeItem = null
+	var antrean: Array = [item]
+	while not antrean.is_empty() and ditemukan == null:
+		var it: TreeItem = antrean.pop_front()
+		if it == null:
+			continue
+		for k in range(pohon.columns):
+			if it.get_text(k).contains(teks):
+				ditemukan = it
+				break
+		var anak := it.get_first_child()
+		while anak != null:
+			antrean.append(anak)
+			anak = anak.get_next()
+	if ditemukan == null:
+		_log("  [tidak ada baris Tree] " + teks)
+		return false
+	pohon.scroll_to_item(ditemukan)
+	await _frames(4)
+	var area := pohon.get_item_area_rect(ditemukan, 0)
+	var titik := area.get_center()
+	var p := get_root().get_final_transform() * (pohon.get_global_transform_with_canvas() * titik)
+	_log("  KLIK baris Tree '%s'" % teks)
+	Input.warp_mouse(p)
+	await _frames(3)
+	var gerak := InputEventMouseMotion.new()
+	gerak.position = p
+	gerak.global_position = p
+	Input.parse_input_event(gerak)
+	await _frames(2)
+	var tekan := InputEventMouseButton.new()
+	tekan.button_index = MOUSE_BUTTON_LEFT
+	tekan.position = p
+	tekan.global_position = p
+	tekan.pressed = true
+	tekan.button_mask = MOUSE_BUTTON_MASK_LEFT
+	Input.parse_input_event(tekan)
+	await _frames(2)
+	var lepas := InputEventMouseButton.new()
+	lepas.button_index = MOUSE_BUTTON_LEFT
+	lepas.position = p
+	lepas.global_position = p
+	lepas.pressed = false
+	Input.parse_input_event(lepas)
+	await _frames(6)
+	return true
+
 func _klik_nyata(c: Control) -> void:
 	var p := get_root().get_final_transform() * (c.get_global_transform_with_canvas() * (c.size / 2.0))
 	Input.warp_mouse(p)
@@ -292,6 +347,8 @@ func _initialize() -> void:
 		await _alur_live()
 	elif mode == "salin":
 		await _alur_salin()
+	elif mode == "misi2":
+		await _alur_misi2()
 	else:
 		await _alur_lanjut()
 	var f := FileAccess.open(LOG % mode, FileAccess.WRITE)
@@ -431,6 +488,119 @@ func _alur_salin() -> void:
 	_log("  TEMPEL: kolom berisi '%s' (cocok dengan papan klip=%s)" % [masukan.text.left(40), str(cocok)])
 	if not cocok:
 		_bug("tempel tidak menyisipkan baris pertama papan klip")
+
+# Misi Tutorial 2 dari awal sampai selesai: terima lewat Misi, baca email, kerjakan 8 tahap dengan ketikan
+# nyata di Terminal (dan Wireshark untuk tahap 7). Syarat: Tutorial 1 sudah selesai di simpanan.
+const PERINTAH_M2 := {
+	1: ["ip addr"],
+	2: ["ip route"],
+	3: ["apt install -y nmap"],
+	4: ["apt install -y netdiscover", "netdiscover -r 10.8.1.0/24"],
+	5: ["nmap -sn 10.8.1.0/24"],
+	6: ["nmap -p 22,80 10.8.1.8"],
+	7: ["apt install -y wireshark", "wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap"],
+	8: ["nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24"],
+}
+
+func _alur_misi2() -> void:
+	_log("== MODE MISI2 ==")
+	var menu := await _tunggu_node("MenuUtama")
+	if menu != null:
+		await _klik(menu, Bahasa.t("menu.lanjutkan"))
+		await _secs(1.5)
+	var s: ShellSession = _sesi()
+	if String(s.misi.get("misi_1", "")) != "selesai":
+		_bug("Tutorial 1 belum selesai di simpanan")
+		return
+	await _buka_app("misi")
+	var misi_app := await _tunggu_node("PusatMisi", 3.0)
+	if misi_app == null:
+		_bug("aplikasi Misi tidak terbuka")
+		return
+	_log("  diagnostik: flag misi_selesai:misi_1=%s, tersedia misi_2=%s" % [str(s.jaringan.progres.has("misi_selesai:misi_1")), str(Misi.tersedia(s, Misi.temukan("misi_2")))])
+	await _klik_baris(misi_app, Bahasa.t("misi.kat.tutorial"))
+	await _secs(0.6)
+	await _klik(misi_app, Bahasa.t("misi.tombol_pilih"))
+	await _secs(0.6)
+	_log("  diagnostik daftar tombol: " + str(_semua_tombol(misi_app)))
+	await _klik_baris_salah_satu(misi_app, ["Jejak Jaringan", "Network Trail"])
+	await _shot("m2_pusat_detail")
+	await _klik(misi_app, Bahasa.t("misi.tombol_pilih"))
+	await _klik(misi_app, Bahasa.t("misi.tombol_terima"))
+	await _shot("m2_diterima")
+	Misi.perbarui(s)
+	var m := Misi.temukan("misi_2")
+	_log("  setelah terima: status=%s, email tahap 1 = %d" % [str(s.misi.get("misi_2", "")), _email_m2(s, 1)])
+	if _email_m2(s, 1) != 1:
+		_bug("email tahap 1 Misi 2 harus tepat satu kali")
+	for n in range(1, 9):
+		var aktif := Misi.tahap_aktif(s, m)
+		_log("== M2 TAHAP %d (aktif=%d) ==" % [n, aktif])
+		if aktif != n:
+			_bug("tahap aktif %d, seharusnya %d" % [aktif, n])
+			return
+		await _buka_app("email")
+		var email := await _tunggu_node("EmailApp", 3.0)
+		if email != null:
+			await _klik_baris_salah_satu(email, ["Tahap %d:" % n, "Stage %d:" % n])
+			await _secs(0.4)
+			await _klik(email, Bahasa.t("email.baca"))
+			await _secs(0.4)
+			if n in [1, 4, 7]:
+				await _shot("m2_email_tahap_%d" % n)
+			await _klik(email, Bahasa.t("email.keluar"))
+		await _buka_app("terminal")
+		var term := _cari_berkas(root_app, "terminal_screen.gd")
+		if term == null:
+			_bug("terminal tidak bisa dibuka di tahap %d" % n)
+			return
+		for c in PERINTAH_M2[n]:
+			await _ketik(term, c)
+			await _secs(0.8)
+		var keluaran_node := term.get("_keluaran") as RichTextLabel
+		var isi_term := keluaran_node.get_parsed_text().split("\n")
+		_log("  keluaran terakhir: " + " | ".join(isi_term.slice(maxi(0, isi_term.size() - 3))).left(400))
+		if n == 4:
+			await _buka_app("netmgr")
+			await _shot("m2_netmgr_netdiscover")
+			await _buka_app("terminal")
+			term = _cari_berkas(root_app, "terminal_screen.gd")
+		if n == 1:
+			await _shot("m2_terminal_ip_addr")
+		if n == 7:
+			var ws := await _tunggu_node_nama("wireshark_app.gd", 6.0)
+			if ws == null:
+				_bug("Wireshark tidak terbuka dari perintah")
+			else:
+				await _klik_baris_tree(ws, "POST /login")
+				await _secs(0.6)
+				await _shot("m2_wireshark_login")
+				await _tutup_jendela_aktif()
+		Misi.perbarui(s)
+		_log("  progres setelah tahap %d: %s" % [n, str(s.jaringan.progres.filter(func(f): return String(f).begins_with("ip:") or String(f).begins_with("nmap:") or String(f).begins_with("netdiscover:") or String(f).begins_with("pasang:") or String(f).begins_with("wireshark:jejak")))])
+	Misi.perbarui(s)
+	_log("Akhir M2: status=%s, hadiah=%s, email selesai=%d" % [str(s.misi.get("misi_2", "")), str(s.hadiah_diambil.has("misi_2")), _email_m2(s, 99)])
+	await _buka_app("peta")
+	await _shot("m2_peta_akhir")
+	await _buka_app("netmgr")
+	await _shot("m2_netmgr_akhir")
+
+func _email_m2(s, n: int) -> int:
+	var k := 0
+	for p in s.pesan_misi:
+		if String(p.get("misi", "")) == "misi_2" and (int(p.get("tahap", 0)) == n or n == 99):
+			k += 1
+	return k
+
+func _tunggu_node_nama(berkas: String, batas := 6.0) -> Node:
+	var t := 0.0
+	while t < batas:
+		var n := _cari_berkas(root_app, berkas)
+		if n != null and n.is_inside_tree():
+			return n
+		await _secs(0.2)
+		t += 0.2
+	return null
 
 func _alur_lanjut() -> void:
 	_log("== MODE LANJUT, ukuran %s ==" % ukuran)

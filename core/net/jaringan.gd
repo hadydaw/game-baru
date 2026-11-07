@@ -16,6 +16,10 @@ var ip_node: Dictionary = {}   # id node -> IP yang dibuat saat Sesi Baru; koson
 
 # Rentang IP privat yang dipakai saat membuat IP acak. Setiap node memilih salah satu rentang.
 const RENTANG_IP := [["10", 0, 255], ["172", 16, 31], ["192.168", 0, 255]]
+# Laboratorium internal Tutorial 2: subnet tetap agar data Wireshark dan IP tetap konsisten.
+const SUBNET_LAB2 := "10.8.1."
+const PEMAIN_IP := "10.8.1.42"
+const PEMAIN_MAC := "02:4a:1c:10:00:42"
 
 static func muat(path: String = DATA) -> Jaringan:
     var j := Jaringan.new()
@@ -44,9 +48,15 @@ func acak_ip(rng: RandomNumberGenerator = null) -> void:
         rng.randomize()
     ip_node.clear()
     var terpakai := {}
+    # Node dengan IP tetap (laboratorium Tutorial 2) tidak diacak, dan subnetnya tidak dipakai node lain.
     for id in data:
+        if bool(data[id].get("ip_tetap", false)):
+            terpakai[String(data[id]["ip"])] = true
+    for id in data:
+        if bool(data[id].get("ip_tetap", false)):
+            continue
         var alamat := ""
-        while alamat == "" or terpakai.has(alamat):
+        while alamat == "" or terpakai.has(alamat) or alamat.begins_with(SUBNET_LAB2):
             var r: Array = RENTANG_IP[rng.randi() % RENTANG_IP.size()]
             var awal := String(r[0])
             if awal == "10":
@@ -149,3 +159,15 @@ func terapkan(d: Dictionary) -> void:
     for id in fs_tersimpan:
         if fs_node.has(id):
             fs_node[id] = fs_tersimpan[id]
+
+# Host yang bisa dijangkau di subnet /24 (prefiks seperti "10.8.1."), diurutkan menurut IP.
+# Node yang masih terkunci atau tidak aktif tidak ikut.
+func host_di_subnet(prefiks: String) -> Array:
+    var hasil: Array = []
+    for id in data:
+        var sid := String(id)
+        if not ip(sid).begins_with(prefiks) or not aktif(sid) or terkunci(sid):
+            continue
+        hasil.append(sid)
+    hasil.sort_custom(func(a, b): return ip(a) < ip(b))
+    return hasil

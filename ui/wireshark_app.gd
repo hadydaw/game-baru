@@ -503,3 +503,6 @@ func _cek_misi() -> void:
 	var pk_terpilih := _model.paket_terpilih()
 	if Dictionary(pk_terpilih.get("fitur", {})).has("http.form.password"):
 		_catat("wireshark:kredensial")
+		# Tahap 7 Tutorial 2: login HTTP plaintext pada sampel jaringan internal laboratorium.
+		if _model.judul == "lab-jejak-internal":
+			_catat("wireshark:jejak:kredensial")

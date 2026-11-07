@@ -481,5 +481,193 @@
     "persyaratan_en": "None (no tools)",
     "latar_en": "The laboratory network cannot be reached without the right device. The Agency wants to see whether you can build one from nothing.",
     "target_en": "Laboratory network LAB-WIFI-01"
+  },
+  {
+    "id": "misi_2",
+    "kategori": "tutorial",
+    "urutan": 2,
+    "judul": "Jejak Jaringan",
+    "judul_en": "Network Trail",
+    "pengirim": "Agensi",
+    "pengirim_en": "Agency",
+    "tujuan_ringkas": "Memetakan jaringan internal laboratorium dan memeriksa perangkat serta layanannya",
+    "tujuan_ringkas_en": "Map the internal laboratory network and inspect its devices and services",
+    "persyaratan": "Selesaikan Tutorial Misi 1",
+    "persyaratan_en": "Complete Tutorial Mission 1",
+    "syarat_terima": [
+      "misi_selesai:misi_1"
+    ],
+    "latar": "Setelah audit LAB-WIFI-01, Agensi ingin tahu apa saja yang berjalan di jaringan internal laboratorium di balik akses itu.",
+    "latar_en": "After the LAB-WIFI-01 audit, the Agency wants to know what runs on the internal laboratory network behind that access.",
+    "target": "Jaringan internal laboratorium 10.8.1.0/24",
+    "target_en": "Internal laboratory network 10.8.1.0/24",
+    "pesan_masuk": {
+      "subjek": "Tutorial Misi 2: Jejak Jaringan",
+      "subjek_en": "Tutorial Mission 2: Network Trail",
+      "isi": "Akses ke LAB-WIFI-01 membuka pintu ke jaringan internal. Tugasmu: memetakan jaringan 10.8.1.0/24, menemukan perangkatnya, dan mencatat layanan yang berjalan. Mulai dengan 'ip addr' di Terminal. — Agensi",
+      "isi_en": "Access to LAB-WIFI-01 opened the door to the internal network. Your task: map the 10.8.1.0/24 network, find its devices, and record the services running on them. Start with 'ip addr' in the Terminal. — Agency"
+    },
+    "tahap": [
+      {
+        "judul": "Tahap 1: Memahami Jaringan Internal",
+        "judul_en": "Stage 1: Understanding the Internal Network",
+        "pesan": "Sebelum memetakan apa pun, kamu harus tahu alamatmu sendiri di jaringan. Ketik 'ip addr' untuk melihat IP dan MAC address perangkatmu. — Agensi",
+        "pesan_en": "Before mapping anything, you need to know your own address on the network. Type 'ip addr' to see your device's IP and MAC address. — Agency",
+        "alasan": "Setiap pemindaian dimulai dari alamat sumbermu. Kamu harus tahu alamat itu dan subnet tempatnya berada.",
+        "alasan_en": "Every scan starts from your source address. You need to know that address and the subnet it sits in.",
+        "pengetahuan": "IP address mengenali perangkat secara logis di jaringan, misalnya 10.8.1.42. MAC address mengenali perangkat secara fisik pada tingkat tautan, misalnya 02:4a:1c:10:00:42. Subnet adalah rentang IP yang sama, dan 10.8.1.0/24 berarti 10.8.1.0 sampai 10.8.1.255.",
+        "pengetahuan_en": "An IP address identifies a device logically on the network, for example 10.8.1.42. A MAC address identifies the device physically at the link layer, for example 02:4a:1c:10:00:42. A subnet is a range of IPs that share a prefix, and 10.8.1.0/24 means 10.8.1.0 through 10.8.1.255."
+      },
+      {
+        "judul": "Tahap 2: Memeriksa Konfigurasi Jaringan",
+        "judul_en": "Stage 2: Checking the Network Configuration",
+        "pesan": "Sekarang lihat jalur keluarmu. Ketik 'ip route' untuk mengetahui gateway default dan jaringan yang terhubung langsung. — Agensi",
+        "pesan_en": "Now look at your way out. Type 'ip route' to see the default gateway and the directly connected network. — Agency",
+        "alasan": "Paket yang ditujukan ke luar subnet selalu lewat gateway. Tanpa gateway, laboratorium tidak bisa dijangkau dari luar.",
+        "alasan_en": "Packets bound for another subnet always go through the gateway. Without it, the laboratory cannot be reached from outside.",
+        "pengetahuan": "Gateway adalah perangkat yang meneruskan paket ke jaringan lain, biasanya router. DHCP adalah layanan yang memberi IP, subnet, dan gateway secara otomatis saat perangkat terhubung. DNS menerjemahkan nama domain menjadi IP.",
+        "pengetahuan_en": "A gateway is the device that forwards packets to other networks, usually a router. DHCP is the service that automatically hands out an IP, subnet, and gateway when a device connects. DNS translates domain names into IP addresses."
+      },
+      {
+        "judul": "Tahap 3: Memasang Network Mapper",
+        "judul_en": "Stage 3: Installing a Network Mapper",
+        "pesan": "Untuk memetakan jaringan kamu butuh pemindai khusus. Pasang Nmap lewat apt: ketik 'apt install -y nmap'. — Agensi",
+        "pesan_en": "To map a network you need a dedicated scanner. Install Nmap through apt: type 'apt install -y nmap'. — Agency",
+        "alasan": "Nmap adalah alat standar untuk menemukan host dan layanan. Memasangnya lewat paket manajer menjaga versinya tetap konsisten.",
+        "alasan_en": "Nmap is the standard tool for finding hosts and services. Installing it through the package manager keeps its version consistent.",
+        "pengetahuan": "Nmap (Network Mapper) melakukan host discovery dengan mengirim probe ke alamat target, lalu melihat siapa yang menjawab. Paket dipasang lewat apt, manajer paket yang mengurus unduhan dan dependensinya.",
+        "pengetahuan_en": "Nmap (Network Mapper) performs host discovery by sending probes to target addresses and seeing who answers. Packages are installed with apt, the package manager that handles downloads and dependencies."
+      },
+      {
+        "judul": "Tahap 4: Menemukan Perangkat Laboratorium",
+        "judul_en": "Stage 4: Finding Laboratory Devices",
+        "pesan": "Di jaringan lokal, perangkat saling mengenal lewat ARP. Pasang Netdiscover lalu jalankan 'netdiscover -r 10.8.1.0/24' untuk menemukan semua perangkat di subnet itu. — Agensi",
+        "pesan_en": "On a local network, devices recognize each other through ARP. Install Netdiscover, then run 'netdiscover -r 10.8.1.0/24' to find every device in that subnet. — Agency",
+        "alasan": "Perangkat di subnet yang sama bisa ditemukan lewat ARP tanpa perlu tahu layanannya lebih dulu.",
+        "alasan_en": "Devices on the same subnet can be found with ARP without knowing their services first.",
+        "pengetahuan": "ARP (Address Resolution Protocol) menanyakan 'siapa yang memiliki IP ini?' ke seluruh subnet, lalu perangkat yang memiliki IP itu menjawab dengan MAC address-nya. Netdiscover mengirim permintaan ARP dan mencatat jawabannya.",
+        "pengetahuan_en": "ARP (Address Resolution Protocol) asks the whole subnet 'who has this IP?', and the device that owns it replies with its MAC address. Netdiscover sends ARP requests and records the replies."
+      },
+      {
+        "judul": "Tahap 5: Membuat Peta Jaringan",
+        "judul_en": "Stage 5: Building the Network Map",
+        "pesan": "Netdiscover hanya melihat lapisan tautan. Untuk peta yang lebih lengkap, jalankan 'nmap -sn 10.8.1.0/24'. Opsi -sn hanya memeriksa siapa yang aktif, tanpa memeriksa port. — Agensi",
+        "pesan_en": "Netdiscover only sees the link layer. For a fuller map, run 'nmap -sn 10.8.1.0/24'. The -sn option only checks which hosts are up, without checking ports. — Agency",
+        "alasan": "Peta jaringan menunjukkan perangkat apa saja yang aktif dan bagaimana hubungan antarperangkatnya.",
+        "alasan_en": "A network map shows which devices are active and how they relate to one another.",
+        "pengetahuan": "Host discovery (ping sweep) memeriksa apakah sebuah host aktif tanpa memindai portnya, sehingga lebih cepat. Topologi jaringan adalah pola hubungan antarperangkat: gateway di tengah, perangkat lain terhubung ke gateway.",
+        "pengetahuan_en": "Host discovery (a ping sweep) checks whether a host is up without scanning its ports, so it is faster. Network topology is the pattern of links between devices: the gateway sits in the middle, and other devices connect to it."
+      },
+      {
+        "judul": "Tahap 6: Mengenali Layanan Jaringan",
+        "judul_en": "Stage 6: Identifying Network Services",
+        "pesan": "Setiap perangkat menjalankan layanan lewat port. Periksa perangkat arsip laboratorium dengan 'nmap -p 22,80 10.8.1.8' untuk melihat layanan apa yang terbuka. — Agensi",
+        "pesan_en": "Every device runs services through ports. Check the laboratory file server with 'nmap -p 22,80 10.8.1.8' to see which services are open. — Agency",
+        "alasan": "Layanan yang terbuka adalah pintu masuk yang perlu dipahami sebelum menilai keamanannya.",
+        "alasan_en": "Open services are entry points that must be understood before judging their security.",
+        "pengetahuan": "Port adalah nomor 0 sampai 65535 yang menunjuk layanan tertentu di sebuah host. TCP menjamin paket sampai dan berurutan, dipakai HTTP dan SSH. UDP lebih ringan tanpa jaminan itu, sering dipakai DNS. HTTP mengirim data tanpa enkripsi, sedangkan SSH terenkripsi dan dipakai untuk akses terminal jarak jauh.",
+        "pengetahuan_en": "A port is a number from 0 to 65535 that points to a particular service on a host. TCP guarantees delivery and order, and HTTP and SSH use it. UDP is lighter without those guarantees and is often used by DNS. HTTP sends data unencrypted, while SSH is encrypted and used for remote terminal access."
+      },
+      {
+        "judul": "Tahap 7: Menganalisis Konfigurasi Keamanan",
+        "judul_en": "Stage 7: Analyzing the Security Configuration",
+        "pesan": "Layanan HTTP di arsip mengirim data tanpa enkripsi. Pasang Wireshark lewat apt ('apt install -y wireshark') jika belum, lalu buka sampel 'lab-jejak-internal' dengan 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap' dan pilih paket login di daftar paket. — Agensi",
+        "pesan_en": "The HTTP service on the archive sends data unencrypted. Install Wireshark with apt ('apt install -y wireshark') if you have not yet, then open the 'lab-jejak-internal' sample with 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap' and select the login packet in the packet list. — Agency",
+        "alasan": "Dengan memeriksa paket, kamu bisa melihat apakah data sensitif benar-benar terlindungi.",
+        "alasan_en": "By inspecting packets, you can see whether sensitive data is really protected.",
+        "pengetahuan": "Packet analysis membaca lapisan demi lapisan: Ethernet, IP, TCP, lalu HTTP. Jika HTTP tidak dienkripsi, isi formulir seperti kata sandi terlihat jelas di paket. Itu sebabnya layanan sensitif harus memakai HTTPS atau SSH.",
+        "pengetahuan_en": "Packet analysis reads layer by layer: Ethernet, IP, TCP, then HTTP. If HTTP is not encrypted, form contents such as passwords are plainly visible in the packet. That is why sensitive services must use HTTPS or SSH."
+      },
+      {
+        "judul": "Tahap 8: Membuat Laporan",
+        "judul_en": "Stage 8: Writing the Report",
+        "pesan": "Tulis hasil pemetaanmu ke berkas. Jalankan 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24'. Laporan ini akan dibaca tim Agensi. — Agensi",
+        "pesan_en": "Write your mapping results to a file. Run 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24'. This report will be read by the Agency team. — Agency",
+        "alasan": "Temuan yang tidak tercatat tidak bisa dipakai tim lain. Laporan mengubah pemindaian menjadi bukti.",
+        "alasan_en": "Findings that are not recorded cannot be used by other teams. A report turns scans into evidence.",
+        "pengetahuan": "Pemindai seperti Nmap bisa menulis hasilnya ke berkas dengan -oN, sehingga bisa dibaca ulang dan dibagikan. Firewall dan segmentasi jaringan membatasi siapa yang boleh berbicara dengan siapa. Laporan yang baik mencatat host, layanan, dan batasan yang ditemukan.",
+        "pengetahuan_en": "Scanners like Nmap can write their results to a file with -oN, so they can be reread and shared. Firewalls and network segmentation limit who may talk to whom. A good report records the hosts, services, and limits found."
+      }
+    ],
+    "tujuan": [
+      {
+        "tahap": 1,
+        "flag": "ip:addr",
+        "teks": "Ketik 'ip addr' di Terminal",
+        "teks_en": "Type 'ip addr' in the Terminal"
+      },
+      {
+        "tahap": 2,
+        "flag": "ip:route",
+        "teks": "Ketik 'ip route' di Terminal",
+        "teks_en": "Type 'ip route' in the Terminal"
+      },
+      {
+        "tahap": 3,
+        "flag": "pasang:nmap",
+        "teks": "Pasang nmap: 'apt install -y nmap'",
+        "teks_en": "Install nmap: 'apt install -y nmap'"
+      },
+      {
+        "tahap": 4,
+        "flag": "pasang:netdiscover",
+        "teks": "Pasang netdiscover: 'apt install -y netdiscover'",
+        "teks_en": "Install netdiscover: 'apt install -y netdiscover'"
+      },
+      {
+        "tahap": 4,
+        "flag": "netdiscover:pindai",
+        "teks": "Jalankan 'netdiscover -r 10.8.1.0/24'",
+        "teks_en": "Run 'netdiscover -r 10.8.1.0/24'"
+      },
+      {
+        "tahap": 5,
+        "flag": "nmap:sn",
+        "teks": "Jalankan 'nmap -sn 10.8.1.0/24'",
+        "teks_en": "Run 'nmap -sn 10.8.1.0/24'"
+      },
+      {
+        "tahap": 6,
+        "flag": "nmap:port:lab2-berkas",
+        "teks": "Jalankan 'nmap -p 22,80 10.8.1.8'",
+        "teks_en": "Run 'nmap -p 22,80 10.8.1.8'"
+      },
+      {
+        "tahap": 7,
+        "flag": "pasang:wireshark",
+        "teks": "Pasang Wireshark: 'apt install -y wireshark'",
+        "teks_en": "Install Wireshark: 'apt install -y wireshark'"
+      },
+      {
+        "tahap": 7,
+        "flag": "wireshark:jejak:kredensial",
+        "teks": "Buka 'lab-jejak-internal' di Wireshark dan pilih paket login",
+        "teks_en": "Open 'lab-jejak-internal' in Wireshark and select the login packet"
+      },
+      {
+        "tahap": 8,
+        "flag": "nmap:laporan",
+        "teks": "Tulis laporan: 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24'",
+        "teks_en": "Write the report: 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24'"
+      }
+    ],
+    "petunjuk": [
+      {
+        "teks": "Netdiscover hanya bekerja di subnet yang sama dengan perangkatmu.",
+        "flag": "netdiscover:pindai",
+        "teks_en": "Netdiscover only works on the same subnet as your device."
+      },
+      {
+        "teks": "Opsi -oN menyimpan hasil nmap ke berkas, bukan hanya menampilkannya.",
+        "flag": "nmap:laporan",
+        "teks_en": "The -oN option saves nmap output to a file instead of only showing it."
+      }
+    ],
+    "pesan_selesai": {
+      "subjek": "Terima kasih",
+      "subjek_en": "Thank you",
+      "isi": "Jejak jaringan sudah lengkap, dan laporanmu sudah masuk ke arsip Agensi. Hadiahmu sudah dikirim. — Agensi",
+      "isi_en": "The network trail is complete, and your report has been filed with the Agency archive. Your reward has been sent. — Agency"
+    }
   }
 ]

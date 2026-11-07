@@ -9,7 +9,7 @@ const FORMAT := "simcap-1"
 const DIR_CONTOH := "res://data/wireshark/"
 const DIR_SAMPEL := "/usr/share/wireshark/samples/"
 const EKSTENSI := ".simcap"
-const CONTOH := ["lab-jaringan-umum", "lab-wifi-01-handshake", "lab-pindai-port"]
+const CONTOH := ["lab-jaringan-umum", "lab-wifi-01-handshake", "lab-pindai-port", "lab-jejak-internal"]
 # Antarmuka simulasi -> skenario yang diputar saat menangkap. wlan0mon hanya ada setelah monitor mode aktif.
 const SKENARIO_ANTARMUKA := {"eth0": "lab-jaringan-umum", "wlan0mon": "lab-wifi-01-handshake"}
 

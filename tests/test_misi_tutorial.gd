@@ -165,3 +165,11 @@ func test_pusat_misi_menampilkan_semua_tahap() -> void:
 	p._rincian = true
 	p._segarkan_semua()
 	assert_true(p._isi_deskripsi.get_child_count() > 10)
+
+func test_flag_misi_selesai_dibuka_setelah_tutorial_1() -> void:
+	var s := _sesi()
+	assert_false(s.jaringan.progres.has("misi_selesai:misi_1"), "belum selesai")
+	s.misi["misi_1"] = "selesai"
+	Misi.perbarui(s)
+	assert_true(s.jaringan.progres.has("misi_selesai:misi_1"), "flag terbuka setelah selesai")
+	assert_eq(Misi.flag_selesai("misi_1"), "misi_selesai:misi_1")

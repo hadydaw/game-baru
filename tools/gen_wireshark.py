@@ -313,6 +313,85 @@ def scen_scan():
         t += 0.4132
     return B.paket
 
+# ---------------------------------------------------------------- skenario 4: jejak jaringan internal (Tutorial 2)
+def scen_jejak():
+    # Subnet laboratorium 10.8.1.0/24 (IP tetap, sama dengan data/jaringan/jaringan.json).
+    B = Builder("eth0")
+    PM, PI = "02:4a:1c:10:00:42", "10.8.1.42"
+    hosts = [("02:4a:1c:10:00:01", "10.8.1.1"), ("02:4a:1c:10:00:08", "10.8.1.8"),
+             ("02:4a:1c:10:00:50", "10.8.1.50"), ("02:4a:1c:10:00:77", "10.8.1.77")]
+    BM, BI = "02:4a:1c:10:00:08", "10.8.1.8"
+    t = 0.0
+    # Netdiscover: permintaan ARP ke setiap alamat di subnet, lalu host yang aktif menjawab.
+    for hm, hi in hosts:
+        arq = struct.pack("!HHBBH6s4s6s4s", 1, 0x0800, 6, 4, 1, mac(PM), ipb(PI), b"\0" * 6, ipb(hi))
+        B.tambah(t, [eth(PM, BC, 0x0806, arq), ("Address Resolution Protocol (request)", arq,
+                 arp_bid(1, PM, PI, "00:00:00:00:00:00", hi))],
+                 "Who has %s? Tell %s" % (hi, PI), "ARP", PM, BC,
+                 {"arp.opcode": 1, "arp.src.proto_ipv4": PI, "arp.dst.proto_ipv4": hi, "eth.addr": [PM, BC]})
+        arr = struct.pack("!HHBBH6s4s6s4s", 1, 0x0800, 6, 4, 2, mac(hm), ipb(hi), mac(PM), ipb(PI))
+        B.tambah(t + 0.000388, [eth(hm, PM, 0x0806, arr), ("Address Resolution Protocol (reply)", arr,
+                 arp_bid(2, hm, hi, PM, PI))],
+                 "%s is at %s" % (hi, hm), "ARP", hm, PM,
+                 {"arp.opcode": 2, "arp.src.proto_ipv4": hi, "eth.addr": [hm, PM]})
+        t += 0.0912
+    # Pemindaian port SYN ke berkas (22 terbuka, 445 tertutup), lalu HTTP plaintext ke /login.
+    for i, (dp, terbuka) in enumerate([(22, True), (445, False)]):
+        sp = 48100 + i
+        seq = 0x4a10 + i * 31
+        B.tambah(t, tcp_frame(PM, BM, PI, BI, sp, dp, seq, 0, ["SYN"], 1024, 0x6100 + i, mss=1460),
+                 tcp_info(sp, dp, ["SYN"], seq, 0, 1024, 0, 1460), "TCP", PI, BI, {**f_ip(PI, BI), **f_tcp(sp, dp, ["SYN"])})
+        t += 0.00042
+        if terbuka:
+            B.tambah(t, tcp_frame(BM, PM, BI, PI, dp, sp, 0x9b20 + i, seq + 1, ["SYN", "ACK"], 64240, 0x6200 + i, mss=1460),
+                     tcp_info(dp, sp, ["SYN", "ACK"], 0x9b20 + i, seq + 1, 64240, 0, 1460), "TCP", BI, PI,
+                     {**f_ip(BI, PI), **f_tcp(dp, sp, ["SYN", "ACK"])})
+            t += 0.00031
+            B.tambah(t, tcp_frame(PM, BM, PI, BI, sp, dp, seq + 1, 0, ["RST"], 0, 0x6120 + i),
+                     tcp_info(sp, dp, ["RST"], seq + 1, 0, 0), "TCP", PI, BI, {**f_ip(PI, BI), **f_tcp(sp, dp, ["RST"])})
+        else:
+            B.tambah(t, tcp_frame(BM, PM, BI, PI, dp, sp, 0, seq + 1, ["RST", "ACK"], 0, 0x6300 + i),
+                     tcp_info(dp, sp, ["RST", "ACK"], 0, seq + 1, 0), "TCP", BI, PI,
+                     {**f_ip(BI, PI), **f_tcp(dp, sp, ["RST", "ACK"])})
+        t += 0.4132
+    cs, ss = 49010, 80
+    s1 = tcp_frame(PM, BM, PI, BI, cs, ss, 0x7c1d0a01, 0, ["SYN"], 64240, 0x6401, mss=1460)
+    B.tambah(t, s1, tcp_info(cs, ss, ["SYN"], 0x7c1d0a01, 0, 64240, 0, 1460), "TCP", PI, BI,
+             {**f_ip(PI, BI), **f_tcp(cs, ss, ["SYN"])})
+    s2 = tcp_frame(BM, PM, BI, PI, ss, cs, 0x3e8f2b02, 0x7c1d0a02, ["SYN", "ACK"], 65160, 0x6402, mss=1460)
+    B.tambah(t + 0.0018, s2, tcp_info(ss, cs, ["SYN", "ACK"], 0x3e8f2b02, 0x7c1d0a02, 65160, 0, 1460), "TCP", BI, PI,
+             {**f_ip(BI, PI), **f_tcp(ss, cs, ["SYN", "ACK"])})
+    s3 = tcp_frame(PM, BM, PI, BI, cs, ss, 0x7c1d0a02, 0x3e8f2b03, ["ACK"], 502, 0x6403)
+    B.tambah(t + 0.0019, s3, tcp_info(cs, ss, ["ACK"], 0x7c1d0a02, 0x3e8f2b03, 502), "TCP", PI, BI,
+             {**f_ip(PI, BI), **f_tcp(cs, ss, ["ACK"])})
+    req = (b"GET /login HTTP/1.1\r\nHost: berkas.lab.jtn.test\r\n"
+           b"User-Agent: Mozilla/5.0 (X11; Linux x86_64) Firefox/128.0\r\nAccept: text/html\r\n"
+           b"Connection: keep-alive\r\n\r\n")
+    B.tambah(t + 0.0021, tcp_frame(PM, BM, PI, BI, cs, ss, 0x7c1d0a02, 0x3e8f2b03, ["PSH", "ACK"], 502, 0x6404,
+             app=http_req(req)), "GET /login HTTP/1.1", "HTTP", PI, BI,
+             {**f_ip(PI, BI), **f_tcp(cs, ss, ["PSH", "ACK"]), "http.request.method": "GET",
+              "http.request.uri": "/login", "http.host": "berkas.lab.jtn.test"})
+    body = b"<html><head><title>Arsip Laboratorium</title></head><body><h1>Masuk</h1></body></html>"
+    resp = (b"HTTP/1.1 200 OK\r\nServer: JTN-HTTP/1.4\r\nContent-Type: text/html\r\nContent-Length: %d\r\n"
+            b"Connection: keep-alive\r\n\r\n" % len(body)) + body
+    B.tambah(t + 0.0042, tcp_frame(BM, PM, BI, PI, ss, cs, 0x3e8f2b03, 0x7c1d0a02 + len(req), ["PSH", "ACK"], 65160,
+             0x6405, app=http_resp(resp)), "HTTP/1.1 200 OK  (text/html)", "HTTP", BI, PI,
+             {**f_ip(BI, PI), **f_tcp(ss, cs, ["PSH", "ACK"]), "http.response.code": 200,
+              "http.content_type": "text/html"})
+    form = b"username=operator&password=Arsip2026"
+    post = (b"POST /login HTTP/1.1\r\nHost: berkas.lab.jtn.test\r\n"
+            b"Content-Type: application/x-www-form-urlencoded\r\nContent-Length: %d\r\n\r\n" % len(form)) + form
+    B.tambah(t + 2.318, tcp_frame(PM, BM, PI, BI, cs, ss, 0x7c1d0a02 + len(req), 0x3e8f2b03 + len(resp),
+             ["PSH", "ACK"], 502, 0x6406, app=http_post(post)),
+             "POST /login HTTP/1.1  (application/x-www-form-urlencoded)", "HTTP", PI, BI,
+             {**f_ip(PI, BI), **f_tcp(cs, ss, ["PSH", "ACK"]), "http.request.method": "POST",
+              "http.request.uri": "/login", "http.host": "berkas.lab.jtn.test", "http.form.password": "Arsip2026"})
+    s7 = tcp_frame(PM, BM, PI, BI, cs, ss, 0x7c1d0a02 + len(req) + len(post), 0x3e8f2b03 + len(resp),
+                   ["FIN", "ACK"], 502, 0x6407)
+    B.tambah(t + 2.402, s7, tcp_info(cs, ss, ["FIN", "ACK"], 0x7c1d0a02 + len(req) + len(post), 0x3e8f2b03 + len(resp), 502),
+             "TCP", PI, BI, {**f_ip(PI, BI), **f_tcp(cs, ss, ["FIN", "ACK"])})
+    return B.paket
+
 # ---------------------------------------------------------------- skenario 3: 802.11 + WPA2
 def mgmt(fcv, a1, a2, a3, seq, body):
     return struct.pack("<H", fcv) + b"\x00\x00" + mac(a1) + mac(a2) + mac(a3) + struct.pack("<H", (seq & 0xfff) << 4) + body
@@ -424,6 +503,8 @@ SKENARIO = [
      "Lalu lintas LAN laboratorium: ARP, DNS, TCP, HTTP dengan login plaintext, dan ping. Data simulasi untuk pelatihan, bukan lalu lintas nyata.", scen_lan),
     ("lab-pindai-port", "Pemindaian Port SYN", "eth0",
      "Pemindaian SYN dari 10.7.0.8 ke 10.7.0.80 pada tujuh port. Port 22 dan 80 terbuka, port lain menolak. Data simulasi untuk pelatihan, bukan lalu lintas nyata.", scen_scan),
+    ("lab-jejak-internal", "Jejak Jaringan Internal", "eth0",
+     "ARP dari 10.8.1.42 ke subnet laboratorium 10.8.1.0/24, pemindaian port ke berkas 10.8.1.8, dan login HTTP plaintext. Data simulasi untuk pelatihan, bukan lalu lintas nyata.", scen_jejak),
 ]
 
 def cek(paket):

@@ -40,6 +40,9 @@ static func ping(s: ShellSession, p: Dictionary) -> Array:
     return hasil
 
 static func nmap(s: ShellSession, p: Dictionary) -> Array:
+    # Mode subnet: -sn memeriksa host yang aktif pada /24 tanpa memindai port. -oN menulis hasilnya ke berkas.
+    if ShellParser.punya_opsi(p["opsi"], "-sn"):
+        return _nmap_sn(s, p)
     # -sV (versi layanan) dan deteksi firewall hanya tersedia dengan Network Scanner tingkat tertentu.
     var sv := ShellParser.punya_huruf(p["opsi"], "V")
     if sv and s.inventory.tingkat("network_scanner") < 2:
@@ -86,6 +89,9 @@ static func nmap(s: ShellSession, p: Dictionary) -> Array:
     j.jelajahi(id)
     j.tandai_dipindai(id)
     hasil.append(s.baris("info", Bahasa.dua("Pemindaian selesai: 1 host, %d port ditampilkan.", "Scan complete: 1 host, %d ports shown.", [tampil])))
+    # Pemindaian port terarah pada host laboratorium menjadi bukti tahap misi (Tutorial 2).
+    if not filter.is_empty():
+        j.buka("nmap:port:" + id)
     return hasil
 
 static func ssh(s: ShellSession, p: Dictionary) -> Array:
@@ -138,3 +144,39 @@ static func _kunci_cocok(s: ShellSession, cfg: Dictionary) -> bool:
     if berkas.is_empty() or String(berkas.get("tipe", "")) != "file":
         return false
     return ShellCommands.isi_berkas(berkas).contains(token)
+
+# nmap -sn <subnet/24> [-oN berkas]: host discovery. Hanya host aktif di subnet yang ditampilkan.
+static func _nmap_sn(s: ShellSession, p: Dictionary) -> Array:
+    var args: Array = p["argumen"].duplicate()
+    var berkas := ""
+    if ShellParser.punya_opsi(p["opsi"], "-oN"):
+        if args.size() < 2:
+            return [s.galat("nmap", Teks.t("err.butuh_argumen"))]
+        berkas = String(args[0])
+        args.remove_at(0)
+    if args.is_empty():
+        return [s.galat("nmap", Teks.t("err.butuh_argumen"))]
+    var target := String(args[0])
+    var re := RegEx.new()
+    re.compile("^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\.0/24$")
+    var m := re.search(target)
+    if m == null:
+        return [s.galat("nmap", "Failed to resolve \"%s\"." % target)]
+    var j := s.jaringan
+    var ids := j.host_di_subnet(m.get_string(1) + ".")
+    var teks: Array = ["Starting Nmap 7.94 ( https://nmap.org )"]
+    for id in ids:
+        j.tandai_ditemukan(id)
+        teks.append("Nmap scan report for %s" % j.ip(id))
+        teks.append("Host is up (%.4fs latency)." % (float(int(j.data[id].get("latensi", 10))) / 1000.0))
+    teks.append("Nmap done: 256 IP addresses (%d hosts up) scanned in 2.04 seconds" % ids.size())
+    var hasil: Array = []
+    for t in teks:
+        hasil.append(s.baris("info", t))
+    j.buka("nmap:sn")
+    if berkas != "":
+        var gagal := s.tulis_keluaran(berkas, "\n".join(PackedStringArray(teks)))
+        if not gagal.is_empty():
+            return gagal
+        j.buka("nmap:laporan")
+    return hasil

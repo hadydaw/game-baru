@@ -66,6 +66,8 @@ static func jalankan(s: ShellSession, p: Dictionary) -> Array:
         "find": return ShellSearch.find(s, p)
         "ping": return PerintahJaringan.ping(s, p)
         "nmap": return PerintahJaringan.nmap(s, p)
+        "ip": return PerintahIp.ip(s, p)
+        "netdiscover": return PerintahNetdiscover.netdiscover(s, p)
         "ssh": return PerintahJaringan.ssh(s, p)
         "exit": return [s.galat("exit", Bahasa.dua("tidak ada sesi SSH aktif", "no active SSH session"))]
         _: return [s.galat(nama, Teks.t("err.tidak_ditemukan"))]

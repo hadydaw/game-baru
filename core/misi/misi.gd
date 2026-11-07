@@ -79,9 +79,19 @@ static func perbarui(s: ShellSession) -> void:
 				berubah = true
 			if _tujuan_selesai(s, m):
 				s.misi[id] = "selesai"
+				s.jaringan.buka(flag_selesai(id))
 				_kirim(s, id, dari, m["pesan_selesai"])
 				Hadiah.selesaikan_misi(s, id)
 				berubah = true
+	# Misi yang sudah selesai sebelum flag ini ada (simpanan lama) tetap mendapat flag-nya.
+	for m in daftar():
+		var id := String(m["id"])
+		if String(s.misi.get(id, "")) == "selesai":
+			s.jaringan.buka(flag_selesai(id))
+
+# Flag progres yang menandai misi selesai. Dipakai sebagai syarat terima misi berikutnya.
+static func flag_selesai(id: String) -> String:
+	return "misi_selesai:" + id
 
 # Misi tersedia: syarat terpenuhi, tetapi belum diterima pemain.
 static func tersedia(s: ShellSession, m: Dictionary) -> bool:
@@ -93,6 +103,7 @@ static func terima(s: ShellSession, id: String) -> bool:
 	if m.is_empty() or not tersedia(s, m):
 		return false
 	s.misi[id] = "aktif"
+	s.jaringan.buka("misi_terima:" + id)
 	_kirim(s, id, String(m["pengirim"]), _pesan_masuk_lengkap(m))
 	_kirim_tahap(s, m, 1)
 	perbarui(s)

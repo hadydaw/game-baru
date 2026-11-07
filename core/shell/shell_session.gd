@@ -382,6 +382,10 @@ func _jalankan_redirect(token: Array, idx: int, masukan: String) -> Array:
         teks.append(String(b["teks"]))
     return _tulis_berkas(tujuan, "\n".join(PackedStringArray(teks)), tambah)
 
+# Menulis keluaran perintah ke berkas relatif terhadap direktori kerja (dipakai nmap -oN).
+func tulis_keluaran(tujuan: String, isi: String) -> Array:
+    return _tulis_berkas(tujuan, isi, false)
+
 func _tulis_berkas(tujuan: String, isi: String, tambah: bool) -> Array:
     var abs := Vfs.normalisasi(cwd, tujuan, home)
     var nama := fs.nama_terakhir(abs)

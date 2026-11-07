@@ -22,5 +22,12 @@
       "id": "network_scanner",
       "tingkat": 2
     }
+  },
+  "misi_2": {
+    "kredit": 200,
+    "xp": 150,
+    "reputasi": {
+      "kolektif_senja": 5
+    }
   }
 }

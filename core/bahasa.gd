@@ -178,6 +178,8 @@ const KAMUS := {
 	"netmgr.kol_sinyal": {"id": "Sinyal", "en": "Signal"},
 	"netmgr.kol_keamanan": {"id": "Keamanan", "en": "Security"},
 	"netmgr.kol_terlihat": {"id": "Terakhir terlihat", "en": "Last seen"},
+	"sw.desk.nmap": {"id": "Pemindai jaringan untuk menemukan host, port, dan layanan.", "en": "Network scanner for finding hosts, ports, and services."},
+	"sw.desk.netdiscover": {"id": "Menemukan perangkat di subnet lokal lewat ARP.", "en": "Finds devices on the local subnet through ARP."},
 	"netmgr.dibobol": {"id": "DIBOBOL", "en": "CRACKED"},
 	"netmgr.terkunci": {"id": "TERKUNCI", "en": "LOCKED"},
 	"netmgr.ketuk_detail": {"id": "Ketuk jaringan untuk melihat detail.", "en": "Tap a network to see details."},

@@ -1,0 +1,3628 @@
+{
+ "id": "lab-jejak-internal",
+ "judul": "Jejak Jaringan Internal",
+ "antarmuka": "eth0",
+ "deskripsi": "ARP dari 10.8.1.42 ke subnet laboratorium 10.8.1.0/24, pemindaian port ke berkas 10.8.1.8, dan login HTTP plaintext. Data simulasi untuk pelatihan, bukan lalu lintas nyata.",
+ "simulasi": true,
+ "paket": [
+  {
+   "no": 1,
+   "waktu": 0.0,
+   "sumber": "02:4a:1c:10:00:42",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "Who has 10.8.1.1? Tell 10.8.1.42",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 1,
+    "arp.src.proto_ipv4": "10.8.1.42",
+    "arp.dst.proto_ipv4": "10.8.1.1",
+    "eth.addr": [
+     "02:4a:1c:10:00:42",
+     "ff:ff:ff:ff:ff:ff"
+    ]
+   },
+   "hex": "ffffffffffff024a1c10004208060001080006040001024a1c1000420a08012a0000000000000a080101000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 1: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.000000 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: ff:ff:ff:ff:ff:ff",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: ff:ff:ff:ff:ff:ff",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (request)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: request (1)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:42",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.42",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 00:00:00:00:00:00",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.1",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 2,
+   "waktu": 0.000388,
+   "sumber": "02:4a:1c:10:00:01",
+   "tujuan": "02:4a:1c:10:00:42",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "10.8.1.1 is at 02:4a:1c:10:00:01",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 2,
+    "arp.src.proto_ipv4": "10.8.1.1",
+    "eth.addr": [
+     "02:4a:1c:10:00:01",
+     "02:4a:1c:10:00:42"
+    ]
+   },
+   "hex": "024a1c100042024a1c10000108060001080006040002024a1c1000010a080101024a1c1000420a08012a000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 2: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.000388 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:01, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:01",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (reply)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: reply (2)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:01",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.1",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 02:4a:1c:10:00:42",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.42",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 3,
+   "waktu": 0.0912,
+   "sumber": "02:4a:1c:10:00:42",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "Who has 10.8.1.8? Tell 10.8.1.42",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 1,
+    "arp.src.proto_ipv4": "10.8.1.42",
+    "arp.dst.proto_ipv4": "10.8.1.8",
+    "eth.addr": [
+     "02:4a:1c:10:00:42",
+     "ff:ff:ff:ff:ff:ff"
+    ]
+   },
+   "hex": "ffffffffffff024a1c10004208060001080006040001024a1c1000420a08012a0000000000000a080108000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 3: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.091200 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: ff:ff:ff:ff:ff:ff",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: ff:ff:ff:ff:ff:ff",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (request)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: request (1)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:42",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.42",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 00:00:00:00:00:00",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.8",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 4,
+   "waktu": 0.091588,
+   "sumber": "02:4a:1c:10:00:08",
+   "tujuan": "02:4a:1c:10:00:42",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "10.8.1.8 is at 02:4a:1c:10:00:08",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 2,
+    "arp.src.proto_ipv4": "10.8.1.8",
+    "eth.addr": [
+     "02:4a:1c:10:00:08",
+     "02:4a:1c:10:00:42"
+    ]
+   },
+   "hex": "024a1c100042024a1c10000808060001080006040002024a1c1000080a080108024a1c1000420a08012a000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 4: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.091588 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:08, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:08",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (reply)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: reply (2)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:08",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.8",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 02:4a:1c:10:00:42",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.42",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "waktu": 0.1824,
+   "sumber": "02:4a:1c:10:00:42",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "Who has 10.8.1.50? Tell 10.8.1.42",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 1,
+    "arp.src.proto_ipv4": "10.8.1.42",
+    "arp.dst.proto_ipv4": "10.8.1.50",
+    "eth.addr": [
+     "02:4a:1c:10:00:42",
+     "ff:ff:ff:ff:ff:ff"
+    ]
+   },
+   "hex": "ffffffffffff024a1c10004208060001080006040001024a1c1000420a08012a0000000000000a080132000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 5: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.182400 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: ff:ff:ff:ff:ff:ff",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: ff:ff:ff:ff:ff:ff",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (request)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: request (1)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:42",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.42",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 00:00:00:00:00:00",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.50",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 6,
+   "waktu": 0.182788,
+   "sumber": "02:4a:1c:10:00:50",
+   "tujuan": "02:4a:1c:10:00:42",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "10.8.1.50 is at 02:4a:1c:10:00:50",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 2,
+    "arp.src.proto_ipv4": "10.8.1.50",
+    "eth.addr": [
+     "02:4a:1c:10:00:50",
+     "02:4a:1c:10:00:42"
+    ]
+   },
+   "hex": "024a1c100042024a1c10005008060001080006040002024a1c1000500a080132024a1c1000420a08012a000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 6: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.182788 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:50, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:50",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (reply)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: reply (2)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:50",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.50",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 02:4a:1c:10:00:42",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.42",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 7,
+   "waktu": 0.2736,
+   "sumber": "02:4a:1c:10:00:42",
+   "tujuan": "ff:ff:ff:ff:ff:ff",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "Who has 10.8.1.77? Tell 10.8.1.42",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 1,
+    "arp.src.proto_ipv4": "10.8.1.42",
+    "arp.dst.proto_ipv4": "10.8.1.77",
+    "eth.addr": [
+     "02:4a:1c:10:00:42",
+     "ff:ff:ff:ff:ff:ff"
+    ]
+   },
+   "hex": "ffffffffffff024a1c10004208060001080006040001024a1c1000420a08012a0000000000000a08014d000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 7: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.273600 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: ff:ff:ff:ff:ff:ff",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: ff:ff:ff:ff:ff:ff",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (request)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: request (1)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:42",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.42",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 00:00:00:00:00:00",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.77",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 8,
+   "waktu": 0.273988,
+   "sumber": "02:4a:1c:10:00:77",
+   "tujuan": "02:4a:1c:10:00:42",
+   "protokol": "ARP",
+   "panjang": 60,
+   "info": "10.8.1.77 is at 02:4a:1c:10:00:77",
+   "lapisan": [
+    "eth",
+    "arp"
+   ],
+   "fitur": {
+    "arp.opcode": 2,
+    "arp.src.proto_ipv4": "10.8.1.77",
+    "eth.addr": [
+     "02:4a:1c:10:00:77",
+     "02:4a:1c:10:00:42"
+    ]
+   },
+   "hex": "024a1c100042024a1c10007708060001080006040002024a1c1000770a08014d024a1c1000420a08012a000000000000000000000000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 8: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.273988 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:arp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:77, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 42,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:77",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: ARP (0x0806)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Address Resolution Protocol (reply)",
+     "mulai": 14,
+     "panjang": 28,
+     "bidang": [
+      {
+       "teks": "Hardware type: Ethernet (1)",
+       "mulai": 14,
+       "panjang": 2
+      },
+      {
+       "teks": "Protocol type: IPv4 (0x0800)",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Hardware size: 6",
+       "mulai": 18,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol size: 4",
+       "mulai": 19,
+       "panjang": 1
+      },
+      {
+       "teks": "Opcode: reply (2)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Sender MAC address: 02:4a:1c:10:00:77",
+       "mulai": 22,
+       "panjang": 6
+      },
+      {
+       "teks": "Sender IP address: 10.8.1.77",
+       "mulai": 28,
+       "panjang": 4
+      },
+      {
+       "teks": "Target MAC address: 02:4a:1c:10:00:42",
+       "mulai": 32,
+       "panjang": 6
+      },
+      {
+       "teks": "Target IP address: 10.8.1.42",
+       "mulai": 38,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 42,
+     "panjang": 18,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000000000000000000000000000",
+       "mulai": 42,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 9,
+   "waktu": 0.3648,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "48100 → 22 [SYN] Seq=18960 Win=1024 Len=0 MSS=1460",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 48100,
+    "tcp.dstport": 22,
+    "tcp.port": [
+     48100,
+     22
+    ],
+    "tcp.flags.syn": 1,
+    "tcp.flags.ack": 0,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100008024a1c10004208004500002c610040004006c38a0a08012a0a080108bbe4001600004a10000000006002040077da0000020405b40000",
+   "rincian": [
+    {
+     "judul": "Frame 9: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.364800 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 58,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 44,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 44",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6100 (24832)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc38a [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 48100, Dst Port: 22, Seq: 18960, Len: 0",
+     "mulai": 34,
+     "panjang": 24,
+     "bidang": [
+      {
+       "teks": "Source Port: 48100",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 22",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 18960",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 0",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0110 .... = Header Length: 24 bytes (6)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x002 (SYN)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 1024",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0x77da [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      },
+      {
+       "teks": "Maximum segment size: 1460 bytes",
+       "mulai": 54,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 58,
+     "panjang": 2,
+     "bidang": [
+      {
+       "teks": "Padding: 0000",
+       "mulai": 58,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 10,
+   "waktu": 0.36522,
+   "sumber": "10.8.1.8",
+   "tujuan": "10.8.1.42",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "22 → 48100 [SYN, ACK] Seq=39712 Ack=18961 Win=64240 Len=0 MSS=1460",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.8",
+    "ip.dst": "10.8.1.42",
+    "ip.addr": [
+     "10.8.1.8",
+     "10.8.1.42"
+    ],
+    "tcp.srcport": 22,
+    "tcp.dstport": 48100,
+    "tcp.port": [
+     22,
+     48100
+    ],
+    "tcp.flags.syn": 1,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100042024a1c10000808004500002c620040004006c28a0a0801080a08012a0016bbe400009b2000004a116012faf0e5b70000020405b40000",
+   "rincian": [
+    {
+     "judul": "Frame 10: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.365220 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:08, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 58,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:08",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.8, Dst: 10.8.1.42",
+     "mulai": 14,
+     "panjang": 44,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 44",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6200 (25088)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc28a [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.8",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.42",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 22, Dst Port: 48100, Seq: 39712, Len: 0",
+     "mulai": 34,
+     "panjang": 24,
+     "bidang": [
+      {
+       "teks": "Source Port: 22",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 48100",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 39712",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 18961",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0110 .... = Header Length: 24 bytes (6)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x012 (SYN, ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 64240",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0xe5b7 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      },
+      {
+       "teks": "Maximum segment size: 1460 bytes",
+       "mulai": 54,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 58,
+     "panjang": 2,
+     "bidang": [
+      {
+       "teks": "Padding: 0000",
+       "mulai": 58,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 11,
+   "waktu": 0.36553,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "48100 → 22 [RST] Seq=18961 Win=0 Len=0",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 48100,
+    "tcp.dstport": 22,
+    "tcp.port": [
+     48100,
+     22
+    ],
+    "tcp.flags.syn": 0,
+    "tcp.flags.ack": 0,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 1,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100008024a1c100042080045000028612040004006c36e0a08012a0a080108bbe4001600004a11000000005004000093930000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 11: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.365530 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 54,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 40,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 40",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6120 (24864)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc36e [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 48100, Dst Port: 22, Seq: 18961, Len: 0",
+     "mulai": 34,
+     "panjang": 20,
+     "bidang": [
+      {
+       "teks": "Source Port: 48100",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 22",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 18961",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 0",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0101 .... = Header Length: 20 bytes (5)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x004 (RST)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 0",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0x9393 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 54,
+     "panjang": 6,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000",
+       "mulai": 54,
+       "panjang": 6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 12,
+   "waktu": 0.77873,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "48101 → 445 [SYN] Seq=18991 Win=1024 Len=0 MSS=1460",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 48101,
+    "tcp.dstport": 445,
+    "tcp.port": [
+     48101,
+     445
+    ],
+    "tcp.flags.syn": 1,
+    "tcp.flags.ack": 0,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100008024a1c10004208004500002c610140004006c3890a08012a0a080108bbe501bd00004a2f000000006002040076130000020405b40000",
+   "rincian": [
+    {
+     "judul": "Frame 12: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.778730 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 58,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 44,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 44",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6101 (24833)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc389 [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 48101, Dst Port: 445, Seq: 18991, Len: 0",
+     "mulai": 34,
+     "panjang": 24,
+     "bidang": [
+      {
+       "teks": "Source Port: 48101",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 445",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 18991",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 0",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0110 .... = Header Length: 24 bytes (6)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x002 (SYN)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 1024",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0x7613 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      },
+      {
+       "teks": "Maximum segment size: 1460 bytes",
+       "mulai": 54,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 58,
+     "panjang": 2,
+     "bidang": [
+      {
+       "teks": "Padding: 0000",
+       "mulai": 58,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 13,
+   "waktu": 0.77915,
+   "sumber": "10.8.1.8",
+   "tujuan": "10.8.1.42",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "445 → 48101 [RST, ACK] Seq=0 Ack=18992 Win=0 Len=0",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.8",
+    "ip.dst": "10.8.1.42",
+    "ip.addr": [
+     "10.8.1.8",
+     "10.8.1.42"
+    ],
+    "tcp.srcport": 445,
+    "tcp.dstport": 48101,
+    "tcp.port": [
+     445,
+     48101
+    ],
+    "tcp.flags.syn": 0,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 1,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100042024a1c100008080045000028630140004006c18d0a0801080a08012a01bdbbe50000000000004a305014000091bc0000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 13: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 0.779150 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:08, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 54,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:08",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.8, Dst: 10.8.1.42",
+     "mulai": 14,
+     "panjang": 40,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 40",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6301 (25345)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc18d [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.8",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.42",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 445, Dst Port: 48101, Seq: 0, Len: 0",
+     "mulai": 34,
+     "panjang": 20,
+     "bidang": [
+      {
+       "teks": "Source Port: 445",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 48101",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 0",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 18992",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0101 .... = Header Length: 20 bytes (5)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x014 (RST, ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 0",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0x91bc [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 54,
+     "panjang": 6,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000",
+       "mulai": 54,
+       "panjang": 6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 14,
+   "waktu": 1.19235,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "49010 → 80 [SYN] Seq=2082277889 Win=64240 Len=0 MSS=1460",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 49010,
+    "tcp.dstport": 80,
+    "tcp.port": [
+     49010,
+     80
+    ],
+    "tcp.flags.syn": 1,
+    "tcp.flags.ack": 0,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100008024a1c10004208004500002c640140004006c0890a08012a0a080108bf7200507c1d0a01000000006002faf041130000020405b40000",
+   "rincian": [
+    {
+     "judul": "Frame 14: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 1.192350 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 58,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 44,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 44",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6401 (25601)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc089 [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 49010, Dst Port: 80, Seq: 2082277889, Len: 0",
+     "mulai": 34,
+     "panjang": 24,
+     "bidang": [
+      {
+       "teks": "Source Port: 49010",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 80",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 2082277889",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 0",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0110 .... = Header Length: 24 bytes (6)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x002 (SYN)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 64240",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0x4113 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      },
+      {
+       "teks": "Maximum segment size: 1460 bytes",
+       "mulai": 54,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 58,
+     "panjang": 2,
+     "bidang": [
+      {
+       "teks": "Padding: 0000",
+       "mulai": 58,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 15,
+   "waktu": 1.19415,
+   "sumber": "10.8.1.8",
+   "tujuan": "10.8.1.42",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "80 → 49010 [SYN, ACK] Seq=1049570050 Ack=2082277890 Win=65160 Len=0 MSS=1460",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.8",
+    "ip.dst": "10.8.1.42",
+    "ip.addr": [
+     "10.8.1.8",
+     "10.8.1.42"
+    ],
+    "tcp.srcport": 80,
+    "tcp.dstport": 49010,
+    "tcp.port": [
+     80,
+     49010
+    ],
+    "tcp.flags.syn": 1,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100042024a1c10000808004500002c640240004006c0880a0801080a08012a0050bf723e8f2b027c1d0a026012fe88d3d80000020405b40000",
+   "rincian": [
+    {
+     "judul": "Frame 15: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 1.194150 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:08, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 58,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:08",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.8, Dst: 10.8.1.42",
+     "mulai": 14,
+     "panjang": 44,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 44",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6402 (25602)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc088 [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.8",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.42",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 80, Dst Port: 49010, Seq: 1049570050, Len: 0",
+     "mulai": 34,
+     "panjang": 24,
+     "bidang": [
+      {
+       "teks": "Source Port: 80",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 49010",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 1049570050",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 2082277890",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0110 .... = Header Length: 24 bytes (6)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x012 (SYN, ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 65160",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0xd3d8 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      },
+      {
+       "teks": "Maximum segment size: 1460 bytes",
+       "mulai": 54,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 58,
+     "panjang": 2,
+     "bidang": [
+      {
+       "teks": "Padding: 0000",
+       "mulai": 58,
+       "panjang": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 16,
+   "waktu": 1.19425,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "49010 → 80 [ACK] Seq=2082277890 Ack=1049570051 Win=502 Len=0",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 49010,
+    "tcp.dstport": 80,
+    "tcp.port": [
+     49010,
+     80
+    ],
+    "tcp.flags.syn": 0,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100008024a1c100042080045000028640340004006c08b0a08012a0a080108bf7200507c1d0a023e8f2b03501001f6e8280000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 16: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 1.194250 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 54,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 40,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 40",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6403 (25603)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc08b [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 49010, Dst Port: 80, Seq: 2082277890, Len: 0",
+     "mulai": 34,
+     "panjang": 20,
+     "bidang": [
+      {
+       "teks": "Source Port: 49010",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 80",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 2082277890",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 1049570051",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0101 .... = Header Length: 20 bytes (5)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x010 (ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 502",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0xe828 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 54,
+     "panjang": 6,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000",
+       "mulai": 54,
+       "panjang": 6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 17,
+   "waktu": 1.19445,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "HTTP",
+   "panjang": 206,
+   "info": "GET /login HTTP/1.1",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp",
+    "http"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 49010,
+    "tcp.dstport": 80,
+    "tcp.port": [
+     49010,
+     80
+    ],
+    "tcp.flags.syn": 0,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 1,
+    "http.request.method": "GET",
+    "http.request.uri": "/login",
+    "http.host": "berkas.lab.jtn.test"
+   },
+   "hex": "024a1c100008024a1c1000420800450000c0640440004006bff20a08012a0a080108bf7200507c1d0a023e8f2b03501801f6e06b0000474554202f6c6f67696e20485454502f312e310d0a486f73743a206265726b61732e6c61622e6a746e2e746573740d0a557365722d4167656e743a204d6f7a696c6c612f352e3020285831313b204c696e7578207838365f3634292046697265666f782f3132382e300d0a4163636570743a20746578742f68746d6c0d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a0d0a",
+   "rincian": [
+    {
+     "judul": "Frame 17: 206 bytes on wire (1648 bits), 206 bytes captured (1648 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 206,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 1.194450 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 206 bytes (1648 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp:http",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 206,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 192,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 192",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6404 (25604)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xbff2 [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 49010, Dst Port: 80, Seq: 2082277890, Len: 152",
+     "mulai": 34,
+     "panjang": 172,
+     "bidang": [
+      {
+       "teks": "Source Port: 49010",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 80",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 2082277890",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 1049570051",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0101 .... = Header Length: 20 bytes (5)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x018 (PSH, ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 502",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0xe06b [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Hypertext Transfer Protocol",
+     "mulai": 54,
+     "panjang": 152,
+     "bidang": [
+      {
+       "teks": "Request Method: GET",
+       "mulai": 54,
+       "panjang": 3
+      },
+      {
+       "teks": "Request URI: /login",
+       "mulai": 58,
+       "panjang": 6
+      },
+      {
+       "teks": "Request Version: HTTP/1.1",
+       "mulai": 65,
+       "panjang": 8
+      },
+      {
+       "teks": "Host: berkas.lab.jtn.test",
+       "mulai": 75,
+       "panjang": 25
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 18,
+   "waktu": 1.19655,
+   "sumber": "10.8.1.8",
+   "tujuan": "10.8.1.42",
+   "protokol": "HTTP",
+   "panjang": 250,
+   "info": "HTTP/1.1 200 OK  (text/html)",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp",
+    "http"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.8",
+    "ip.dst": "10.8.1.42",
+    "ip.addr": [
+     "10.8.1.8",
+     "10.8.1.42"
+    ],
+    "tcp.srcport": 80,
+    "tcp.dstport": 49010,
+    "tcp.port": [
+     80,
+     49010
+    ],
+    "tcp.flags.syn": 0,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 1,
+    "http.response.code": 200,
+    "http.content_type": "text/html"
+   },
+   "hex": "024a1c100042024a1c1000080800450000ec640540004006bfc50a0801080a08012a0050bf723e8f2b037c1d0a9a5018fe88eac40000485454502f312e3120323030204f4b0d0a5365727665723a204a544e2d485454502f312e340d0a436f6e74656e742d547970653a20746578742f68746d6c0d0a436f6e74656e742d4c656e6774683a2038360d0a436f6e6e656374696f6e3a206b6565702d616c6976650d0a0d0a3c68746d6c3e3c686561643e3c7469746c653e4172736970204c61626f7261746f7269756d3c2f7469746c653e3c2f686561643e3c626f64793e3c68313e4d6173756b3c2f68313e3c2f626f64793e3c2f68746d6c3e",
+   "rincian": [
+    {
+     "judul": "Frame 18: 250 bytes on wire (2000 bits), 250 bytes captured (2000 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 250,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 1.196550 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 250 bytes (2000 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp:http",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:08, Dst: 02:4a:1c:10:00:42",
+     "mulai": 0,
+     "panjang": 250,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:42",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:08",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.8, Dst: 10.8.1.42",
+     "mulai": 14,
+     "panjang": 236,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 236",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6405 (25605)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xbfc5 [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.8",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.42",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 80, Dst Port: 49010, Seq: 1049570051, Len: 196",
+     "mulai": 34,
+     "panjang": 216,
+     "bidang": [
+      {
+       "teks": "Source Port: 80",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 49010",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 1049570051",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 2082278042",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0101 .... = Header Length: 20 bytes (5)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x018 (PSH, ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 65160",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0xeac4 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Hypertext Transfer Protocol",
+     "mulai": 54,
+     "panjang": 196,
+     "bidang": [
+      {
+       "teks": "Response Version: HTTP/1.1",
+       "mulai": 54,
+       "panjang": 8
+      },
+      {
+       "teks": "Status Code: 200",
+       "mulai": 63,
+       "panjang": 3
+      },
+      {
+       "teks": "Response Phrase: OK",
+       "mulai": 67,
+       "panjang": 2
+      },
+      {
+       "teks": "Content-Type: text/html",
+       "mulai": 93,
+       "panjang": 23
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 19,
+   "waktu": 3.51035,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "HTTP",
+   "panjang": 210,
+   "info": "POST /login HTTP/1.1  (application/x-www-form-urlencoded)",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp",
+    "http"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 49010,
+    "tcp.dstport": 80,
+    "tcp.port": [
+     49010,
+     80
+    ],
+    "tcp.flags.syn": 0,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 0,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 1,
+    "http.request.method": "POST",
+    "http.request.uri": "/login",
+    "http.host": "berkas.lab.jtn.test",
+    "http.form.password": "Arsip2026"
+   },
+   "hex": "024a1c100008024a1c1000420800450000c4640640004006bfec0a08012a0a080108bf7200507c1d0a9a3e8f2bc7501801f66a210000504f5354202f6c6f67696e20485454502f312e310d0a486f73743a206265726b61732e6c61622e6a746e2e746573740d0a436f6e74656e742d547970653a206170706c69636174696f6e2f782d7777772d666f726d2d75726c656e636f6465640d0a436f6e74656e742d4c656e6774683a2033360d0a0d0a757365726e616d653d6f70657261746f722670617373776f72643d417273697032303236",
+   "rincian": [
+    {
+     "judul": "Frame 19: 210 bytes on wire (1680 bits), 210 bytes captured (1680 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 210,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 3.510350 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 210 bytes (1680 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp:http",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 210,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 196,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 196",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6406 (25606)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xbfec [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 49010, Dst Port: 80, Seq: 2082278042, Len: 156",
+     "mulai": 34,
+     "panjang": 176,
+     "bidang": [
+      {
+       "teks": "Source Port: 49010",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 80",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 2082278042",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 1049570247",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0101 .... = Header Length: 20 bytes (5)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x018 (PSH, ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 502",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0x6a21 [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Hypertext Transfer Protocol",
+     "mulai": 54,
+     "panjang": 156,
+     "bidang": [
+      {
+       "teks": "Request Method: POST",
+       "mulai": 54,
+       "panjang": 4
+      },
+      {
+       "teks": "Request URI: /login",
+       "mulai": 59,
+       "panjang": 6
+      },
+      {
+       "teks": "Content-Type: application/x-www-form-urlencoded",
+       "mulai": 103,
+       "panjang": 47
+      },
+      {
+       "teks": "Form item: \"username\" = \"operator\"",
+       "mulai": 174,
+       "panjang": 17
+      },
+      {
+       "teks": "Form item: \"password\" = \"Arsip2026\"",
+       "mulai": 192,
+       "panjang": 18
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "no": 20,
+   "waktu": 3.59435,
+   "sumber": "10.8.1.42",
+   "tujuan": "10.8.1.8",
+   "protokol": "TCP",
+   "panjang": 60,
+   "info": "49010 → 80 [FIN, ACK] Seq=2082278198 Ack=1049570247 Win=502 Len=0",
+   "lapisan": [
+    "eth",
+    "ip",
+    "tcp"
+   ],
+   "fitur": {
+    "ip.src": "10.8.1.42",
+    "ip.dst": "10.8.1.8",
+    "ip.addr": [
+     "10.8.1.42",
+     "10.8.1.8"
+    ],
+    "tcp.srcport": 49010,
+    "tcp.dstport": 80,
+    "tcp.port": [
+     49010,
+     80
+    ],
+    "tcp.flags.syn": 0,
+    "tcp.flags.ack": 1,
+    "tcp.flags.fin": 1,
+    "tcp.flags.rst": 0,
+    "tcp.flags.psh": 0
+   },
+   "hex": "024a1c100008024a1c100042080045000028640740004006c0870a08012a0a080108bf7200507c1d0b363e8f2bc7501101f6e62f0000000000000000",
+   "rincian": [
+    {
+     "judul": "Frame 20: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface eth0, id 0",
+     "mulai": 0,
+     "panjang": 60,
+     "bidang": [
+      {
+       "teks": "Arrival Time: 3.594350 seconds",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Frame Length: 60 bytes (480 bits)",
+       "mulai": 0,
+       "panjang": 0
+      },
+      {
+       "teks": "Protocols in frame: eth:ip:tcp",
+       "mulai": 0,
+       "panjang": 0
+      }
+     ]
+    },
+    {
+     "judul": "Ethernet II, Src: 02:4a:1c:10:00:42, Dst: 02:4a:1c:10:00:08",
+     "mulai": 0,
+     "panjang": 54,
+     "bidang": [
+      {
+       "teks": "Destination: 02:4a:1c:10:00:08",
+       "mulai": 0,
+       "panjang": 6
+      },
+      {
+       "teks": "Source: 02:4a:1c:10:00:42",
+       "mulai": 6,
+       "panjang": 6
+      },
+      {
+       "teks": "Type: IPv4 (0x0800)",
+       "mulai": 12,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Internet Protocol Version 4, Src: 10.8.1.42, Dst: 10.8.1.8",
+     "mulai": 14,
+     "panjang": 40,
+     "bidang": [
+      {
+       "teks": "0100 .... = Version: 4",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": ".... 0101 = Header Length: 20 bytes (5)",
+       "mulai": 14,
+       "panjang": 1
+      },
+      {
+       "teks": "Differentiated Services Field: 0x00",
+       "mulai": 15,
+       "panjang": 1
+      },
+      {
+       "teks": "Total Length: 40",
+       "mulai": 16,
+       "panjang": 2
+      },
+      {
+       "teks": "Identification: 0x6407 (25607)",
+       "mulai": 18,
+       "panjang": 2
+      },
+      {
+       "teks": "Flags: 0x2 (Don't Fragment)",
+       "mulai": 20,
+       "panjang": 2
+      },
+      {
+       "teks": "Time to Live: 64",
+       "mulai": 22,
+       "panjang": 1
+      },
+      {
+       "teks": "Protocol: TCP (6)",
+       "mulai": 23,
+       "panjang": 1
+      },
+      {
+       "teks": "Header Checksum: 0xc087 [correct]",
+       "mulai": 24,
+       "panjang": 2
+      },
+      {
+       "teks": "Source Address: 10.8.1.42",
+       "mulai": 26,
+       "panjang": 4
+      },
+      {
+       "teks": "Destination Address: 10.8.1.8",
+       "mulai": 30,
+       "panjang": 4
+      }
+     ]
+    },
+    {
+     "judul": "Transmission Control Protocol, Src Port: 49010, Dst Port: 80, Seq: 2082278198, Len: 0",
+     "mulai": 34,
+     "panjang": 20,
+     "bidang": [
+      {
+       "teks": "Source Port: 49010",
+       "mulai": 34,
+       "panjang": 2
+      },
+      {
+       "teks": "Destination Port: 80",
+       "mulai": 36,
+       "panjang": 2
+      },
+      {
+       "teks": "Sequence Number: 2082278198",
+       "mulai": 38,
+       "panjang": 4
+      },
+      {
+       "teks": "Acknowledgment Number: 1049570247",
+       "mulai": 42,
+       "panjang": 4
+      },
+      {
+       "teks": "0101 .... = Header Length: 20 bytes (5)",
+       "mulai": 46,
+       "panjang": 1
+      },
+      {
+       "teks": "Flags: 0x011 (FIN, ACK)",
+       "mulai": 47,
+       "panjang": 1
+      },
+      {
+       "teks": "Window: 502",
+       "mulai": 48,
+       "panjang": 2
+      },
+      {
+       "teks": "Checksum: 0xe62f [correct]",
+       "mulai": 50,
+       "panjang": 2
+      },
+      {
+       "teks": "Urgent Pointer: 0",
+       "mulai": 52,
+       "panjang": 2
+      }
+     ]
+    },
+    {
+     "judul": "Padding",
+     "mulai": 54,
+     "panjang": 6,
+     "bidang": [
+      {
+       "teks": "Padding: 000000000000",
+       "mulai": 54,
+       "panjang": 6
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -77,7 +77,7 @@
   },
   "arsip": {
     "penemuan": "scan",
-      "ip": "10.7.0.8",
+    "ip": "10.7.0.8",
     "status": "aktif",
     "syarat": [],
     "latensi": 34,
@@ -221,6 +221,217 @@
       "kunci_lokal": "/home/operator/dokumen/kunci_kota.txt",
       "token": "kota:RAHASIA"
     },
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "lab2-gerbang": {
+    "ip": "10.8.1.1",
+    "ip_tetap": true,
+    "mac": "02:4a:1c:10:00:01",
+    "vendor": "Senja Networks",
+    "status": "aktif",
+    "penemuan": "scan",
+    "syarat": [
+      "misi_terima:misi_2"
+    ],
+    "latensi": 6,
+    "tetangga": [
+      "lab2-berkas",
+      "lab2-printer",
+      "lab2-kamera"
+    ],
+    "port": {
+      "22": {
+        "status": "tertutup",
+        "layanan": "ssh"
+      },
+      "80": {
+        "status": "terbuka",
+        "layanan": "http",
+        "versi": "JTN-HTTP 1.4"
+      }
+    },
+    "firewall": 0,
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "lab2-berkas": {
+    "ip": "10.8.1.8",
+    "ip_tetap": true,
+    "mac": "02:4a:1c:10:00:08",
+    "vendor": "Senja Networks",
+    "status": "aktif",
+    "penemuan": "scan",
+    "syarat": [
+      "misi_terima:misi_2"
+    ],
+    "latensi": 9,
+    "tetangga": [],
+    "port": {
+      "22": {
+        "status": "terbuka",
+        "layanan": "ssh",
+        "versi": "JTN-SSH 2.1"
+      },
+      "80": {
+        "status": "terbuka",
+        "layanan": "http",
+        "versi": "JTN-HTTP 1.4"
+      },
+      "445": {
+        "status": "tertutup",
+        "layanan": "microsoft-ds"
+      }
+    },
+    "firewall": 0,
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {
+                "laporan-lab.txt": {
+                  "tipe": "file",
+                  "pemilik": "operator",
+                  "grup": "operator",
+                  "izin": "rw-r-----",
+                  "isi": "Laporan lab: jaringan internal 10.8.1.0/24.",
+                  "ukuran": 42
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "lab2-printer": {
+    "ip": "10.8.1.50",
+    "ip_tetap": true,
+    "mac": "02:4a:1c:10:00:50",
+    "vendor": "Printex Co.",
+    "status": "aktif",
+    "penemuan": "scan",
+    "syarat": [
+      "misi_terima:misi_2"
+    ],
+    "latensi": 14,
+    "tetangga": [],
+    "port": {
+      "631": {
+        "status": "tertutup",
+        "layanan": "ipp"
+      },
+      "9100": {
+        "status": "terbuka",
+        "layanan": "jetdirect",
+        "versi": "JTN-PRINT 3.0"
+      }
+    },
+    "firewall": 0,
+    "fs": {
+      "tipe": "dir",
+      "pemilik": "root",
+      "grup": "root",
+      "izin": "rwxr-xr-x",
+      "isi": {
+        "home": {
+          "tipe": "dir",
+          "pemilik": "root",
+          "grup": "root",
+          "izin": "rwxr-xr-x",
+          "isi": {
+            "operator": {
+              "tipe": "dir",
+              "pemilik": "operator",
+              "grup": "operator",
+              "izin": "rwxr-x---",
+              "isi": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "lab2-kamera": {
+    "ip": "10.8.1.77",
+    "ip_tetap": true,
+    "mac": "02:4a:1c:10:00:77",
+    "vendor": "Vista Cam",
+    "status": "aktif",
+    "penemuan": "scan",
+    "syarat": [
+      "misi_terima:misi_2"
+    ],
+    "latensi": 21,
+    "tetangga": [],
+    "port": {
+      "80": {
+        "status": "terbuka",
+        "layanan": "http",
+        "versi": "JTN-CAM 2.2"
+      },
+      "554": {
+        "status": "terbuka",
+        "layanan": "rtsp",
+        "versi": "JTN-RTSP 1.0"
+      }
+    },
+    "firewall": 0,
     "fs": {
       "tipe": "dir",
       "pemilik": "root",
