@@ -307,164 +307,164 @@
     ],
     "tujuan": [
       {
-        "teks": "Ketik 'help' di Terminal",
-        "teks_en": "Type 'help' in the Terminal",
+        "teks": "Buka Terminal, ketik 'help', lalu tekan Enter untuk melihat daftar perintah.",
+        "teks_en": "Open the Terminal, type 'help', then press Enter to see the list of commands.",
         "flag": "cmd:help",
         "tahap": 1
       },
       {
-        "teks": "Ketik 'lsusb' di Terminal",
-        "teks_en": "Type 'lsusb' in the Terminal",
+        "teks": "Di Terminal, ketik 'lsusb' lalu Enter untuk melihat perangkat USB yang tersambung.",
+        "teks_en": "In the Terminal, type 'lsusb' and press Enter to see the connected USB devices.",
         "flag": "cmd:lsusb",
         "tahap": 2
       },
       {
-        "teks": "Beli USB Wireless Adapter",
-        "teks_en": "Buy a USB Wireless Adapter",
+        "teks": "Buka aplikasi Toko Perangkat, lalu beli USB Wireless Adapter.",
+        "teks_en": "Open the Hardware Shop app, then buy a USB Wireless Adapter.",
         "flag": "beli:usb_wireless_adapter",
         "tahap": 3
       },
       {
-        "teks": "Beli Antena Eksternal",
-        "teks_en": "Buy an External Antenna",
+        "teks": "Di aplikasi Toko Perangkat, beli Antena Eksternal.",
+        "teks_en": "In the Hardware Shop app, buy an External Antenna.",
         "flag": "beli:antena_eksternal",
         "tahap": 4
       },
       {
-        "teks": "Beli Kabel USB",
-        "teks_en": "Buy a USB Cable",
+        "teks": "Di aplikasi Toko Perangkat, beli Kabel USB.",
+        "teks_en": "In the Hardware Shop app, buy a USB Cable.",
         "flag": "beli:kabel_usb",
         "tahap": 5
       },
       {
-        "teks": "Rakit perangkat lewat tombol Rakit di aplikasi Perangkat",
-        "teks_en": "Assemble the device with the Assemble button in the Devices app",
+        "teks": "Buka aplikasi Perangkat, lalu tekan tombol Rakit untuk merakit perangkatmu.",
+        "teks_en": "Open the Devices app, then press the Assemble button to build your device.",
         "flag": "rakit:wifi_kit",
         "tahap": 6
       },
       {
-        "teks": "Pasang driver-ar9271 lewat 'apt install'",
-        "teks_en": "Install driver-ar9271 with 'apt install'",
+        "teks": "Di Terminal, ketik 'apt search driver' untuk mencari driver perangkat.",
+        "teks_en": "In the Terminal, type 'apt search driver' to look for the device driver.",
         "flag": "cari:driver",
         "tahap": 7
       },
       {
-        "teks": "Pasang driver-ar9271 lewat 'apt install'",
-        "teks_en": "Install driver-ar9271 with 'apt install'",
+        "teks": "Di Terminal, ketik 'apt install -y driver-ar9271' untuk memasang driver.",
+        "teks_en": "In the Terminal, type 'apt install -y driver-ar9271' to install the driver.",
         "flag": "pasang:driver-ar9271",
         "tahap": 8
       },
       {
-        "teks": "Hubungkan perangkat lewat tombol Hubungkan di aplikasi Perangkat",
-        "teks_en": "Connect the device with the Connect button in the Devices app",
+        "teks": "Buka aplikasi Perangkat, lalu tekan tombol Hubungkan.",
+        "teks_en": "Open the Devices app, then press the Connect button.",
         "flag": "device:terhubung",
         "tahap": 9
       },
       {
-        "teks": "Pasang Aircrack-ng (berisi airmon-ng dan airodump-ng)",
-        "teks_en": "Install Aircrack-ng (contains airmon-ng and airodump-ng)",
+        "teks": "Di Terminal, ketik 'apt install -y aircrack-ng' untuk memasang Aircrack-ng (berisi airmon-ng dan airodump-ng).",
+        "teks_en": "In the Terminal, type 'apt install -y aircrack-ng' to install Aircrack-ng (includes airmon-ng and airodump-ng).",
         "flag": "pasang:aircrack-ng",
         "tahap": 10
       },
       {
-        "teks": "Aktifkan monitor mode: 'airmon-ng start wlan0'",
-        "teks_en": "Enable monitor mode: 'airmon-ng start wlan0'",
+        "teks": "Di Terminal, ketik 'airmon-ng start wlan0' untuk mengaktifkan monitor mode.",
+        "teks_en": "In the Terminal, type 'airmon-ng start wlan0' to enable monitor mode.",
         "flag": "wifi:monitor",
         "tahap": 11
       },
       {
-        "teks": "Jalankan 'airodump-ng wlan0mon'",
-        "teks_en": "Run 'airodump-ng wlan0mon'",
+        "teks": "Di Terminal, ketik 'airodump-ng wlan0mon' untuk melihat jaringan di sekitarmu.",
+        "teks_en": "In the Terminal, type 'airodump-ng wlan0mon' to see the networks around you.",
         "flag": "wifi:scan",
         "tahap": 11
       },
       {
-        "teks": "Buka aplikasi Network Manager",
-        "teks_en": "Open the Network Manager app",
+        "teks": "Buka aplikasi Network Manager.",
+        "teks_en": "Open the Network Manager app.",
         "flag": "ui:netmgr",
         "tahap": 12
       },
       {
-        "teks": "Pilih LAB-WIFI-01 dengan '--bssid'",
-        "teks_en": "Select LAB-WIFI-01 with '--bssid'",
+        "teks": "Di Terminal, ketik 'airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon' untuk memilih LAB-WIFI-01.",
+        "teks_en": "In the Terminal, type 'airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon' to select LAB-WIFI-01.",
         "flag": "wifi:pilih:LAB-WIFI-01",
         "tahap": 13
       },
       {
-        "teks": "Pasang Network Analyzer",
-        "teks_en": "Install the Network Analyzer",
+        "teks": "Di Terminal, ketik 'apt install -y network-analyzer'.",
+        "teks_en": "In the Terminal, type 'apt install -y network-analyzer'.",
         "flag": "pasang:network-analyzer",
         "tahap": 14
       },
       {
-        "teks": "Analisis keamanan dengan 'network-analyzer analyze'",
-        "teks_en": "Analyze security with 'network-analyzer analyze'",
+        "teks": "Pilih LAB-WIFI-01 dulu, lalu di Terminal ketik 'network-analyzer analyze LAB-WIFI-01' untuk menganalisis keamanannya.",
+        "teks_en": "Select LAB-WIFI-01 first, then type 'network-analyzer analyze LAB-WIFI-01' in the Terminal to analyze its security.",
         "flag": "wifi:analisis:LAB-WIFI-01",
         "tahap": 15
       },
       {
-        "teks": "Baca 'man password-auditor'",
-        "teks_en": "Read 'man password-auditor'",
+        "teks": "Di Terminal, ketik 'man password-auditor' untuk membaca panduannya.",
+        "teks_en": "In the Terminal, type 'man password-auditor' to read its manual.",
         "flag": "man:password-auditor",
         "tahap": 16
       },
       {
-        "teks": "Pasang Password Auditor lewat 'apt install'",
-        "teks_en": "Install Password Auditor with 'apt install'",
+        "teks": "Di Terminal, ketik 'apt install -y password-auditor'.",
+        "teks_en": "In the Terminal, type 'apt install -y password-auditor'.",
         "flag": "pasang:password-auditor",
         "tahap": 17
       },
       {
-        "teks": "Cek daftar dengan 'apt list --installed'",
-        "teks_en": "Check the list with 'apt list --installed'",
+        "teks": "Di Terminal, ketik 'apt list --installed' untuk memeriksa paket yang sudah terpasang.",
+        "teks_en": "In the Terminal, type 'apt list --installed' to check the installed packages.",
         "flag": "apt:list",
         "tahap": 18
       },
       {
-        "teks": "Baca 'man aircrack-ng'",
-        "teks_en": "Read 'man aircrack-ng'",
+        "teks": "Di Terminal, ketik 'man aircrack-ng' untuk membaca panduannya.",
+        "teks_en": "In the Terminal, type 'man aircrack-ng' to read its manual.",
         "flag": "man:aircrack-ng",
         "tahap": 19
       },
       {
-        "teks": "Tangkap autentikasi dengan 'password-auditor auth'",
-        "teks_en": "Capture authentication with 'password-auditor auth'",
+        "teks": "Di Terminal, ketik 'password-auditor auth LAB-WIFI-01' untuk menangkap data autentikasi LAB-WIFI-01.",
+        "teks_en": "In the Terminal, type 'password-auditor auth LAB-WIFI-01' to capture LAB-WIFI-01's authentication data.",
         "flag": "wifi:auth:LAB-WIFI-01",
         "tahap": 20
       },
       {
-        "teks": "Baca 'man airodump-ng'",
-        "teks_en": "Read 'man airodump-ng'",
+        "teks": "Di Terminal, ketik 'man airodump-ng' untuk membaca panduannya.",
+        "teks_en": "In the Terminal, type 'man airodump-ng' to read its manual.",
         "flag": "man:airodump-ng",
         "tahap": 21
       },
       {
-        "teks": "Baca 'man john'",
-        "teks_en": "Read 'man john'",
+        "teks": "Di Terminal, ketik 'man john' untuk membaca panduannya.",
+        "teks_en": "In the Terminal, type 'man john' to read its manual.",
         "flag": "man:john",
         "tahap": 22
       },
       {
-        "teks": "Uji kata sandi dengan 'password-auditor run'",
-        "teks_en": "Test the password with 'password-auditor run'",
+        "teks": "Di Terminal, ketik 'password-auditor run LAB-WIFI-01' untuk menguji kata sandi LAB-WIFI-01 terhadap daftar kata. Catat kata sandi yang ditemukan.",
+        "teks_en": "In the Terminal, type 'password-auditor run LAB-WIFI-01' to test LAB-WIFI-01's password against the word list. Note the password you find.",
         "flag": "wifi:audit:LAB-WIFI-01",
         "tahap": 23
       },
       {
-        "teks": "Baca 'man network-analyzer'",
-        "teks_en": "Read 'man network-analyzer'",
+        "teks": "Di Terminal, ketik 'man network-analyzer' untuk membaca panduannya.",
+        "teks_en": "In the Terminal, type 'man network-analyzer' to read its manual.",
         "flag": "man:network-analyzer",
         "tahap": 24
       },
       {
-        "teks": "Verifikasi dengan 'network-analyzer verify'",
-        "teks_en": "Verify with 'network-analyzer verify'",
+        "teks": "Di Terminal, ketik 'network-analyzer verify LAB-WIFI-01 <kata sandi>' dengan kata sandi yang ditemukan di tahap audit.",
+        "teks_en": "In the Terminal, type 'network-analyzer verify LAB-WIFI-01 <password>' using the password you found in the audit stage.",
         "flag": "wifi:akses:LAB-WIFI-01",
         "tahap": 25
       },
       {
-        "teks": "Tulis laporan dengan 'network-analyzer report LAB-WIFI-01'",
-        "teks_en": "Write the report with 'network-analyzer report LAB-WIFI-01'",
+        "teks": "Di Terminal, ketik 'network-analyzer report LAB-WIFI-01' untuk menulis laporan hasil analisis.",
+        "teks_en": "In the Terminal, type 'network-analyzer report LAB-WIFI-01' to write the analysis report.",
         "flag": "wifi:laporan:LAB-WIFI-01",
         "tahap": 26
       }
@@ -571,8 +571,8 @@
       {
         "judul": "Tahap 7: Menganalisis Konfigurasi Keamanan",
         "judul_en": "Stage 7: Analyzing the Security Configuration",
-        "pesan": "Layanan HTTP di arsip mengirim data tanpa enkripsi. Pasang Wireshark lewat apt ('apt install -y wireshark') jika belum, lalu buka sampel 'lab-jejak-internal' dengan 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap' dan pilih paket login di daftar paket. — Agensi",
-        "pesan_en": "The HTTP service on the archive sends data unencrypted. Install Wireshark with apt ('apt install -y wireshark') if you have not yet, then open the 'lab-jejak-internal' sample with 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap' and select the login packet in the packet list. — Agency",
+        "pesan": "Layanan HTTP di arsip mengirim data tanpa enkripsi. Pasang Wireshark lewat apt ('apt install -y wireshark') jika belum, lalu buka sampel 'lab-jejak-internal' dengan 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap' lalu di daftar paket, ketuk paket nomor 19 (POST /login). Paket itu berisi kolom password. — Agensi",
+        "pesan_en": "The HTTP service on the archive sends data unencrypted. Install Wireshark with apt ('apt install -y wireshark') if you have not yet, then open the 'lab-jejak-internal' sample with 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap' then in the packet list, tap packet number 19 (POST /login). That packet contains the password field. — Agency",
         "alasan": "Dengan memeriksa paket, kamu bisa melihat apakah data sensitif benar-benar terlindungi.",
         "alasan_en": "By inspecting packets, you can see whether sensitive data is really protected.",
         "pengetahuan": "Packet analysis membaca lapisan demi lapisan: Ethernet, IP, TCP, lalu HTTP. Jika HTTP tidak dienkripsi, isi formulir seperti kata sandi terlihat jelas di paket. Itu sebabnya layanan sensitif harus memakai HTTPS atau SSH.",
@@ -593,62 +593,62 @@
       {
         "tahap": 1,
         "flag": "ip:addr",
-        "teks": "Ketik 'ip addr' di Terminal",
-        "teks_en": "Type 'ip addr' in the Terminal"
+        "teks": "Di Terminal, ketik 'ip addr' untuk melihat alamat IP perangkatmu.",
+        "teks_en": "In the Terminal, type 'ip addr' to see your device's IP address."
       },
       {
         "tahap": 2,
         "flag": "ip:route",
-        "teks": "Ketik 'ip route' di Terminal",
-        "teks_en": "Type 'ip route' in the Terminal"
+        "teks": "Di Terminal, ketik 'ip route' untuk melihat gateway default.",
+        "teks_en": "In the Terminal, type 'ip route' to see the default gateway."
       },
       {
         "tahap": 3,
         "flag": "pasang:nmap",
-        "teks": "Pasang nmap: 'apt install -y nmap'",
-        "teks_en": "Install nmap: 'apt install -y nmap'"
+        "teks": "Di Terminal, ketik 'apt install -y nmap'.",
+        "teks_en": "In the Terminal, type 'apt install -y nmap'."
       },
       {
         "tahap": 4,
         "flag": "pasang:netdiscover",
-        "teks": "Pasang netdiscover: 'apt install -y netdiscover'",
-        "teks_en": "Install netdiscover: 'apt install -y netdiscover'"
+        "teks": "Di Terminal, ketik 'apt install -y netdiscover'.",
+        "teks_en": "In the Terminal, type 'apt install -y netdiscover'."
       },
       {
         "tahap": 4,
         "flag": "netdiscover:pindai",
-        "teks": "Jalankan 'netdiscover -r 10.8.1.0/24'",
-        "teks_en": "Run 'netdiscover -r 10.8.1.0/24'"
+        "teks": "Di Terminal, ketik 'netdiscover -r 10.8.1.0/24' untuk mencari perangkat di subnet laboratorium.",
+        "teks_en": "In the Terminal, type 'netdiscover -r 10.8.1.0/24' to find devices on the lab subnet."
       },
       {
         "tahap": 5,
         "flag": "nmap:sn",
-        "teks": "Jalankan 'nmap -sn 10.8.1.0/24'",
-        "teks_en": "Run 'nmap -sn 10.8.1.0/24'"
+        "teks": "Di Terminal, ketik 'nmap -sn 10.8.1.0/24' untuk memeriksa perangkat mana yang aktif.",
+        "teks_en": "In the Terminal, type 'nmap -sn 10.8.1.0/24' to check which devices are up."
       },
       {
         "tahap": 6,
         "flag": "nmap:port:lab2-berkas",
-        "teks": "Jalankan 'nmap -p 22,80 10.8.1.8'",
-        "teks_en": "Run 'nmap -p 22,80 10.8.1.8'"
+        "teks": "Di Terminal, ketik 'nmap -p 22,80 10.8.1.8' untuk memeriksa port berkas.lab.jtn (10.8.1.8).",
+        "teks_en": "In the Terminal, type 'nmap -p 22,80 10.8.1.8' to check the ports of berkas.lab.jtn (10.8.1.8)."
       },
       {
         "tahap": 7,
         "flag": "pasang:wireshark",
-        "teks": "Pasang Wireshark: 'apt install -y wireshark'",
-        "teks_en": "Install Wireshark: 'apt install -y wireshark'"
+        "teks": "Di Terminal, ketik 'apt install -y wireshark'.",
+        "teks_en": "In the Terminal, type 'apt install -y wireshark'."
       },
       {
         "tahap": 7,
         "flag": "wireshark:jejak:kredensial",
-        "teks": "Buka 'lab-jejak-internal' di Wireshark dan pilih paket login",
-        "teks_en": "Open 'lab-jejak-internal' in Wireshark and select the login packet"
+        "teks": "Di Terminal, ketik 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap'. Di Wireshark, ketuk baris nomor 19 (POST /login dari 10.8.1.42 ke 10.8.1.8). Baris itu berisi kolom password. Baris 17 (GET /login) belum cukup.",
+        "teks_en": "In the Terminal, type 'wireshark -r /usr/share/wireshark/samples/lab-jejak-internal.simcap'. In Wireshark, tap packet number 19 (POST /login from 10.8.1.42 to 10.8.1.8). That packet contains the password field. Packet 17 (GET /login) is not enough."
       },
       {
         "tahap": 8,
         "flag": "nmap:laporan",
-        "teks": "Tulis laporan: 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24'",
-        "teks_en": "Write the report: 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24'"
+        "teks": "Di Terminal, ketik 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24' untuk menyimpan laporan ke berkasmu.",
+        "teks_en": "In the Terminal, type 'nmap -sn -oN ~/laporan-jejak.txt 10.8.1.0/24' to save the report to your file."
       }
     ],
     "petunjuk": [
