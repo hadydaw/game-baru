@@ -7,8 +7,8 @@ extends RefCounted
 
 var milik: Dictionary = {}  # id -> {"tingkat": int, "sumber": String}
 
-# Keadaan awal pemain: tanpa alat. Perintah dasar (ping, nmap tanpa opsi) tetap tersedia
-# karena tidak dikunci oleh tool; alat didapat lewat misi dan pasar.
+# Keadaan awal pemain: tanpa alat. Perintah dasar (ping, ip) tetap tersedia karena tidak dikunci oleh
+# tool. Nmap harus dipasang lewat apt; alat didapat lewat misi dan pasar.
 static func baru() -> Inventory:
 	return Inventory.new()
 

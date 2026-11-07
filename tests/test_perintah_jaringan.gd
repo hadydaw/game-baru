@@ -16,8 +16,9 @@ func before_each():
 func _sesi() -> ShellSession:
     var isi := FileAccess.get_file_as_string("res://data/fs/pemain.json")
     var data: Dictionary = JSON.parse_string(isi)
-    return ShellSession.new(Vfs.new(data["/"]))
-
+    var s := ShellSession.new(Vfs.new(data["/"]))
+    s.jalankan("apt install -y nmap")
+    return s
 func _teks(hasil: Array) -> String:
     var baris: Array = []
     for b in hasil:

@@ -69,5 +69,9 @@ func test_perintah_alat_dimiliki_tool_dan_bukan_perintah_terminal() -> void:
 func test_perintah_tanpa_pemilik_selalu_tersedia() -> void:
 	var kosong := _sesi()
 	kosong.inventory = Inventory.new()
-	for nama in ["ping", "nmap", "ls", "cd", "lsusb", "apt", "man", "help"]:
+	for nama in ["ping", "ls", "cd", "lsusb", "apt", "man", "help"]:
 		assert_true(CommandRegistry.tersedia(kosong, nama), "%s tidak perlu tool" % nama)
+	# nmap baru tersedia setelah dipasang lewat apt, seperti tahap 3 Tutorial 1.
+	assert_false(CommandRegistry.tersedia(kosong, "nmap"), "nmap belum dipasang")
+	kosong.jalankan("apt install -y nmap")
+	assert_true(CommandRegistry.tersedia(kosong, "nmap"), "nmap tersedia setelah apt install")

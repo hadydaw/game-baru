@@ -106,6 +106,7 @@ func _ready() -> void:
     _masukan.keep_editing_on_text_submit = true
     _masukan.text_submitted.connect(_kirim)
     _masukan.text_changed.connect(_teks_berubah)
+    _masukan.gui_input.connect(_tekan_masukan)
     baris.add_child(_masukan)
     _status = Label.new()
     _status.add_theme_font_override("font", _font)
@@ -659,15 +660,31 @@ func _riwayat(arah: int) -> void:
     _riwayat_idx = clampi(_riwayat_idx + arah, 0, r.size())
     _set_teks(String(r[_riwayat_idx]) if _riwayat_idx < r.size() else "")
 
-# Tab: melengkapi perintah atau nama berkas/direktori. Bila banyak kecocokan, daftarnya ditampilkan.
+# Tab: melengkapi perintah, opsi, subperintah, paket, atau nama berkas. Bila banyak kecocokan, daftarnya ditampilkan.
+# Yang dilengkapi hanya teks sebelum kursor; teks sesudah kursor dipertahankan. Tab tidak menjalankan perintah.
 func _lengkapi() -> void:
-    if _sesi == null:
+    if _sesi == null or _live:
+        # Saat airodump-ng berjalan, input shell tidak diproses, termasuk Tab.
         return
-    var hasil := ShellComplete.lengkapi(_sesi, _masukan.text)
-    _set_teks(String(hasil["teks"]))
+    var kursor := clampi(_masukan.caret_column, 0, _masukan.text.length())
+    var sebelum := _masukan.text.substr(0, kursor)
+    var sesudah := _masukan.text.substr(kursor)
+    # Saat SSH aktif, perintah berjalan di server jarak jauh, jadi melengkapi juga memakai sesi itu.
+    var sesi_aktif := _sesi.ssh_aktif if _sesi.ssh_aktif != null else _sesi
+    var hasil := ShellComplete.lengkapi(sesi_aktif, sebelum)
+    var baru := String(hasil["teks"])
+    _set_teks(baru + sesudah)
+    _masukan.caret_column = baru.length()
     var pilihan: Array = hasil["pilihan"]
-    if pilihan.size() > 1:
+    # Saat perintah masih berjalan, daftar pilihan tidak dicetak agar tidak bercampur dengan animasinya.
+    if pilihan.size() > 1 and not _busy:
         _tampil([{"tipe": "info", "teks": "  ".join(PackedStringArray(pilihan))}])
+
+# Tab dari keyboard fisik atau keyboard HP yang mengirim tombol Tab: jalankan autocomplete, jangan pindah fokus.
+func _tekan_masukan(event: InputEvent) -> void:
+    if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_TAB:
+        _lengkapi()
+        _masukan.accept_event()
 
 func _perbarui_prompt() -> void:
     if _sesi == null:

@@ -8,8 +8,9 @@ func before_each() -> void:
 # Tahap 3b: inventaris tool, perintah yang dibatasi tool, nmap -sV dan firewall, inspeksi, dan trace.
 
 func _sesi() -> ShellSession:
-	return ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}))
-
+	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}))
+	s.jalankan("apt install -y nmap")
+	return s
 func _teks(hasil: Array) -> String:
 	var t := ""
 	for b in hasil:

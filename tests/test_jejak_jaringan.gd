@@ -86,6 +86,7 @@ func test_nmap_sn_subnet_dan_flag() -> void:
 	var s := _sesi()
 	_selesaikan_tutorial_1(s)
 	Misi.terima(s, "misi_2")
+	_jalan(s, "apt install -y nmap")
 	var t := _jalan(s, "nmap -sn 10.8.1.0/24")
 	assert_true(t.contains("Nmap scan report for 10.8.1.8"))
 	assert_true(t.contains("Nmap done"))
@@ -96,6 +97,7 @@ func test_nmap_port_berkas_mencatat_flag() -> void:
 	var s := _sesi()
 	_selesaikan_tutorial_1(s)
 	Misi.terima(s, "misi_2")
+	_jalan(s, "apt install -y nmap")
 	_jalan(s, "nmap -sn 10.8.1.0/24")
 	var t := _jalan(s, "nmap -p 22,80 10.8.1.8")
 	assert_true(t.contains("22/tcp"))
@@ -106,6 +108,7 @@ func test_nmap_oN_menulis_laporan_ke_berkas() -> void:
 	var s := _sesi()
 	_selesaikan_tutorial_1(s)
 	Misi.terima(s, "misi_2")
+	_jalan(s, "apt install -y nmap")
 	_jalan(s, "nmap -sn -oN laporan-jejak.txt 10.8.1.0/24")
 	var abs := Vfs.normalisasi(s.cwd, "laporan-jejak.txt", s.home)
 	var node := s.fs.ambil(abs)
@@ -126,6 +129,7 @@ func test_misi_2_selesai_setelah_semua_flag() -> void:
 	var s := _sesi()
 	_selesaikan_tutorial_1(s)
 	Misi.terima(s, "misi_2")
+	_jalan(s, "apt install -y nmap")
 	var urutan := ["ip:addr", "ip:route", "pasang:nmap", "pasang:netdiscover", "netdiscover:pindai",
 		"nmap:sn", "nmap:port:lab2-berkas", "pasang:wireshark", "wireshark:jejak:kredensial", "nmap:laporan"]
 	for f in urutan:
@@ -144,3 +148,13 @@ func test_progres_misi_2_bertahan_setelah_muat_ulang() -> void:
 	assert_true(pulih.jaringan.progres.has("ip:addr"))
 	assert_eq(pulih.jaringan.ip("lab2-berkas"), "10.8.1.8")
 	assert_eq(pulih.wifi.kunci_seed, 0)
+
+func test_nmap_belum_dipasang_ditolak_seperti_perintah_tidak_ada() -> void:
+	var s := _sesi()
+	_selesaikan_tutorial_1(s)
+	Misi.terima(s, "misi_2")
+	var t := _jalan(s, "nmap -sn 10.8.1.0/24")
+	assert_true(t.contains("not found") or t.contains("tidak ditemukan"), "nmap belum dipasang: %s" % t)
+	assert_false(s.jaringan.progres.has("nmap:sn"), "tidak ada progres nmap sebelum dipasang")
+	_jalan(s, "apt install -y nmap")
+	assert_true(_jalan(s, "nmap -sn 10.8.1.0/24").contains("Nmap done"), "nmap berjalan setelah apt install")

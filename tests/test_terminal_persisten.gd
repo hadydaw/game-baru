@@ -26,6 +26,7 @@ func before_each() -> void:
 	TerminalScreen._scroll_bersama = 0.0
 	TerminalScreen._ikut_bawah_bersama = true
 	SesiUtama.sesi = ShellSession.new(Vfs.new(_fs_uji()))
+	SesiUtama.sesi.jalankan("apt install -y nmap")
 
 func _buka() -> TerminalScreen:
 	var layar := TerminalScreen.new()

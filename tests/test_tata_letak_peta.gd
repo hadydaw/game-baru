@@ -8,6 +8,7 @@ func before_each() -> void:
 	Penyimpanan.berkas_aktif = "user://uji_sesi_peta.json"
 	# Sesi baru untuk setiap tes agar tidak bergantung pada penyimpanan dan tes lain.
 	SesiUtama.sesi = ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}))
+	SesiUtama.sesi.jalankan("apt install -y nmap")
 
 func test_posisi_semua_node_di_dalam_area() -> void:
 	var posisi := TataLetakPeta.posisi(["gerbang", "arsip", "relay", "server_kota"], AREA)

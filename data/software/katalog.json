@@ -146,7 +146,7 @@
     "deps": [],
     "butuh_adapter": false,
     "chipset": [],
-    "perintah": [],
+    "perintah": ["nmap"],
     "deskripsi_kunci": "sw.desk.nmap"
   },
   "netdiscover": {
