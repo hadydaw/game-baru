@@ -238,6 +238,9 @@ func _baris(p: Dictionary) -> Control:
 	isi.add_theme_constant_override("separation", 8)
 	baris.add_child(isi)
 	var pengirim := Tema.label("", Tema.TEAL if belum else Tema.TEKS_REDUP, 22)
+	# Nama pengirim panjang dibungkus, bukan dipotong di tepi kartu (layar HP sempit).
+	pengirim.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	pengirim.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	isi.add_child(pengirim)
 	_pasang_pengirim(pengirim, p)
 	var judul := Tema.label("", Tema.TEKS, 26)
@@ -304,9 +307,19 @@ func _bangun_pembaca() -> void:
 	if _belajar:
 		_bangun_belajar(p)
 		return
+	# Kartu header dan isi pesan berada dalam satu area gulir, sehingga isi email mendapat tinggi layar yang tersisa.
+	var gulir := ScrollContainer.new()
+	gulir.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gulir.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_area_pembaca.add_child(gulir)
+	var kolom := VBoxContainer.new()
+	kolom.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	kolom.add_theme_constant_override("separation", 14)
+	gulir.add_child(kolom)
+
 	var kartu := PanelContainer.new()
 	kartu.add_theme_stylebox_override("panel", Tema.kotak(LATAR_KARTU, Tema.TEAL, 2, 16))
-	_area_pembaca.add_child(kartu)
+	kolom.add_child(kartu)
 	var pad := MarginContainer.new()
 	Tema.margin_seragam(pad, 22)
 	kartu.add_child(pad)
@@ -322,15 +335,11 @@ func _bangun_pembaca() -> void:
 	kepala.add_child(judul)
 	_teks_pesan(judul, p, "judul")
 
-	var gulir := ScrollContainer.new()
-	gulir.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	gulir.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_area_pembaca.add_child(gulir)
 	var isi_pad := MarginContainer.new()
 	isi_pad.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	isi_pad.add_theme_constant_override("margin_left", 6)
 	isi_pad.add_theme_constant_override("margin_right", 14)
-	gulir.add_child(isi_pad)
+	kolom.add_child(isi_pad)
 	var isi := Tema.label("", TEKS_ISI, 26)
 	isi.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	isi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -408,9 +417,19 @@ func _bangun_belajar(p: Dictionary) -> void:
 	var jumlah := Misi.pembelajaran(id).size()
 	var n := clampi(_tahap_belajar, 1, maxi(jumlah, 1))
 	var materi: Dictionary = Misi.materi_tahap(id, n)
+	# Seluruh isi materi (judul tahap dan enam bagian) berada di satu area gulir, agar tinggi layar HP kecil tetap terbaca.
+	var gulir := ScrollContainer.new()
+	gulir.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gulir.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_area_pembaca.add_child(gulir)
+	var isi := VBoxContainer.new()
+	isi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	isi.add_theme_constant_override("separation", 12)
+	gulir.add_child(isi)
+
 	var kartu := PanelContainer.new()
 	kartu.add_theme_stylebox_override("panel", Tema.kotak(LATAR_KARTU, Tema.AMBER, 2, 16))
-	_area_pembaca.add_child(kartu)
+	isi.add_child(kartu)
 	var pad := MarginContainer.new()
 	Tema.margin_seragam(pad, 22)
 	kartu.add_child(pad)
@@ -428,14 +447,6 @@ func _bangun_belajar(p: Dictionary) -> void:
 	kepala.add_child(l_tahap)
 	kepala.add_child(_label_dwibahasa(String(materi.get("judul", "")), Tema.TEAL, 28))
 
-	var gulir := ScrollContainer.new()
-	gulir.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	gulir.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_area_pembaca.add_child(gulir)
-	var isi := VBoxContainer.new()
-	isi.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	isi.add_theme_constant_override("separation", 12)
-	gulir.add_child(isi)
 	var bagian := [
 		["misi.materi_konsep", "konsep"],
 		["misi.materi_cara", "cara_kerja"],

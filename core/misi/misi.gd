@@ -72,12 +72,15 @@ static func perbarui(s: ShellSession) -> void:
 		for m in daftar():
 			var id := String(m["id"])
 			var dari := String(m["pengirim"])
-			if String(s.misi.get(id, "")) == "aktif" and _tujuan_selesai(s, m):
+			if String(s.misi.get(id, "")) != "aktif":
+				continue
+			# Email tahap dikirim dulu, baru misi dinyatakan selesai. Jika tidak, tahap terakhir tidak mendapat emailnya.
+			if _cek_tahap(s, m):
+				berubah = true
+			if _tujuan_selesai(s, m):
 				s.misi[id] = "selesai"
 				_kirim(s, id, dari, m["pesan_selesai"])
 				Hadiah.selesaikan_misi(s, id)
-				berubah = true
-			elif String(s.misi.get(id, "")) == "aktif" and _cek_tahap(s, m):
 				berubah = true
 
 # Misi tersedia: syarat terpenuhi, tetapi belum diterima pemain.
@@ -105,7 +108,13 @@ static func tahap_aktif(s: ShellSession, m: Dictionary) -> int:
 
 # Materi BELAJAR bersifat panduan opsional. Hanya tahap yang sudah terbuka (sampai tahap aktif) yang bisa dibuka.
 static func tahap_bisa_dibaca(s: ShellSession, m: Dictionary, n: int) -> bool:
-	if String(s.misi.get(String(m["id"]), "")) != "aktif" or n < 1:
+	var jumlah := (m.get("tahap", []) as Array).size()
+	if n < 1 or n > jumlah:
+		return false
+	var status := String(s.misi.get(String(m["id"]), ""))
+	if status == "selesai":
+		return true
+	if status != "aktif":
 		return false
 	var aktif := tahap_aktif(s, m)
 	return aktif == 0 or n <= aktif

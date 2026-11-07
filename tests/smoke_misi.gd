@@ -20,6 +20,8 @@ func _initialize() -> void:
 	var fs := {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {"home": {"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {"operator": rumah}}}}
 	SesiUtama.sesi = ShellSession.new(Vfs.new(fs), Jaringan.muat(), "operator")
 	Misi.perbarui(SesiUtama.sesi)
+	# Misi tutorial sudah diterima pemain, lalu tampil di Pusat Misi dengan judulnya saat ini.
+	Misi.terima(SesiUtama.sesi, "misi_1")
 
 	var kiri := MainController.new()
 	_cek(kiri._buat_konten("misi") is PusatMisi, "aplikasi Misi di Desktop membuka Pusat Misi")
@@ -35,6 +37,10 @@ func _initialize() -> void:
 		wadah.add_child(layar)
 		await process_frame
 		await process_frame
+		layar.call("_pilih_kategori", "tutorial")
+		layar.set("_tampil_daftar", "tutorial")
+		layar.call("_segarkan_semua")
+		await process_frame
 		var keluar := 0
 		var ada_judul := false
 		var ada_tujuan := false
@@ -42,11 +48,13 @@ func _initialize() -> void:
 			var r := (l as Label).get_global_rect()
 			if r.position.x < -0.5 or r.end.x > ukuran.x + 0.5:
 				keluar += 1
-			if (l as Label).text.contains("Pesan dari Arsip"):
+			if (l as Label).text.contains("Tutorial Misi 1"):
 				ada_judul = true
-			if (l as Label).text == "Tujuan:":
+			# Rincian misi memuat baris "Tujuan : ..." dari ringkasan misi.
+			if (l as Label).text.begins_with("Tujuan"):
 				ada_tujuan = true
 		_cek(keluar == 0, "semua teks Pusat Misi di dalam lebar %s" % tag)
+
 		_cek(ada_judul, "misi aktif tampil dengan judulnya %s" % tag)
 		_cek(ada_tujuan, "tujuan misi tampil %s" % tag)
 		wadah.free()

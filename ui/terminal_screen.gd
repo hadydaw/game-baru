@@ -8,13 +8,17 @@ const FONT_PATH := "res://assets/fonts/JetBrainsMono-Regular.ttf"
 const FS_PATH := "res://data/fs/pemain.json"
 const UKURAN_TOMBOL := 22
 const TINGGI_TOMBOL := 64
+# Tombol keyboard di layar: tinggi dan lebar minimum 48 dp agar nyaman disentuh.
+const TINGGI_KUNCI := 56
+const LEBAR_KUNCI := 48
 const WARNA_USER := "#3fb950"
 const WARNA_JALUR := "#2dd4bf"
 const WARNA_TEKS := "#e6f7f5"
 const WARNA_ERROR := "#ff7b72"
 const LATAR := Color("#0d1117")
 const BATAS_BUFFER := 60000
-const TOMBOL := ["/", "-", "_", "|", ".", "~", "Tab", "Ctrl", "Enter", "Backspace", "↑", "↓"]
+# Tiga baris tombol: simbol, navigasi, lalu kontrol.
+const BARIS_TOMBOL := [["/", "-", "_", "|"], [".", "~", "↑", "↓"], ["Tab", "Ctrl", "Enter", "Backspace"]]
 
 var _sesi: ShellSession
 var _keluaran: RichTextLabel
@@ -264,28 +268,41 @@ func _gaya_latar() -> StyleBoxFlat:
     s.content_margin_bottom = 10.0
     return s
 
+# Bobot lebar tombol: tombol berlabel panjang mendapat lebih banyak ruang dalam baris kontrol.
+const BOBOT_TOMBOL := {"Backspace": 1.8, "Enter": 1.2}
+
 func _buat_baris_tombol() -> Control:
-    var grid := GridContainer.new()
-    grid.columns = 6
-    grid.add_theme_constant_override("h_separation", 6)
-    grid.add_theme_constant_override("v_separation", 6)
-    for t in TOMBOL:
-        var b := Button.new()
-        b.text = t
-        b.focus_mode = Control.FOCUS_NONE
-        b.custom_minimum_size = Vector2(0, TINGGI_TOMBOL)
-        b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-        b.add_theme_font_override("font", _font)
-        b.add_theme_font_size_override("font_size", UKURAN_TOMBOL if t != "Backspace" else 18)
-        b.add_theme_color_override("font_color", Color(WARNA_TEKS))
-        b.add_theme_stylebox_override("normal", _gaya_tombol(Color(0.06, 0.09, 0.12)))
-        b.add_theme_stylebox_override("hover", _gaya_tombol(Color(0.08, 0.13, 0.15)))
-        b.add_theme_stylebox_override("pressed", _gaya_tombol(Color(0.1, 0.22, 0.22)))
-        if t == "Ctrl":
-            _tombol_ctrl = b
-        b.pressed.connect(_tekan_tombol.bind(t))
-        grid.add_child(b)
-    return grid
+    var kolom := VBoxContainer.new()
+    kolom.add_theme_constant_override("separation", 6)
+    for baris_kunci in BARIS_TOMBOL:
+        var baris := HBoxContainer.new()
+        baris.add_theme_constant_override("separation", 4)
+        kolom.add_child(baris)
+        for t in baris_kunci:
+            baris.add_child(_buat_tombol(String(t)))
+    return kolom
+
+func _buat_tombol(t: String) -> Button:
+    var b := Button.new()
+    b.text = t
+    b.focus_mode = Control.FOCUS_NONE
+    b.custom_minimum_size = Vector2(LEBAR_KUNCI, TINGGI_KUNCI)
+    b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    b.size_flags_stretch_ratio = float(BOBOT_TOMBOL.get(t, 1.0))
+    b.add_theme_font_override("font", _font)
+    var kata := t.length() > 1 and t != "↑" and t != "↓"
+    var ukuran := UKURAN_TOMBOL
+    if kata:
+        ukuran = 14 if t == "Backspace" else 16
+    b.add_theme_font_size_override("font_size", ukuran)
+    b.add_theme_color_override("font_color", Color(WARNA_TEKS))
+    b.add_theme_stylebox_override("normal", _gaya_tombol(Color(0.06, 0.09, 0.12)))
+    b.add_theme_stylebox_override("hover", _gaya_tombol(Color(0.08, 0.13, 0.15)))
+    b.add_theme_stylebox_override("pressed", _gaya_tombol(Color(0.1, 0.22, 0.22)))
+    if t == "Ctrl":
+        _tombol_ctrl = b
+    b.pressed.connect(_tekan_tombol.bind(t))
+    return b
 
 func _gaya_tombol(bg: Color) -> StyleBoxFlat:
     var s := Tema.kotak(bg, Tema.TEAL, 1, 10)
