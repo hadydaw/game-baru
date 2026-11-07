@@ -292,3 +292,22 @@ func test_install_paket_yang_sudah_ada_mencatat_flag_pasang() -> void:
 	var teks := _teks(_apt(s, "apt install driver-ar9271"))
 	assert_string_contains(teks, "already the newest version")
 	assert_true(s.jaringan.progres.has("pasang:driver-ar9271"), "flag pasang tercatat walau sudah terpasang")
+
+# Konfirmasi "y" pada apt install juga memperbarui misi: tahap berikutnya harus terkirim.
+func test_konfirmasi_y_mengirim_tahap_berikutnya() -> void:
+	var s := _sesi()
+	_adapter(s)
+	var m: Dictionary = Misi.temukan("misi_1")
+	s.misi["misi_1"] = "aktif"
+	for t in m.get("tujuan", []):
+		if int(t.get("tahap", 0)) <= 7:
+			s.jaringan.buka(String(t["flag"]))
+	Misi.perbarui(s)
+	var sebelum := s.pesan_misi.size()
+	_apt(s, "apt install driver-ar9271")
+	_apt(s, "y")
+	var ada_tahap_9 := false
+	for pm in s.pesan_misi:
+		if int(pm.get("tahap", 0)) == 9:
+			ada_tahap_9 = true
+	assert_true(ada_tahap_9, "email tahap 9 terkirim setelah konfirmasi y (sebelum %d pesan)" % sebelum)

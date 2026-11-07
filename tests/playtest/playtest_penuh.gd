@@ -517,7 +517,7 @@ func _probe_terminal() -> void:
 # Setiap tahap: ketik perintah sesuai email tugas, lalu cek tahap berikutnya.
 var PERINTAH := {
 	1: ["help"], 2: ["lsusb"], 3: ["__beli__usb_wireless_adapter"], 4: ["__beli__antena_eksternal"],
-	5: ["__beli__kabel_usb"], 6: ["__rakit__"], 7: ["apt search driver"], 8: ["apt install -y driver-ar9271"],
+	5: ["__beli__kabel_usb"], 6: ["__rakit__"], 7: ["apt search driver"], 8: ["apt install driver-ar9271", "y"],
 	9: ["__hubungkan__"], 10: ["apt install -y aircrack-ng"],
 	11: ["airmon-ng start wlan0", "airodump-ng wlan0mon"], 12: ["__netmgr__"],
 	13: ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"], 14: ["apt install -y network-analyzer"],

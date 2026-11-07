@@ -268,7 +268,12 @@ func jalankan(masukan: String) -> Array:
     if konfirmasi_tertunda.is_valid():
         var f := konfirmasi_tertunda
         konfirmasi_tertunda = Callable()
-        return f.call(masukan)
+        var sebelum_konfirmasi := jaringan.progres.size()
+        var hasil_konfirmasi: Array = f.call(masukan)
+        # Pemasangan yang baru dikonfirmasi (y) juga harus memperbarui misi, seperti perintah biasa.
+        if host == LOKAL and jaringan.progres.size() != sebelum_konfirmasi:
+            Misi.perbarui(self)
+        return hasil_konfirmasi
     var sebelum := jaringan.progres.size()
     var keluaran := _jalankan_dasar(masukan)
     if host != LOKAL:
