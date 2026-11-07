@@ -18,7 +18,7 @@ const WARNA_ERROR := "#ff7b72"
 const LATAR := Color("#0d1117")
 const BATAS_BUFFER := 60000
 # Tiga baris tombol: simbol, navigasi, lalu kontrol.
-const BARIS_TOMBOL := [["/", "-", "_", "|"], [".", "~", "↑", "↓"], ["Tab", "Ctrl", "Enter", "Backspace"]]
+const BARIS_TOMBOL := [["/", "-", "_", "|"], [".", "~", "↑", "↓"], ["Tab", "Ctrl", "Enter", "Backspace"], ["SALIN", "TEMPEL"]]
 
 var _sesi: ShellSession
 var _keluaran: RichTextLabel
@@ -301,7 +301,7 @@ func _buat_baris_tombol() -> Control:
 
 func _buat_tombol(t: String) -> Button:
     var b := Button.new()
-    b.text = t
+    b.text = _label_tombol(t)
     b.focus_mode = Control.FOCUS_NONE
     b.custom_minimum_size = Vector2(LEBAR_KUNCI, TINGGI_KUNCI)
     b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -320,6 +320,15 @@ func _buat_tombol(t: String) -> Button:
         _tombol_ctrl = b
     b.pressed.connect(_tekan_tombol.bind(t))
     return b
+
+# Label tombol yang berbahasa; kunci internal SALIN dan TEMPEL memakai kunci bahasa.
+func _label_tombol(t: String) -> String:
+    match t:
+        "SALIN":
+            return Bahasa.t("term.salin")
+        "TEMPEL":
+            return Bahasa.t("term.tempel")
+    return t
 
 func _gaya_tombol(bg: Color) -> StyleBoxFlat:
     var s := Tema.kotak(bg, Tema.TEAL, 1, 10)
@@ -363,6 +372,12 @@ func _tekan_tombol(t: String) -> void:
         _ctrl = not _ctrl
         _perbarui_ctrl()
         return
+    if t == "SALIN":
+        _salin()
+        return
+    if t == "TEMPEL":
+        _tempel()
+        return
     if t not in ["Tab", "Enter", "Backspace", "↑", "↓"]:
         # Karakter biasa. Bila Ctrl aktif, _teks_berubah yang memprosesnya.
         _ubah_masukan(func(): _masukan.insert_text_at_caret(t))
@@ -381,6 +396,25 @@ func _tekan_tombol(t: String) -> void:
             _riwayat(-1)
         "↓":
             _riwayat(1)
+
+# Salin: teks yang diseleksi di keluaran; bila tidak ada seleksi, isi kolom perintah.
+func _salin() -> void:
+    var teks := _keluaran.get_selected_text() if is_instance_valid(_keluaran) else ""
+    if teks.strip_edges() == "":
+        teks = _masukan.text
+    if teks.strip_edges() == "":
+        return
+    DisplayServer.clipboard_set(teks)
+
+# Tempel: baris pertama dari papan klip disisipkan di kolom perintah, tempat kursor berada.
+func _tempel() -> void:
+    var baris := DisplayServer.clipboard_get().split("\n")
+    if baris.is_empty():
+        return
+    var teks := String(baris[0]).strip_edges()
+    if teks == "":
+        return
+    _ubah_masukan(func(): _masukan.insert_text_at_caret(teks))
 
 # Setiap perubahan masukan (tombol layar maupun keyboard HP) lewat sini.
 # Bila Ctrl aktif dan satu karakter disisipkan, karakter itu dipakai sebagai kombinasi Ctrl.

@@ -290,6 +290,8 @@ func _initialize() -> void:
 		await _alur_baru()
 	elif mode == "live":
 		await _alur_live()
+	elif mode == "salin":
+		await _alur_salin()
 	else:
 		await _alur_lanjut()
 	var f := FileAccess.open(LOG % mode, FileAccess.WRITE)
@@ -385,6 +387,50 @@ func _alur_baru() -> void:
 	var s = _sesi()
 	Penyimpanan.simpan_sesi(s)
 	_log("Simpan tahap 1-13 selesai, tahap aktif = %d" % Misi.tahap_aktif(s, Misi.temukan("misi_1")))
+
+# Uji Salin dan Tempel di Terminal: pilih keluaran, tekan SALIN (klik nyata), lalu TEMPEL ke kolom perintah.
+func _alur_salin() -> void:
+	_log("== MODE SALIN ==")
+	var menu := await _tunggu_node("MenuUtama")
+	if menu == null:
+		_bug("menu utama tidak muncul")
+		return
+	if _cari_tombol(menu, Bahasa.t("menu.lanjutkan")) == null:
+		# Tanpa simpanan: mulai sesi baru lewat alur penuh, lalu lanjut ke Terminal.
+		_log("  tidak ada simpanan, memakai alur baru")
+		await _alur_baru()
+	else:
+		await _klik(menu, Bahasa.t("menu.lanjutkan"))
+	await _secs(1.5)
+	await _buka_app("terminal")
+	var term: Node = null
+	var t := 0.0
+	while term == null and t < 8.0:
+		term = _cari_berkas(root_app, "terminal_screen.gd")
+		if term == null:
+			await _secs(0.3)
+			t += 0.3
+	if term == null:
+		_bug("terminal tidak terbuka")
+		return
+	await _ketik(term, "lsusb")
+	var keluaran := term.get("_keluaran") as RichTextLabel
+	keluaran.select_all()
+	await _frames(2)
+	_log("  seleksi keluaran: '%s'" % keluaran.get_selected_text().left(40).replace("\n", " | "))
+	await _klik(term, Bahasa.t("term.salin"))
+	await _frames(2)
+	var papan := DisplayServer.clipboard_get()
+	_log("  SALIN: papan klip %d karakter, baris pertama '%s'" % [papan.length(), papan.split("\n")[0].left(40)])
+	var masukan: LineEdit = term.get("_masukan")
+	await _isi_nyata(masukan, "")
+	await _klik(term, Bahasa.t("term.tempel"))
+	await _frames(2)
+	var baris_pertama := papan.split("\n")[0].strip_edges()
+	var cocok := masukan.text == baris_pertama and baris_pertama != ""
+	_log("  TEMPEL: kolom berisi '%s' (cocok dengan papan klip=%s)" % [masukan.text.left(40), str(cocok)])
+	if not cocok:
+		_bug("tempel tidak menyisipkan baris pertama papan klip")
 
 func _alur_lanjut() -> void:
 	_log("== MODE LANJUT, ukuran %s ==" % ukuran)

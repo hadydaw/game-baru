@@ -498,6 +498,8 @@ const KAMUS := {
 	"wifi.kata_sandi_salah": {"id": "Kata sandi salah untuk %s.", "en": "Wrong password for %s."},
 	"wifi.akses": {"id": "Akses ke %s terverifikasi. Jaringan laboratorium terbuka.", "en": "Access to %s verified. Laboratory network unlocked."},
 	"term.siap": {"id": "Terminal siap. Ketik \"help\" untuk daftar perintah.", "en": "Terminal ready. Type \"help\" for the list of commands."},
+	"term.salin": {"id": "Salin", "en": "Copy"},
+	"term.tempel": {"id": "Tempel", "en": "Paste"},
 }
 
 # Teks terminal dua-bahasa: satu string membawa versi ID dan EN, dipilih saat ditampilkan.
