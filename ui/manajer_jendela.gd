@@ -27,6 +27,9 @@ func atur_area(kerja: Rect2, penuh: Rect2) -> void:
 func buka(id: String, judul: String, ikon: String, konten: Control) -> JendelaAplikasi:
     var ada := _cari(id)
     if ada != null:
+        # Jendela yang sudah ada dibuka lagi: isinya disegarkan agar perubahan sesi (mis. email misi baru) ikut tampil.
+        if ada.isi != null and ada.isi.has_method("segarkan_data"):
+            ada.isi.call("segarkan_data")
         fokus(id)
         return ada
     var j := JendelaAplikasi.new()

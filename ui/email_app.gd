@@ -99,6 +99,10 @@ func _ready() -> void:
 
 	_segarkan()
 
+# Dipanggil saat jendela E-Mail dibuka lagi, agar pesan baru dari misi langsung terlihat.
+func segarkan_data() -> void:
+	_segarkan()
+
 # Menyusun ulang daftar atau pembaca sesuai keadaan. Dipanggil setiap ada perubahan.
 func _segarkan() -> void:
 	_gaya_tab(_tab_masuk, _tab == "masuk")
@@ -485,9 +489,15 @@ func _label_dwibahasa(teks: String, warna: Color, ukuran: int) -> Label:
 			l.text = Bahasa.pilih(teks))
 	return l
 
+# Petunjuk satu baris. Menekan BACA/HAPUS berulang tanpa memilih pesan tidak menumpuk petunjuk.
 func _hint(kunci: String) -> void:
+	for c in _kolom_baris.get_children():
+		if c.has_meta("hint"):
+			_kolom_baris.remove_child(c)
+			c.queue_free()
 	var l := Tema.label("", Tema.AMBER, 24)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.set_meta("hint", true)
 	_kolom_baris.add_child(l)
 	Bahasa.isi(l, kunci)
 

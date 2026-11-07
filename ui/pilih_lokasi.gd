@@ -8,7 +8,8 @@ signal selesai(kode_negara: String, kode_kota: String)
 signal kembali
 
 const RASIO_PETA := 887.0 / 1774.0
-const UKURAN_TITIK := 56.0
+# Titik negara di peta harus bisa diketuk jari: minimal 48 dp (96 satuan desain 720 px).
+const UKURAN_TITIK := 96.0
 
 var _aman := Vector4.ZERO
 var _negara := ""

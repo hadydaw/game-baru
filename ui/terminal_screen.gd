@@ -35,11 +35,19 @@ var _teks_terakhir: String = ""
 
 # Animasi pemrosesan perintah. Hasil sudah dihitung; yang dianimasikan hanya tampilannya.
 var _timer: Timer
+# Mode live airodump-ng: bingkai diperbarui tiap interval -u sampai Ctrl+C.
+var _live_timer: Timer
+var _live := false
+var _live_buffer_awal := ""
+var _live_entri_awal := 0
+var _live_terakhir: Array = []
 var _status: Label
 var _busy: bool = false
 var _antrean: Array = []
 var _langkah: Array = []
 var _ketik_teks: String = ""
+# Teks yang benar-benar diketik: hanya bahasa aktif. _ketik_teks tetap dua bahasa agar tersimpan dan ikut ganti bahasa.
+var _ketik_tampil: String = ""
 var _ketik_kunci: String = ""
 var _ketik_args: Array = []
 var _ketik_perintah: String = ""
@@ -68,6 +76,7 @@ func _ready() -> void:
     _keluaran = RichTextLabel.new()
     _keluaran.bbcode_enabled = true
     _keluaran.scroll_following = true
+    _keluaran.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART  # teks di layar HP membungkus, tidak terpotong
     _keluaran.selection_enabled = true
     _keluaran.size_flags_vertical = Control.SIZE_EXPAND_FILL
     _keluaran.add_theme_font_override("normal_font", _font)
@@ -108,6 +117,10 @@ func _ready() -> void:
     _timer.one_shot = true
     _timer.timeout.connect(_lanjut)
     add_child(_timer)
+    _live_timer = Timer.new()
+    _live_timer.one_shot = false
+    _live_timer.timeout.connect(_live_segarkan)
+    add_child(_live_timer)
 
     kolom.add_child(_buat_baris_tombol())
 
@@ -183,6 +196,8 @@ func _segarkan_bahasa() -> void:
 # Dipanggil saat layar dilepas (berpindah ke Desktop atau aplikasi lain).
 # Animasi yang belum selesai diselesaikan dulu agar buffer utuh, lalu posisi scroll dicatat.
 func _saat_keluar() -> void:
+    if _live:
+        _hentikan_live()
     if _busy:
         _selesaikan_cepat()
     _simpan_posisi()
@@ -313,6 +328,9 @@ func _gaya_tombol(bg: Color) -> StyleBoxFlat:
 func _process(_delta: float) -> void:
     _perbarui_status()
     # Saat keyboard HP muncul, area terminal dinaikkan agar output dan baris input tidak tertutup.
+    # Hanya di platform yang punya keyboard layar (HP). Di PC tidak perlu dicek setiap frame.
+    if not DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+        return
     var tinggi := float(DisplayServer.virtual_keyboard_get_height())
     if is_equal_approx(tinggi, _tinggi_keyboard):
         return
@@ -390,6 +408,15 @@ func _ubah_masukan(ubah: Callable) -> void:
         _teks_berubah(_masukan.text)
 
 func _jalankan_aksi(a: String) -> void:
+    if _live and a == "batal":
+        _hentikan_live()
+        return
+    if _busy and a == "batal" and _sesi != null and _sesi.live_aktif():
+        # Ctrl+C saat animasi pembuka airodump-ng: batalkan mode live sebelum dimulai.
+        _sesi.live_hentikan()
+        _tulis("^C\n")
+        _selesaikan_cepat()
+        return
     if _busy and a == "batal":
         # Ctrl+C saat animasi berjalan: tampilkan sisa output sekarang juga.
         _selesaikan_cepat()
@@ -413,6 +440,10 @@ func _kirim(teks: String) -> void:
     if _sesi == null:
         _tampil([{"tipe": "error", "teks": "Sesi shell belum siap, perintah tidak dijalankan."}])
         return
+    if _live:
+        # Saat airodump-ng berjalan, input shell tidak diproses dan tidak diantrikan.
+        _tampil([{"tipe": "info", "kunci": "term.live_sibuk"}])
+        return
     if _busy:
         # Perintah yang dikirim saat animasi berjalan menunggu giliran, agar output tidak bercampur.
         if not t.is_empty():
@@ -427,7 +458,12 @@ signal minta_aplikasi(id: String)
 
 func _mulai(t: String) -> void:
     _tampil_perintah(t)
+    _live_buffer_awal = _buffer_bersama
+    _live_entri_awal = _entri_bersama.size()
+    _sesi.lebar_kolom = _lebar_kolom_terminal()
+    _sesi.live_diizinkan = true
     var hasil := _sesi.jalankan(t)
+    _sesi.live_diizinkan = false
     _riwayat_idx = _sesi.riwayat.size()
     _simpan()
     _langkah = Animasi.rencana(t, hasil)
@@ -442,11 +478,11 @@ func _mulai(t: String) -> void:
 # Dipanggil Timer: menjalankan satu langkah animasi (status, pengetikan baris, atau jeda).
 func _lanjut() -> void:
     if _ketik_aktif:
-        var sisa := _ketik_teks.length() - _ketik_pos
+        var sisa := _ketik_tampil.length() - _ketik_pos
         var n := clampi(ceili(sisa / 10.0), 2, 8)
-        _tulis(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos, n)))
+        _tulis(_warna_baris(_ketik_tipe, _ketik_tampil.substr(_ketik_pos, n)))
         _ketik_pos += n
-        if _ketik_pos >= _ketik_teks.length():
+        if _ketik_pos >= _ketik_tampil.length():
             _tulis("\n")
             _ketik_aktif = false
             _simpan_entri({"tipe": _ketik_tipe, "teks": _ketik_teks, "kunci": _ketik_kunci, "args": _ketik_args, "perintah": _ketik_perintah})
@@ -464,6 +500,7 @@ func _lanjut() -> void:
             _timer.start(maxf(int(s["durasi"]), 10) / 1000.0)
         "baris":
             _ketik_teks = String(s["teks"])
+            _ketik_tampil = Bahasa.pilih(_ketik_teks)
             _ketik_tipe = String(s["tipe_baris"])
             _ketik_kunci = String(s.get("kunci", ""))
             _ketik_args = Array(s.get("args", []))
@@ -480,6 +517,52 @@ func _akhiri() -> void:
     _busy = false
     _status.visible = false
     _perbarui_prompt()
+    if _sesi != null and _sesi.live_aktif():
+        _mulai_live()
+        return
+    if not _antrean.is_empty():
+        _mulai(String(_antrean.pop_front()))
+
+# Lebar layar dalam karakter, dihitung dari lebar area keluaran dan lebar satu karakter monospace (0,6 em).
+func _lebar_kolom_terminal() -> int:
+    var lebar := _keluaran.size.x - 16.0
+    return maxi(int(lebar / (0.6 * float(_ukuran_font()))), 20)
+
+# Mulai mode live: animasi bingkai pertama diganti oleh bingkai live di tempat yang sama.
+func _mulai_live() -> void:
+    _live = true
+    # Perintah yang sempat diantrikan sebelum live dimulai tidak dijalankan setelah Ctrl+C.
+    _antrean.clear()
+    _buffer_bersama = _live_buffer_awal
+    _entri_bersama = _entri_bersama.slice(0, _live_entri_awal)
+    _live_segarkan()
+    _live_timer.start(maxf(_sesi.live_interval(), 1.0))
+
+# Satu bingkai live: menggantikan bingkai sebelumnya. Bingkai ini tidak disimpan ke riwayat sampai berhenti.
+func _live_segarkan() -> void:
+    if not _live or _sesi == null:
+        return
+    _sesi.lebar_kolom = _lebar_kolom_terminal()
+    _live_terakhir = _sesi.live_langkah()
+    var bb := ""
+    for b in _live_terakhir:
+        bb += _bb_entri({"tipe": String(b["tipe"]), "teks": String(b.get("teks", ""))})
+    _keluaran.clear()
+    _keluaran.append_text(_buffer_bersama + bb)
+
+# Ctrl+C: hentikan mode live, tampilkan ^C, lalu simpan bingkai terakhir sebagai riwayat biasa.
+func _hentikan_live() -> void:
+    _live_timer.stop()
+    _live = false
+    _sesi.live_hentikan()
+    _buffer_bersama = _live_buffer_awal
+    _entri_bersama = _entri_bersama.slice(0, _live_entri_awal)
+    _keluaran.clear()
+    _keluaran.append_text(_buffer_bersama)
+    _tulis("^C\n")
+    _tampil(_live_terakhir)
+    _live_terakhir = []
+    _perbarui_prompt()
     if not _antrean.is_empty():
         _mulai(String(_antrean.pop_front()))
 
@@ -487,7 +570,7 @@ func _akhiri() -> void:
 func _selesaikan_cepat() -> void:
     while _busy:
         if _ketik_aktif:
-            _tulis(_warna_baris(_ketik_tipe, _ketik_teks.substr(_ketik_pos)) + "\n")
+            _tulis(_warna_baris(_ketik_tipe, _ketik_tampil.substr(_ketik_pos)) + "\n")
             _ketik_aktif = false
             _simpan_entri({"tipe": _ketik_tipe, "teks": _ketik_teks, "kunci": _ketik_kunci, "args": _ketik_args, "perintah": _ketik_perintah})
         elif not _langkah.is_empty():

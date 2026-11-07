@@ -33,6 +33,24 @@ var perangkat: Perangkat = Perangkat.new()   # perangkat keras: komponen, peraki
 var repositori: Repositori = Repositori.new() # Tools Repository: software yang terpasang
 var wifi: WifiLab = WifiLab.new()             # keadaan pengujian Wi-Fi laboratorium
 var xp: int = 0                               # pengalaman dari misi
+# Pemindaian airodump-ng yang sedang berjalan dalam mode live. Tidak disimpan ke berkas.
+var live: Dictionary = {}
+# Hanya Terminal yang boleh memulai mode live; pemanggil lain (tes, Network Manager) mendapat snapshot.
+var live_diizinkan := false
+# Lebar layar dalam karakter, diatur Terminal. Menentukan tabel penuh atau ringkas.
+var lebar_kolom := 120
+
+func live_aktif() -> bool:
+    return not live.is_empty()
+
+func live_interval() -> float:
+    return float(live.get("update", 1))
+
+func live_langkah() -> Array:
+    return WifiCommands.live_langkah(self)
+
+func live_hentikan() -> void:
+    WifiCommands.live_hentikan(self)
 var permintaan_aplikasi: String = ""             # aplikasi yang diminta dibuka setelah perintah (tidak disimpan)
 var misi_tahap: Dictionary = {}               # id misi -> Array nomor tahap yang sudah diberi umpan balik
 
@@ -52,7 +70,62 @@ func _init(p_fs: Vfs, p_jaringan: Jaringan = null, p_pengguna: String = USER) ->
 func to_dict() -> Dictionary:
     return {"misi": misi.duplicate(), "pesan_misi": pesan_misi.duplicate(true), "pengguna": user, "fs": fs.akar, "cwd": cwd, "riwayat": riwayat, "jaringan": jaringan.to_dict(), "ekonomi": economy.to_dict(), "reputasi": reputation.to_dict(), "inventaris": inventory.to_dict(), "pasar": market.to_dict(), "hadiah": hadiah_diambil.duplicate(), "lokasi": lokasi.duplicate(), "email": email.duplicate(true), "perangkat": perangkat.to_dict(), "repositori": repositori.to_dict(), "wifi": wifi.to_dict(), "xp": xp, "misi_tahap": misi_tahap.duplicate(true)}
 
+# Simpanan lama memakai WiFi Scanner (wifi-scanner). Nama itu diganti airodump-ng, dan progres
+# pemain tetap dipertahankan: pemasangan, flag misi, dan teks email yang sudah tersimpan ikut diganti.
+const GANTI_NAMA_AIRODUMP := [
+    ["pasang:wifi-scanner", "pasang:airodump-ng"],
+    ["Jalankan 'wifi-scanner --scan' untuk melihat jaringan di sekitarmu.", "Aktifkan monitor mode dengan 'airmon-ng start wlan0', lalu jalankan 'airodump-ng wlan0mon' untuk melihat access point di sekitarmu."],
+    ["Run 'wifi-scanner --scan' to see the networks around you.", "Enable monitor mode with 'airmon-ng start wlan0', then run 'airodump-ng wlan0mon' to see the access points around you."],
+    ["Wireless Scanner", "Airodump-ng"],
+    ["wifi-scanner --scan", "airodump-ng wlan0mon"],
+    ["network inspect LAB-WIFI-01", "airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"],
+    ["network inspect LAB-WIFI-02", "airodump-ng --bssid 02:4A:1C:00:02:02 wlan0mon"],
+    ["network inspect LAB-WIFI-03", "airodump-ng --bssid 02:4A:1C:00:03:03 wlan0mon"],
+    ["wifi-scanner", "airodump-ng"],
+    ["Jalankan 'airodump-ng wlan0mon' untuk melihat access point di sekitarmu.", "Aktifkan monitor mode dengan 'airmon-ng start wlan0', lalu jalankan 'airodump-ng wlan0mon' untuk melihat access point di sekitarmu."],
+    ["Run 'airodump-ng wlan0mon' to see the access points around you.", "Enable monitor mode with 'airmon-ng start wlan0', then run 'airodump-ng wlan0mon' to see the access points around you."],
+]
+
+static func _migrasi_airodump(d: Dictionary) -> Dictionary:
+    var hasil := d.duplicate(true)
+    if typeof(hasil.get("jaringan")) == TYPE_DICTIONARY and hasil["jaringan"].has("progres"):
+        var pengganti := {"pasang:wifi-scanner": "pasang:airodump-ng"}
+        var baru: Array = []
+        for f in Array(hasil["jaringan"]["progres"]):
+            var nama := String(pengganti.get(String(f), String(f)))
+            if not baru.has(nama):
+                baru.append(nama)
+        hasil["jaringan"]["progres"] = baru
+    if typeof(hasil.get("repositori")) == TYPE_DICTIONARY and typeof(hasil["repositori"].get("terpasang")) == TYPE_DICTIONARY:
+        var terpasang: Dictionary = hasil["repositori"]["terpasang"]
+        if terpasang.has("wifi-scanner"):
+            if not terpasang.has("airodump-ng"):
+                terpasang["airodump-ng"] = terpasang["wifi-scanner"]
+            terpasang.erase("wifi-scanner")
+    if hasil.has("pesan_misi"):
+        hasil["pesan_misi"] = _ganti_teks(hasil["pesan_misi"])
+    return hasil
+
+static func _ganti_teks(v: Variant) -> Variant:
+    if typeof(v) == TYPE_STRING:
+        var t := String(v)
+        for pasangan in GANTI_NAMA_AIRODUMP:
+            t = t.replace(String(pasangan[0]), String(pasangan[1]))
+        return t
+    if typeof(v) == TYPE_ARRAY:
+        var a: Array = []
+        for x in v:
+            a.append(_ganti_teks(x))
+        return a
+    if typeof(v) == TYPE_DICTIONARY:
+        var dct := {}
+        for k in v:
+            dct[k] = _ganti_teks(v[k])
+        return dct
+    return v
+
 static func dari_dict(d: Dictionary) -> ShellSession:
+    d = _migrasi_airodump(d)
     var j := Jaringan.muat()
     if typeof(d.get("jaringan")) == TYPE_DICTIONARY:
         j.terapkan(d["jaringan"])

@@ -106,6 +106,10 @@ func _ready() -> void:
 	Bahasa.daftar_penyegar(self, _segarkan_semua)
 
 # Semua tampilan dibangun ulang dari data sesi dan bahasa aktif, sehingga selalu sesuai.
+# Dipanggil saat jendela Misi dibuka lagi, agar status misi terbaru tampil.
+func segarkan_data() -> void:
+	_segarkan_semua()
+
 func _segarkan_semua() -> void:
 	if _tampil_daftar == "":
 		_misi_terpilih = ""

@@ -265,7 +265,9 @@ func _titik_radar(n: int) -> Array:
 func _pindai() -> void:
 	if _memindai or not _sesi.perangkat.terhubung():
 		return
-	var keluaran := _jalankan("wifi-scanner --scan")
+	if _sesi.wifi.monitor == "":
+		_jalankan("airmon-ng start wlan0")
+	var keluaran := _jalankan("airodump-ng %s" % _sesi.wifi.monitor)
 	_pesan_pindai = ""
 	for b in keluaran:
 		if String(b.get("tipe", "")) == "error":
@@ -312,7 +314,7 @@ func _selesai_reveal() -> void:
 			baris.modulate.a = 1.0
 
 func _pilih_jaringan(ssid: String) -> void:
-	_jalankan("network inspect " + ssid)
+	_jalankan("airodump-ng --bssid %s %s" % [String(WifiLab.jaringan(ssid)["bssid"]), _sesi.wifi.monitor])
 	_tab = "detail"
 	_bangun_tab()
 

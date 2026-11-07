@@ -3,7 +3,7 @@ extends SceneTree
 const CMDS := [
 	["help"], ["device list"], ["toko beli usb_wireless_adapter"], ["toko beli antena_eksternal"], ["toko beli kabel_usb"],
 	["device rakit"], ["tools search driver"], ["tools install driver-ar9271"], ["device hubungkan"],
-	["tools install wifi-scanner"], ["wifi-scanner --scan"], ["__netmgr__"], ["network inspect LAB-WIFI-01"],
+	["tools install airodump-ng"], ["airmon-ng start wlan0", "airodump-ng wlan0mon"], ["__netmgr__"], ["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"],
 	["tools install network-analyzer"], ["security analyze LAB-WIFI-01"], ["man password-auditor"],
 	["tools install password-auditor"],
 ]

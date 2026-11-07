@@ -107,14 +107,25 @@ func _isi_splash(ukuran: Vector2, aman: Vector4) -> Control:
 
 # Menu utama adalah layar pertama setelah splash. Dari sini pemain masuk ke Desktop.
 func _tampilkan_menu() -> void:
+    _buat_menu()
+
+func _buat_menu() -> MenuUtama:
     var menu := MenuUtama.new()
     menu.size = size
     menu.atur_aman(_aman)
     menu.mulai.connect(_mulai_dari_menu.bind(menu))
     menu.keluar_diminta.connect(func(): get_tree().quit())
+    menu.bahasa_diganti.connect(_ulang_menu.bind(menu))
     add_child(menu)
     menu.position = Vector2.ZERO
     menu.size = size
+    return menu
+
+# Bahasa berganti di Pengaturan: menu dibangun ulang dengan bahasa baru, Pengaturan tetap terbuka.
+func _ulang_menu(lama: MenuUtama) -> void:
+    lama.queue_free()
+    var baru := _buat_menu()
+    baru.buka_pengaturan_setelah_ganti_bahasa()
 
 # Sesi baru membuka cerita pembuka dan pemilihan lokasi. Lanjutkan langsung ke Desktop.
 func _mulai_dari_menu(mode: String, menu: MenuUtama) -> void:
@@ -169,7 +180,6 @@ func _tawarkan_sambutan_email() -> void:
         return
     var popup := PopupSambutanEmail.new()
     popup.name = "PopupSambutan"
-    popup.atur_aman(_aman)
     popup.diterima.connect(func():
         Email.tandai_sambutan(sesi)
         Penyimpanan.simpan_sesi(sesi)
@@ -178,6 +188,7 @@ func _tawarkan_sambutan_email() -> void:
     add_child(popup)
     popup.position = Vector2.ZERO
     popup.size = size
+    popup.atur_aman(_aman)  # setelah masuk pohon, agar margin area aman terpasang
 
 func _transisi_masuk(node: Control) -> void:
     node.modulate.a = 0.0

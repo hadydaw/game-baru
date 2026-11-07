@@ -108,20 +108,20 @@
         "pengetahuan_en": "The status indicator in Network Manager shows whether the adapter is active, disconnected, or has a problem."
       },
       {
-        "judul": "Tahap 10: Memasang Wireless Scanner",
-        "judul_en": "Stage 10: Installing the Wireless Scanner",
-        "pesan": "Pasang Wireless Scanner dari Tools Repository: 'tools install wifi-scanner'. — Agensi",
-        "pesan_en": "Install the Wireless Scanner from the Tools Repository: 'tools install wifi-scanner'. — Agency",
-        "alasan": "Scanner adalah alat untuk melihat jaringan di sekitarmu.",
-        "alasan_en": "The scanner is the tool for seeing the networks around you.",
+        "judul": "Tahap 10: Memasang Airodump-ng",
+        "judul_en": "Stage 10: Installing Airodump-ng",
+        "pesan": "Pasang Airodump-ng dari Tools Repository: 'tools install airodump-ng'. — Agensi",
+        "pesan_en": "Install Airodump-ng from the Tools Repository: 'tools install airodump-ng'. — Agency",
+        "alasan": "Airodump-ng adalah alat untuk melihat access point di sekitarmu.",
+        "alasan_en": "Airodump-ng is the tool for seeing the access points around you.",
         "pengetahuan": "Setiap jaringan punya nama (SSID) dan alamat perangkat unik (BSSID). Nama bisa sama, tetapi BSSID selalu berbeda.",
         "pengetahuan_en": "Every network has a name (SSID) and a unique device address (BSSID). Names can be the same, but BSSIDs are always different."
       },
       {
         "judul": "Tahap 11: Memindai Jaringan",
         "judul_en": "Stage 11: Scanning Networks",
-        "pesan": "Jalankan 'wifi-scanner --scan' untuk melihat jaringan di sekitarmu. — Agensi",
-        "pesan_en": "Run 'wifi-scanner --scan' to see the networks around you. — Agency",
+        "pesan": "Aktifkan monitor mode dengan 'airmon-ng start wlan0', lalu jalankan 'airodump-ng wlan0mon' untuk melihat access point di sekitarmu. — Agensi",
+        "pesan_en": "Enable monitor mode with 'airmon-ng start wlan0', then run 'airodump-ng wlan0mon' to see the access points around you. — Agency",
         "alasan": "Kamu harus tahu target yang tersedia sebelum memilih.",
         "alasan_en": "You need to know which targets are available before choosing one.",
         "pengetahuan": "Pengintaian (reconnaissance) adalah tahap pertama pengujian penetrasi. Hanya jaringan yang sudah diberi izin tertulis yang boleh diuji.",
@@ -140,8 +140,8 @@
       {
         "judul": "Tahap 13: Memilih Target",
         "judul_en": "Stage 13: Choosing a Target",
-        "pesan": "Pilih LAB-WIFI-01 dengan 'network inspect LAB-WIFI-01'. — Agensi",
-        "pesan_en": "Choose LAB-WIFI-01 with 'network inspect LAB-WIFI-01'. — Agency",
+        "pesan": "Pilih LAB-WIFI-01 dengan 'airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon'. — Agensi",
+        "pesan_en": "Choose LAB-WIFI-01 with 'airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon'. — Agency",
         "alasan": "Kamu perlu memilih satu target agar analisis berfokus.",
         "alasan_en": "You need to pick one target so the analysis stays focused.",
         "pengetahuan": "Jaringan dengan nama sama bisa berbeda perangkatnya. BSSID menunjukkan perangkat yang sebenarnya.",
@@ -270,10 +270,10 @@
       {
         "judul": "Tahap 26: Penyelesaian",
         "judul_en": "Stage 26: Completion",
-        "pesan": "Kamu berhasil menembus jaringan laboratorium pertamamu. Hadiah sudah dikirim. — Agensi",
-        "pesan_en": "You have breached your first laboratory network. Your reward has been sent. — Agency",
-        "alasan": "",
-        "alasan_en": "",
+        "pesan": "Kamu berhasil menembus jaringan laboratorium pertamamu. Tulis laporan temuanmu dengan 'security report LAB-WIFI-01'. — Agensi",
+        "pesan_en": "You have breached your first laboratory network. Write your findings with 'security report LAB-WIFI-01'. — Agency",
+        "alasan": "Temuan yang tidak dicatat tidak bisa diperiksa ulang atau diperbaiki. Laporan adalah bukti hasil pengujianmu.",
+        "alasan_en": "Findings that are not recorded cannot be reviewed again or fixed. The report is the evidence of your test.",
         "pengetahuan": "Pengujian keamanan yang baik selalu berakhir dengan laporan dan rekomendasi.",
         "pengetahuan_en": "A good security test always ends with a report and recommendations."
       }
@@ -346,14 +346,20 @@
         "tahap": 9
       },
       {
-        "teks": "Pasang Wireless Scanner",
-        "teks_en": "Install the Wireless Scanner",
-        "flag": "pasang:wifi-scanner",
+        "teks": "Pasang Airodump-ng",
+        "teks_en": "Install Airodump-ng",
+        "flag": "pasang:airodump-ng",
         "tahap": 10
       },
       {
-        "teks": "Jalankan 'wifi-scanner --scan'",
-        "teks_en": "Run 'wifi-scanner --scan'",
+        "teks": "Aktifkan monitor mode: 'airmon-ng start wlan0'",
+        "teks_en": "Enable monitor mode: 'airmon-ng start wlan0'",
+        "flag": "wifi:monitor",
+        "tahap": 11
+      },
+      {
+        "teks": "Jalankan 'airodump-ng wlan0mon'",
+        "teks_en": "Run 'airodump-ng wlan0mon'",
         "flag": "wifi:scan",
         "tahap": 11
       },
@@ -364,8 +370,8 @@
         "tahap": 12
       },
       {
-        "teks": "Pilih LAB-WIFI-01 dengan 'network inspect'",
-        "teks_en": "Select LAB-WIFI-01 with 'network inspect'",
+        "teks": "Pilih LAB-WIFI-01 dengan '--bssid'",
+        "teks_en": "Select LAB-WIFI-01 with '--bssid'",
         "flag": "wifi:pilih:LAB-WIFI-01",
         "tahap": 13
       },
@@ -440,6 +446,12 @@
         "teks_en": "Verify with 'security verify'",
         "flag": "wifi:akses:LAB-WIFI-01",
         "tahap": 25
+      },
+      {
+        "teks": "Tulis laporan dengan 'security report LAB-WIFI-01'",
+        "teks_en": "Write the report with 'security report LAB-WIFI-01'",
+        "flag": "wifi:laporan:LAB-WIFI-01",
+        "tahap": 26
       }
     ],
     "pesan_selesai": {

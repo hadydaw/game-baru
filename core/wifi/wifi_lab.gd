@@ -7,14 +7,15 @@ extends RefCounted
 
 const DATA := "res://data/wifi/lab.json"
 
-var ditemukan: Array = []                # SSID hasil wifi-scanner --scan
-var terpilih: String = ""                # SSID hasil network inspect
+var ditemukan: Array = []                # SSID hasil airodump-ng wlan0mon
+var terpilih: String = ""                # SSID target hasil airodump-ng --bssid
 var dianalisis: Dictionary = {}          # SSID -> true (security analyze)
 var handshake: Dictionary = {}           # SSID -> true (audit auth)
 var kata_sandi_ditemukan: Dictionary = {}  # SSID -> kata sandi hasil audit run
 var terakses: Dictionary = {}            # SSID -> true (security verify)
 var riwayat: Array = []                  # tiap pemindaian, terbaru di depan: {waktu, perangkat, jumlah, jaringan, dipilih, analisis}
 var waktu_lihat: Dictionary = {}         # SSID -> waktu terakhir ditemukan oleh pemindaian
+var monitor: String = ""                 # nama interface monitor hasil airmon-ng start (kosong bila belum aktif)
 
 const BATAS_RIWAYAT := 50
 
@@ -46,6 +47,7 @@ func to_dict() -> Dictionary:
 		"terakses": terakses.duplicate(true),
 		"riwayat": riwayat.duplicate(true),
 		"waktu_lihat": waktu_lihat.duplicate(),
+		"monitor": monitor,
 	}
 
 func terapkan(d: Dictionary) -> void:
@@ -57,6 +59,7 @@ func terapkan(d: Dictionary) -> void:
 	terakses = Dictionary(d.get("terakses", {})).duplicate()
 	riwayat = Array(d.get("riwayat", [])).duplicate(true)
 	waktu_lihat = Dictionary(d.get("waktu_lihat", {})).duplicate()
+	monitor = String(d.get("monitor", ""))
 
 # Mencatat satu pemindaian ke riwayat. Entri terbaru ada di depan.
 func catat_scan(perangkat_id: String, ssids: Array, waktu: String) -> void:
@@ -125,6 +128,10 @@ static func tingkat_risiko(ssid: String) -> String:
 		if int(urut.get(String(k["tingkat"]), 0)) > int(urut.get(hasil, 0)):
 			hasil = String(k["tingkat"])
 	return hasil
+
+# Driver dan nama chipset yang ditampilkan airmon-ng untuk adapter tertentu.
+static func airmon_info(chipset: String) -> Dictionary:
+	return Dictionary(Dictionary(data().get("airmon", {})).get(chipset, {})).duplicate()
 
 static func ambang_handshake() -> int:
 	return int(data().get("ambang_handshake_dbm", -65))

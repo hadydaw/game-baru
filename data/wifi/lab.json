@@ -14,7 +14,27 @@
       "kelemahan": [
         "wps_aktif",
         "kata_sandi_lemah"
-      ]
+      ],
+      "beacon": 412,
+      "data": 37,
+      "mb": 54,
+      "cipher": "CCMP",
+      "auth": "PSK",
+      "stasiun": [
+        {
+          "mac": "3C:52:82:A1:01:11",
+          "pwr": -41,
+          "frames": 96,
+          "probe": ""
+        },
+        {
+          "mac": "3C:52:82:A1:01:12",
+          "pwr": -58,
+          "frames": 23,
+          "probe": "Senja-Guest"
+        }
+      ],
+      "rxq": 100
     },
     "LAB-WIFI-02": {
       "bssid": "02:4A:1C:00:02:02",
@@ -29,7 +49,21 @@
       "klien": 1,
       "kelemahan": [
         "enkripsi_lama"
-      ]
+      ],
+      "beacon": 318,
+      "data": 4,
+      "mb": 11,
+      "cipher": "WEP",
+      "auth": "",
+      "stasiun": [
+        {
+          "mac": "3C:52:82:A1:02:21",
+          "pwr": -66,
+          "frames": 12,
+          "probe": ""
+        }
+      ],
+      "rxq": 88
     },
     "LAB-WIFI-03": {
       "bssid": "02:4A:1C:00:03:03",
@@ -42,7 +76,39 @@
       "lebar_kanal": 40,
       "wps": false,
       "klien": 4,
-      "kelemahan": []
+      "kelemahan": [],
+      "beacon": 527,
+      "data": 61,
+      "mb": 270,
+      "cipher": "CCMP",
+      "auth": "PSK",
+      "stasiun": [
+        {
+          "mac": "3C:52:82:A1:03:31",
+          "pwr": -52,
+          "frames": 140,
+          "probe": ""
+        },
+        {
+          "mac": "3C:52:82:A1:03:32",
+          "pwr": -70,
+          "frames": 8,
+          "probe": "NusaHome"
+        },
+        {
+          "mac": "3C:52:82:A1:03:33",
+          "pwr": -75,
+          "frames": 3,
+          "probe": ""
+        },
+        {
+          "mac": "3C:52:82:A1:03:34",
+          "pwr": -79,
+          "frames": 2,
+          "probe": "Kopi-Lab"
+        }
+      ],
+      "rxq": 72
     }
   },
   "kelemahan": {
@@ -86,5 +152,15 @@
     "senja1234",
     "0102030405",
     "qwerty123"
-  ]
+  ],
+  "airmon": {
+    "ar9271": {
+      "driver": "ath9k_htc",
+      "nama_chipset": "Qualcomm Atheros AR9271 802.11n"
+    },
+    "rt5370": {
+      "driver": "rt2800usb",
+      "nama_chipset": "Ralink RT5370 802.11n"
+    }
+  }
 }

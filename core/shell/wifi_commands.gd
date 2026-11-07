@@ -1,7 +1,7 @@
 class_name WifiCommands
 extends RefCounted
 
-# Perintah pengujian Wi-Fi laboratorium: wifi-scanner --scan, network list|inspect,
+# Perintah pengujian Wi-Fi laboratorium: airmon-ng (monitor mode), airodump-ng (pemindaian dan pemilihan target),
 # security analyze|verify, dan audit auth|run. Setiap perintah memeriksa tahap sebelumnya,
 # perangkat yang terpasang, dan data yang dihasilkannya (WifiLab). Tidak ada perintah yang
 # langsung memberi akses: kata sandi harus ditemukan lewat audit lalu diverifikasi.
@@ -9,69 +9,256 @@ extends RefCounted
 # dBm yang ditambahkan tiap tingkat antena ke sinyal yang sampai ke adapter.
 const BONUS_ANTENA_DBM := 5
 
-static func scan(s: ShellSession, p: Dictionary) -> Array:
+# Opsi airodump-ng yang membutuhkan nilai (sintaks resmi aircrack-ng).
+const OPSI_BERNILAI := ["-c", "--channel", "-d", "--bssid", "-t", "--encrypt", "-N", "--essid", "-w", "--write", "-u", "--update"]
+const ENKRIPSI_VALID := ["OPN", "WEP", "WPA", "WPA1", "WPA2", "WPA3", "OWE"]
+# Kanal yang dipindai airodump-ng bila -c tidak diberikan (2.4 GHz, mode berpindah kanal).
+const KANAL_DEFAULT := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+# Di bawah lebar ini (karakter), tabel AP dan station ditampilkan ringkas agar muat di layar HP.
+const LEBAR_TABEL_PENUH := 92
+const HEADER_AP := " BSSID              PWR RXQ  Beacons    #Data, #/s  CH  MB   ENC  CIPHER AUTH ESSID"
+const HEADER_STATION := " BSSID              STATION            PWR   Rate    Lost    Frames  Notes  Probes"
+
+# airmon-ng start|stop <interface>. Monitor mode hanya bisa diaktifkan pada adapter yang driver-nya
+# mendukungnya. Interface yang dihasilkan adalah <interface>mon, dan nama itu yang dipakai airodump-ng.
+static func airmon(s: ShellSession, p: Dictionary) -> Array:
+	var args: Array = ShellParser.tokenkan(String(p["mentah"])).slice(1)
+	if args.size() < 2 or not (String(args[0]) == "start" or String(args[0]) == "stop"):
+		return [s.galat_kunci("airmon-ng", "wifi.usage_airmon")]
+	var aksi := String(args[0])
+	var iface := String(args[1])
 	if not s.perangkat.terhubung():
-		return [s.galat_kunci("wifi-scanner", "hw.belum_terhubung")]
-	if not ShellParser.punya_opsi(p["opsi"], "--scan"):
-		return [s.galat_kunci("wifi-scanner", "wifi.usage_scan")]
-	var ssids := Dictionary(WifiLab.data().get("jaringan", {})).keys()
-	ssids.sort()
+		return [s.galat_kunci("airmon-ng", "hw.belum_terhubung")]
+	var chipset := Perangkat.chipset_adapter(s.perangkat.adapter())
+	var info := WifiLab.airmon_info(chipset)
+	var driver := String(info.get("driver", ""))
+	var nama_chipset := String(info.get("nama_chipset", chipset))
+	if aksi == "start":
+		if iface != "wlan0":
+			return [s.galat_kunci("airmon-ng", "wifi.iface_tidak_ada", [iface])]
+		if s.wifi.monitor != "":
+			return [s.galat_kunci("airmon-ng", "wifi.monitor_sudah", [s.wifi.monitor])]
+		if not WifiLab.mendukung_monitor(chipset):
+			return [s.galat_kunci("airmon-ng", "wifi.monitor_tidak_didukung", [driver])]
+		var mon := iface + "mon"
+		s.wifi.monitor = mon
+		s.jaringan.buka("wifi:monitor")
+		_catat(s, "airmon-ng start %s: monitor mode vif enabled for [phy0]%s on [phy0]%s" % [iface, iface, mon])
+		return [
+			s.baris("info", "PHY  Interface  Driver      Chipset"),
+			s.baris("info", ""),
+			s.baris("info", "phy0 %s %s %s" % [iface.rpad(9), driver.rpad(11), nama_chipset]),
+			s.baris("info", "\t\t(mac80211 monitor mode vif enabled for [phy0]%s on [phy0]%s)" % [iface, mon]),
+			s.baris("info", "\t\t(mac80211 station mode vif disabled for [phy0]%s)" % iface),
+		]
+	# stop: menerima nama interface monitor, bukan nama adapter.
+	if s.wifi.monitor == "" or iface != s.wifi.monitor:
+		return [s.galat_kunci("airmon-ng", "wifi.monitor_belum", [iface])]
+	var mon_lama := s.wifi.monitor
+	s.wifi.monitor = ""
+	s.live_hentikan()
+	_catat(s, "airmon-ng stop %s: monitor mode vif disabled for [phy0]%s" % [mon_lama, mon_lama])
+	return [
+		s.baris("info", "PHY  Interface  Driver      Chipset"),
+		s.baris("info", ""),
+		s.baris("info", "phy0 %s %s %s" % [mon_lama.rpad(9), driver.rpad(11), nama_chipset]),
+		s.baris("info", "\t\t(mac80211 monitor mode vif disabled for [phy0]%s)" % mon_lama),
+		s.baris("info", "\t\t(mac80211 station mode vif enabled for [phy0]%s)" % mon_lama.trim_suffix("mon")),
+	]
+
+# airodump-ng [opsi] <interface>. Sintaks dan opsi mengikuti aircrack-ng:
+# -c/--channel (daftar dipisah koma), -d/--bssid, -t/--encrypt, -N/--essid (boleh berulang),
+# -u/--update (detik), dan -w/--write. Interface harus interface monitor yang dibuat airmon-ng.
+# Tanpa -c, airodump-ng berpindah kanal. Hanya Terminal yang memulai mode live.
+static func airodump(s: ShellSession, p: Dictionary) -> Array:
+	if not s.perangkat.terhubung():
+		return [s.galat_kunci("airodump-ng", "hw.belum_terhubung")]
+	var args: Array = ShellParser.tokenkan(String(p["mentah"])).slice(1)
+	var saring := {"kanal": [], "bssid": "", "enkripsi": [], "essid": [], "tulis": "", "update": 1}
+	var interface := ""
+	var i := 0
+	while i < args.size():
+		var a := String(args[i])
+		if a in OPSI_BERNILAI:
+			if i + 1 >= args.size():
+				return [s.galat_kunci("airodump-ng", "wifi.opsi_butuh_nilai", [a])]
+			var nilai := String(args[i + 1])
+			match a:
+				"-c", "--channel":
+					var daftar: Array = []
+					for bagian in nilai.split(","):
+						if not bagian.is_valid_int() or int(bagian) < 1:
+							return [s.galat_kunci("airodump-ng", "wifi.kanal_salah", [nilai])]
+						daftar.append(int(bagian))
+					saring["kanal"] = daftar
+				"-d", "--bssid":
+					if not _bssid_valid(nilai):
+						return [s.galat_kunci("airodump-ng", "wifi.bssid_salah", [nilai])]
+					saring["bssid"] = nilai.to_upper()
+				"-t", "--encrypt":
+					if not ENKRIPSI_VALID.has(nilai.to_upper()):
+						return [s.galat_kunci("airodump-ng", "wifi.enkripsi_salah", [nilai])]
+					(saring["enkripsi"] as Array).append(nilai.to_upper())
+				"-N", "--essid":
+					(saring["essid"] as Array).append(nilai)
+				"-u", "--update":
+					if not nilai.is_valid_int() or int(nilai) < 1:
+						return [s.galat_kunci("airodump-ng", "wifi.update_salah", [nilai])]
+					saring["update"] = int(nilai)
+				"-w", "--write":
+					saring["tulis"] = nilai
+			i += 2
+			continue
+		if a.begins_with("-"):
+			return [s.galat_kunci("airodump-ng", "wifi.opsi_tidak_dikenal", [a])]
+		interface = a
+		i += 1
+	if interface == "":
+		return [s.galat_kunci("airodump-ng", "wifi.usage_airodump")]
+	if s.wifi.monitor == "":
+		return [s.galat_kunci("airodump-ng", "wifi.iface_bukan_monitor", [interface])]
+	if interface != s.wifi.monitor:
+		return [s.galat_kunci("airodump-ng", "wifi.iface_salah", [interface, s.wifi.monitor])]
+
+	var semua := Dictionary(WifiLab.data().get("jaringan", {})).keys()
+	semua.sort()
 	s.wifi.ditemukan = []
-	var waktu := Time.get_datetime_string_from_system().substr(0, 16).replace("T", " ")
-	var hasil: Array = [s.baris_kunci("info", "wifi.judul_scan")]
-	hasil.append(s.baris("info", "BSSID              CH   SINYAL          ENK    SSID"))
-	for ssid in ssids:
-		var j := WifiLab.jaringan(String(ssid))
+	for ssid in semua:
 		s.wifi.ditemukan.append(String(ssid))
-		var dbm := int(j["sinyal"])
-		hasil.append(s.baris("info", "%-17s  %3d  %s %4d dBm  %-5s  %s" % [String(j["bssid"]), int(j["kanal"]), WifiLab.bar(dbm), dbm, String(j["enkripsi"]), String(ssid)]))
-	hasil.append(s.baris("info", Bahasa.dua("%d jaringan ditemukan. Gunakan 'network inspect <SSID>' untuk detail.", "%d networks found. Use 'network inspect <SSID>' for details.", [ssids.size()])))
-	s.wifi.catat_scan(s.perangkat.adapter(), ssids, waktu)
-	_catat(s, "wifi-scanner --scan: %d networks [%s]" % [ssids.size(), ", ".join(PackedStringArray(ssids))])
+	var waktu := Time.get_datetime_string_from_system().substr(0, 16).replace("T", " ")
+	var hasil := _bingkai(s, saring, 0, waktu)
+	var cocok := _ap_cocok(saring)
+
+	s.wifi.catat_scan(s.perangkat.adapter(), semua, waktu)
+	_catat(s, "airodump-ng %s: %d access points, %d shown" % [interface, semua.size(), cocok.size()])
 	s.jaringan.buka("wifi:scan")
+	if cocok.size() == 1 and String(saring["bssid"]) != "":
+		var ssid := String(cocok[0])
+		s.wifi.terpilih = ssid
+		s.wifi.catat_pilih(ssid)
+		s.jaringan.buka("wifi:pilih:" + ssid)
+		hasil.append(s.baris_kunci("info", "wifi.judul_inspect", [ssid]))
+	if String(saring["tulis"]) != "":
+		_tulis_csv(s, saring, waktu)
+		hasil.append(s.baris_kunci("info", "wifi.tulis", [s.home + "/" + String(saring["tulis"]) + "-01.csv"]))
+	if s.live_diizinkan:
+		s.live = {"saring": saring, "waktu": waktu, "tick": 0, "update": int(saring["update"])}
 	return hasil
 
-static func network(s: ShellSession, p: Dictionary) -> Array:
-	var args: Array = p["argumen"]
-	if args.is_empty():
-		return [s.galat_kunci("network", "wifi.usage_network")]
-	match String(args[0]):
-		"list":
-			if not s.wifi.sudah_scan():
-				return [s.galat_kunci("network", "wifi.belum_scan")]
-			var hasil: Array = [s.baris_kunci("info", "wifi.judul_list")]
-			for ssid in s.wifi.ditemukan:
-				var j := WifiLab.jaringan(String(ssid))
-				hasil.append(s.baris("info", "  %-12s %s  %s  %s" % [String(ssid), WifiLab.bar(int(j["sinyal"])), String(j["enkripsi"]), String(j["vendor"])]))
-			return hasil
-		"inspect":
-			if args.size() < 2:
-				return [s.galat_kunci("network", "err.butuh_argumen")]
-			var ssid := String(args[1])
-			if not s.wifi.sudah_scan():
-				return [s.galat_kunci("network", "wifi.belum_scan")]
-			if not s.wifi.terlihat(ssid):
-				return [s.galat_kunci("network", "wifi.tidak_terlihat", [ssid])]
-			var j := WifiLab.jaringan(ssid)
-			s.wifi.terpilih = ssid
-			s.wifi.catat_pilih(ssid)
-			_catat(s, "network inspect %s: bssid=%s channel=%d signal=%d enc=%s wps=%s clients=%d" % [ssid, String(j["bssid"]), int(j["kanal"]), int(j["sinyal"]), String(j["enkripsi"]), str(bool(j["wps"])), int(j["klien"])])
-			s.jaringan.buka("wifi:pilih:" + ssid)
-			return [
-				s.baris_kunci("info", "wifi.judul_inspect", [ssid]),
-				s.baris("info", _kv("BSSID", "BSSID", String(j["bssid"]), String(j["bssid"]))),
-				s.baris("info", _kv("Vendor", "Vendor", "%s %s" % [String(j["vendor"]), String(j["model"])], "%s %s" % [String(j["vendor"]), String(j["model"])])),
-				s.baris("info", _kv("Kanal", "Channel", "%d (%s, %d MHz)" % [int(j["kanal"]), WifiLab.frekuensi(j), int(j["lebar_kanal"])], "%d (%s, %d MHz)" % [int(j["kanal"]), WifiLab.frekuensi(j), int(j["lebar_kanal"])])),
-				s.baris("info", _kv("Sinyal", "Signal", "%d dBm %s" % [int(j["sinyal"]), WifiLab.bar(int(j["sinyal"]))], "%d dBm %s" % [int(j["sinyal"]), WifiLab.bar(int(j["sinyal"]))])),
-				s.baris("info", _kv("Enkripsi", "Encryption", String(j["enkripsi"]), String(j["enkripsi"]))),
-				s.baris("info", _kv("WPS", "WPS", "aktif" if bool(j["wps"]) else "nonaktif", "enabled" if bool(j["wps"]) else "disabled")),
-				s.baris("info", _kv("Klien", "Clients", str(int(j["klien"])), str(int(j["klien"])))),
-			]
-	return [s.galat_kunci("network", "wifi.usage_network")]
+# Bingkai berikutnya untuk mode live. Dipanggil Terminal setiap interval -u.
+static func live_langkah(s: ShellSession) -> Array:
+	if s.live.is_empty():
+		return []
+	var t := int(s.live["tick"])
+	s.live["tick"] = t + 1
+	return _bingkai(s, s.live["saring"], t, String(s.live["waktu"]))
 
-# Baris "label: nilai" dalam kolom yang rapi, dengan label dan nilai untuk masing-masing bahasa.
-static func _kv(id: String, en: String, nilai_id: String, nilai_en: String) -> String:
-	return Bahasa.dua("  %-12s %s" % [id + ":", nilai_id], "  %-12s %s" % [en + ":", nilai_en])
+# Ctrl+C: menghentikan mode live. Berkas -w ditulis ulang dengan hasil terakhir.
+static func live_hentikan(s: ShellSession) -> void:
+	if s.live.is_empty():
+		return
+	if String(Dictionary(s.live["saring"]).get("tulis", "")) != "":
+		_tulis_csv(s, s.live["saring"], String(s.live["waktu"]))
+	s.live = {}
+
+static func _bssid_valid(teks: String) -> bool:
+	var bagian := teks.split(":")
+	if bagian.size() != 6:
+		return false
+	for b in bagian:
+		if b.length() != 2 or not b.is_valid_hex_number():
+			return false
+	return true
+
+# AP yang lolos filter -c, -d, -t, dan -N.
+static func _ap_cocok(saring: Dictionary) -> Array:
+	var hasil: Array = []
+	var semua := Dictionary(WifiLab.data().get("jaringan", {})).keys()
+	semua.sort()
+	for ssid in semua:
+		var j := WifiLab.jaringan(String(ssid))
+		var kanal_daftar: Array = saring["kanal"]
+		if not kanal_daftar.is_empty() and not kanal_daftar.has(int(j["kanal"])):
+			continue
+		if String(saring["bssid"]) != "" and String(j["bssid"]) != String(saring["bssid"]):
+			continue
+		var enkripsi: Array = saring["enkripsi"]
+		if not enkripsi.is_empty() and not enkripsi.has(String(j["enkripsi"])):
+			continue
+		var essid: Array = saring["essid"]
+		if not essid.is_empty() and not essid.has(String(ssid)):
+			continue
+		hasil.append(String(ssid))
+	return hasil
+
+# Satu bingkai tampilan airodump-ng. tick adalah jumlah detik sejak dimulai; angka paket naik
+# setiap bingkai. Semua angka berasal dari laboratorium, dan bingkai selalu diberi label simulasi.
+static func _bingkai(s: ShellSession, saring: Dictionary, tick: int, waktu: String) -> Array:
+	var kanal_daftar: Array = saring["kanal"]
+	var daftar_kanal: Array = kanal_daftar if not kanal_daftar.is_empty() else KANAL_DEFAULT
+	var kanal_aktif: int = int(daftar_kanal[tick % daftar_kanal.size()])
+	var interval := int(saring.get("update", 1))
+	var ap := _ap_cocok(saring)
+	var penuh := s.lebar_kolom >= LEBAR_TABEL_PENUH
+	var hasil: Array = [s.baris_kunci("info", "wifi.simulasi_catatan")]
+	if penuh:
+		hasil.append(s.baris("info", " CH %2d ][ Elapsed: %d s ][ %s" % [kanal_aktif, tick * interval, waktu]))
+	else:
+		hasil.append(s.baris("info", " CH %2d ][ Elapsed: %d s" % [kanal_aktif, tick * interval]))
+	if penuh:
+		hasil.append(s.baris("info", ""))
+		hasil.append(s.baris("info", HEADER_AP))
+		hasil.append(s.baris("info", ""))
+	for ssid in ap:
+		var j := WifiLab.jaringan(ssid)
+		var step := _langkah_paket(ssid)
+		var beacon := int(j["beacon"]) + tick * 10
+		var data := int(j["data"]) + tick * step
+		var per_detik := step if tick > 0 else 0
+		if penuh:
+			hasil.append(s.baris("info", " %-17s %4d %3d %8d %8d %4d %3d %3d  %-4s %-6s %-4s %s" % [
+				String(j["bssid"]), int(j["sinyal"]), int(j["rxq"]), beacon, data, per_detik,
+				int(j["kanal"]), int(j["mb"]), String(j["enkripsi"]), String(j["cipher"]), String(j["auth"]), ssid]))
+		else:
+			# Ringkas: satu AP menjadi beberapa baris pendek agar muat di layar HP. Semua kolom tetap ada.
+			hasil.append(s.baris("info", " %s" % String(j["bssid"])))
+			hasil.append(s.baris("info", "  PWR %d  CH %d" % [int(j["sinyal"]), int(j["kanal"])]))
+			hasil.append(s.baris("info", "  %s %s %s" % [String(j["enkripsi"]), String(j["cipher"]), String(j["auth"]).strip_edges()]))
+			hasil.append(s.baris("info", "  ESSID %s" % ssid))
+			hasil.append(s.baris("info", "  RXQ %d MB %d" % [int(j["rxq"]), int(j["mb"])]))
+			hasil.append(s.baris("info", "  Beacons %d" % beacon))
+			hasil.append(s.baris("info", "  #Data %d #/s %d" % [data, per_detik]))
+	if ap.is_empty():
+		hasil.append(s.baris("info", Bahasa.dua("  Tidak ada access point yang cocok dengan filter.", "  No access points match the filter.")))
+	if String(saring["bssid"]) != "" and ap.size() == 1:
+		var ssid := String(ap[0])
+		var stasiun: Array = Array(WifiLab.jaringan(ssid).get("stasiun", []))
+		hasil.append(s.baris("info", ""))
+		if penuh:
+			hasil.append(s.baris("info", HEADER_STATION))
+		else:
+			hasil.append(s.baris("info", Bahasa.dua("Stasiun:", "Stations:")))
+		for st in stasiun:
+			var frame := int(st["frames"]) + tick * 2
+			if penuh:
+				hasil.append(s.baris("info", " %-17s  %-17s %4d  0-1      0  %7d         %s" % [String(saring["bssid"]), String(st["mac"]), int(st["pwr"]), frame, String(st["probe"])]))
+			else:
+				hasil.append(s.baris("info", " %s" % String(st["mac"])))
+				hasil.append(s.baris("info", "  PWR %d  Frames %d" % [int(st["pwr"]), frame]))
+				hasil.append(s.baris("info", "  Rate 0-1 Lost 0"))
+				hasil.append(s.baris("info", "  Probes: %s" % (String(st["probe"]) if String(st["probe"]) != "" else "-")))
+	return hasil
+
+# Langkah jumlah paket per detik dibuat dari SSID, supaya tiap AP punya laju yang tetap.
+static func _langkah_paket(ssid: String) -> int:
+	return 1 + ssid.length() % 4
+
+static func _tulis_csv(s: ShellSession, saring: Dictionary, waktu: String) -> void:
+	var baris_csv := PackedStringArray(["BSSID,First time seen,Channel,Privacy,Cipher,Authentication,Power,ESSID"])
+	for ssid in _ap_cocok(saring):
+		var j := WifiLab.jaringan(String(ssid))
+		baris_csv.append("%s,%s,%d,%s,%s,%s,%d,%s" % [String(j["bssid"]), waktu, int(j["kanal"]), String(j["enkripsi"]), String(j["cipher"]), String(j["auth"]), int(j["sinyal"]), String(ssid)])
+	s.tulis_berkas("%s/%s-01.csv" % [s.home, String(saring["tulis"])], "\n".join(baris_csv))
 
 static func security(s: ShellSession, p: Dictionary) -> Array:
 	var args: Array = p["argumen"]
@@ -87,6 +274,7 @@ static func security(s: ShellSession, p: Dictionary) -> Array:
 			var path := "%s/laporan/%s.txt" % [s.home, ssid]
 			s.tulis_berkas(path, _laporan(s, ssid))
 			_catat(s, "security report %s: saved to %s" % [ssid, path])
+			s.jaringan.buka("wifi:laporan:" + ssid)
 			return [s.baris("info", Bahasa.dua("Laporan disimpan di %s" % path, "Report saved to %s" % path))]
 		"analyze":
 			if args.size() < 2:

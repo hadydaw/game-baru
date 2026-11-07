@@ -18,13 +18,14 @@ func _sesi_terpasang() -> ShellSession:
 	var s := ShellSession.new(Vfs.new({"tipe": "dir", "pemilik": "root", "grup": "root", "izin": "rwxr-xr-x", "isi": {}}), Jaringan.muat(), "operator")
 	Misi.perbarui(s)
 	Misi.terima(s, "misi_1")
-	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install wifi-scanner", "tools install network-analyzer", "tools install password-auditor"]:
+	for c in ["toko beli usb_wireless_adapter", "toko beli antena_eksternal", "toko beli kabel_usb", "device rakit", "tools install driver-ar9271", "device hubungkan", "tools install airodump-ng", "tools install network-analyzer", "tools install password-auditor"]:
 		s.jalankan(c)
 	return s
 
 func test_scan_mencatat_riwayat() -> void:
 	var s := _sesi_terpasang()
-	s.jalankan("wifi-scanner --scan")
+	s.jalankan("airmon-ng start wlan0")
+	s.jalankan("airodump-ng wlan0mon")
 	assert_eq(s.wifi.riwayat.size(), 1, "satu pemindaian tercatat")
 	var e: Dictionary = s.wifi.riwayat[0]
 	assert_eq(int(e["jumlah"]), 3, "tiga jaringan tercatat")
@@ -33,8 +34,9 @@ func test_scan_mencatat_riwayat() -> void:
 
 func test_pilih_dan_analisis_tercatat_di_riwayat() -> void:
 	var s := _sesi_terpasang()
-	s.jalankan("wifi-scanner --scan")
-	s.jalankan("network inspect LAB-WIFI-02")
+	s.jalankan("airmon-ng start wlan0")
+	s.jalankan("airodump-ng wlan0mon")
+	s.jalankan("airodump-ng --bssid 02:4A:1C:00:02:02 wlan0mon")
 	s.jalankan("security analyze LAB-WIFI-02")
 	var e: Dictionary = s.wifi.riwayat[0]
 	assert_eq(String(e["dipilih"]), "LAB-WIFI-02", "jaringan yang dipilih tercatat")
@@ -42,10 +44,11 @@ func test_pilih_dan_analisis_tercatat_di_riwayat() -> void:
 
 func test_riwayat_tetap_ada_setelah_dimuat_ulang() -> void:
 	var s := _sesi_terpasang()
-	s.jalankan("wifi-scanner --scan")
-	s.jalankan("network inspect LAB-WIFI-01")
+	s.jalankan("airmon-ng start wlan0")
+	s.jalankan("airodump-ng wlan0mon")
+	s.jalankan("airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
 	var dimuat := ShellSession.dari_dict(s.to_dict())
-	assert_eq(dimuat.wifi.riwayat.size(), 1, "riwayat ikut tersimpan")
+	assert_eq(dimuat.wifi.riwayat.size(), 2, "riwayat ikut tersimpan")
 	assert_eq(String(dimuat.wifi.riwayat[0]["dipilih"]), "LAB-WIFI-01", "pilihan ikut tersimpan")
 	assert_eq(dimuat.wifi.ditemukan.size(), 3, "hasil pemindaian ikut tersimpan")
 
@@ -71,7 +74,8 @@ func test_layar_tidak_memuat_checklist_tahap() -> void:
 
 func test_layar_menampilkan_jaringan_hasil_scan() -> void:
 	var s := _sesi_terpasang()
-	s.jalankan("wifi-scanner --scan")
+	s.jalankan("airmon-ng start wlan0")
+	s.jalankan("airodump-ng wlan0mon")
 	SesiUtama.sesi = s
 	_nm = NetworkManager.new()
 	add_child(_nm)
@@ -98,7 +102,8 @@ func test_pemindaian_dari_terminal_langsung_tampil_di_network_manager() -> void:
 	_nm = NetworkManager.new()
 	add_child(_nm)
 	assert_false(_nm._memindai, "belum ada pemindaian saat layar dibuka")
-	s.jalankan("wifi-scanner --scan")
+	s.jalankan("airmon-ng start wlan0")
+	s.jalankan("airodump-ng wlan0mon")
 	_nm._periksa()
 	assert_true(_nm._memindai, "pemindaian dari Terminal memicu tampilan bertahap")
 	_nm._reveal_n = 3
@@ -108,8 +113,9 @@ func test_pemindaian_dari_terminal_langsung_tampil_di_network_manager() -> void:
 # Setiap kontrol di dalam daftar gulir harus meneruskan sentuhan geser, supaya layar bisa digulir.
 func test_semua_tab_meneruskan_sentuhan_geser() -> void:
 	var s := _sesi_terpasang()
-	s.jalankan("wifi-scanner --scan")
-	s.jalankan("network inspect LAB-WIFI-01")
+	s.jalankan("airmon-ng start wlan0")
+	s.jalankan("airodump-ng wlan0mon")
+	s.jalankan("airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
 	s.jalankan("security analyze LAB-WIFI-01")
 	SesiUtama.sesi = s
 	_nm = NetworkManager.new()

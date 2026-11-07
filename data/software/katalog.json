@@ -15,8 +15,8 @@
     "perintah": [],
     "deskripsi_kunci": "sw.desk.driver-ar9271"
   },
-  "wifi-scanner": {
-    "nama": "Wireless Scanner",
+  "airodump-ng": {
+    "nama": "Airodump-ng",
     "tipe": "aplikasi",
     "kategori": "Nirkabel",
     "versi_awal": "1.0",
@@ -29,10 +29,10 @@
     "butuh_adapter": true,
     "chipset": [],
     "perintah": [
-      "wifi-scanner",
-      "network"
+      "airodump-ng",
+      "airmon-ng"
     ],
-    "deskripsi_kunci": "sw.desk.wifi-scanner"
+    "deskripsi_kunci": "sw.desk.airodump-ng"
   },
   "network-analyzer": {
     "nama": "Network Analyzer",
@@ -43,7 +43,7 @@
     "ukuran": "5.1 MB",
     "harga": 120,
     "deps": [
-      "wifi-scanner"
+      "airodump-ng"
     ],
     "butuh_adapter": false,
     "chipset": [],

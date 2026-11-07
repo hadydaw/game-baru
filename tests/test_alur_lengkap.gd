@@ -15,11 +15,11 @@ const LANGKAH := [
 	"tools search driver",
 	"tools install driver-ar9271",
 	"device hubungkan",
-	"tools install wifi-scanner",
-	"wifi-scanner --scan",
+	"tools install airodump-ng",
+	"airmon-ng start wlan0", "airodump-ng wlan0mon",
 	"__netmgr__",
 	"tools install network-analyzer",
-	"network inspect LAB-WIFI-01",
+	"airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon",
 	"security analyze LAB-WIFI-01",
 	"man password-auditor",
 	"tools install password-auditor",
@@ -31,11 +31,11 @@ const LANGKAH := [
 	"audit run LAB-WIFI-01",
 	"man kesimpulan-audit",
 	"security verify LAB-WIFI-01 senja1234",
+	"security report LAB-WIFI-01",
 	"device list",
 	"tools",
 	"toko",
 	"wallet",
-	"network list",
 ]
 
 func before_each() -> void:
@@ -93,7 +93,7 @@ func test_tutorial_selesai_lalu_bertahan_setelah_dimuat_ulang() -> void:
 	assert_eq(s2.economy.saldo, saldo, "saldo tetap setelah dimuat")
 	assert_eq(s2.xp, xp, "XP tetap setelah dimuat")
 	assert_true(s2.perangkat.terhubung(), "perangkat tetap terhubung")
-	assert_true(s2.repositori.punya("wifi-scanner"), "software tetap terpasang")
+	assert_true(s2.repositori.punya("airodump-ng"), "software tetap terpasang")
 	assert_true(s2.wifi.terakses.has("LAB-WIFI-01"), "akses jaringan tetap terbuka")
 
 	# Mengulang pemuatan atau membuka misi lagi tidak boleh memberi hadiah ganda.

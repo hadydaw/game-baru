@@ -7,6 +7,7 @@ extends Control
 
 signal mulai(mode: String)
 signal keluar_diminta
+signal bahasa_diganti
 
 static func nama_game() -> String:
 	return Bahasa.t("menu.nama_game")
@@ -356,9 +357,14 @@ func _aksi_pengaturan() -> void:
 
 func _pilih_bahasa(kode: String) -> void:
 	if Pengaturan.set_bahasa(kode):
-		_lbl_hint_bahasa.text = Bahasa.t("pengaturan.bahasa_diganti")
-		_kotak_hint_bahasa.visible = true
-		_segarkan()
+		# Label menu dibuat saat menu dibangun, jadi menu dibangun ulang agar bahasa langsung berlaku.
+		bahasa_diganti.emit()
+
+# Dipanggil controller setelah menu dibangun ulang karena bahasa berganti.
+func buka_pengaturan_setelah_ganti_bahasa() -> void:
+	_aksi_pengaturan()
+	_lbl_hint_bahasa.text = Bahasa.t("pengaturan.bahasa_diganti")
+	_kotak_hint_bahasa.visible = true
 
 func _pilih_ukuran(kunci: String) -> void:
 	if Pengaturan.set_ukuran_teks(kunci):

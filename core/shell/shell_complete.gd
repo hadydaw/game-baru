@@ -6,8 +6,8 @@ extends RefCounted
 
 # Subperintah alat dan perintah jaringan: Tab melengkapi kata kedua dari daftar ini.
 const SUBPERINTAH := {
-    "wifi-scanner": ["--scan"],
-    "network": ["list", "inspect"],
+    "airodump-ng": ["--bssid", "--channel", "--encrypt", "--essid", "--update", "--write"],
+    "airmon-ng": ["start", "stop"],
     "security": ["analyze", "verify"],
     "audit": ["auth", "run"],
 }
@@ -21,7 +21,7 @@ static func lengkapi(s: ShellSession, teks: String) -> Dictionary:
         for nama in Teks.MAN.keys():
             if String(nama).begins_with(teks):
                 kandidat.append(String(nama))
-        # Alat yang sudah dipasang juga perintah: "wifi-scanner" dari Tools Repository.
+        # Alat yang sudah dipasang juga perintah: "airodump-ng" dari Tools Repository.
         for id in Repositori.semua_id():
             if s.repositori.punya(String(id)) and String(id).begins_with(teks) and not kandidat.has(String(id)):
                 kandidat.append(String(id))

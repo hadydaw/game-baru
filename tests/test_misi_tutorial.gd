@@ -59,13 +59,14 @@ func test_alur_lengkap_sampai_hadiah() -> void:
 	assert_false(_galat(_jalan(s, "tools install driver-ar9271")))
 	assert_false(_galat(_jalan(s, "device hubungkan")))
 	# Tahap 5-6: software dan pemindaian
-	_jalan(s, "tools install wifi-scanner")
-	assert_false(_galat(_jalan(s, "wifi-scanner --scan")))
+	_jalan(s, "tools install airodump-ng")
+	_jalan(s, "airmon-ng start wlan0")
+	assert_false(_galat(_jalan(s, "airodump-ng wlan0mon")))
 	s.jaringan.buka("ui:netmgr")
 	Misi.perbarui(s)
 	# Tahap 7: analisis
 	_jalan(s, "tools install network-analyzer")
-	_jalan(s, "network inspect LAB-WIFI-01")
+	_jalan(s, "airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
 	_jalan(s, "security analyze LAB-WIFI-01")
 	# Tahap 8: pengujian keamanan
 	_jalan(s, "man password-auditor")
@@ -79,7 +80,9 @@ func test_alur_lengkap_sampai_hadiah() -> void:
 	_jalan(s, "man kesimpulan-audit")
 	# Tahap 9: verifikasi akses
 	assert_false(_galat(_jalan(s, "security verify LAB-WIFI-01 senja1234")))
-	# Tahap 26: penyelesaian
+	# Tahap 26: laporan temuan menyelesaikan misi
+	assert_eq(String(s.misi["misi_1"]), "aktif", "belum selesai sebelum laporan")
+	_jalan(s, "security report LAB-WIFI-01")
 	assert_eq(String(s.misi["misi_1"]), "selesai")
 	assert_eq(s.xp, 100)
 	assert_eq(s.perangkat.jumlah("wifi_hacking_kit"), 1)
@@ -110,12 +113,13 @@ func test_hadiah_tidak_ganda_setelah_dimuat_ulang() -> void:
 	_jalan(s, "tools search driver")
 	_jalan(s, "tools install driver-ar9271")
 	_jalan(s, "device hubungkan")
-	_jalan(s, "tools install wifi-scanner")
-	_jalan(s, "wifi-scanner --scan")
+	_jalan(s, "tools install airodump-ng")
+	_jalan(s, "airmon-ng start wlan0")
+	_jalan(s, "airodump-ng wlan0mon")
 	s.jaringan.buka("ui:netmgr")
 	Misi.perbarui(s)
 	_jalan(s, "tools install network-analyzer")
-	_jalan(s, "network inspect LAB-WIFI-01")
+	_jalan(s, "airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon")
 	_jalan(s, "security analyze LAB-WIFI-01")
 	_jalan(s, "man password-auditor")
 	_jalan(s, "tools install password-auditor")
@@ -127,6 +131,7 @@ func test_hadiah_tidak_ganda_setelah_dimuat_ulang() -> void:
 	_jalan(s, "audit run LAB-WIFI-01")
 	_jalan(s, "man kesimpulan-audit")
 	_jalan(s, "security verify LAB-WIFI-01 senja1234")
+	_jalan(s, "security report LAB-WIFI-01")
 	assert_eq(String(s.misi["misi_1"]), "selesai")
 	var saldo := s.economy.saldo
 	var pulih := ShellSession.dari_dict(s.to_dict())

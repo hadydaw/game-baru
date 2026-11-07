@@ -13,10 +13,10 @@ const TUGAS := [
 	["tools search driver"],
 	["tools install driver-ar9271"],
 	["device hubungkan"],
-	["tools install wifi-scanner"],
-	["wifi-scanner --scan"],
+	["tools install airodump-ng"],
+	["airmon-ng start wlan0", "airodump-ng wlan0mon"],
 	["__netmgr__"],
-	["network inspect LAB-WIFI-01"],
+	["airodump-ng --bssid 02:4A:1C:00:01:01 wlan0mon"],
 	["tools install network-analyzer"],
 	["security analyze LAB-WIFI-01"],
 	["man password-auditor"],
@@ -29,7 +29,7 @@ const TUGAS := [
 	["audit run LAB-WIFI-01"],
 	["man kesimpulan-audit"],
 	["security verify LAB-WIFI-01 senja1234"],
-	[],
+	["security report LAB-WIFI-01"],
 ]
 
 func before_each() -> void:
@@ -114,27 +114,27 @@ func test_tugas_lebih_awal_tidak_melewati_urutan() -> void:
 
 func test_urutan_penuh_26_tahap() -> void:
 	var s := _sesi()
-	for n in range(1, 26):
+	for n in range(1, 27):
 		assert_eq(_aktif(s), n, "tahap aktif harus %d" % n)
 		assert_true(_bisa(s, n), "materi %d bisa dibuka" % n)
 		if n < 26:
 			assert_false(_bisa(s, n + 1), "materi %d belum bisa dibuka" % (n + 1))
 		_kerjakan(s, n)
-	# Tahap 26 tidak punya tugas, jadi selesai bersama tahap 25 dan misi ikut selesai.
+	# Tahap 26 punya tugas sendiri (laporan), jadi misi selesai hanya setelah laporan dibuat.
 	assert_eq(_aktif(s), 0, "semua tahap selesai")
-	assert_eq(String(s.misi.get("misi_1", "")), "selesai", "misi selesai setelah tugas tahap 25")
+	assert_eq(String(s.misi.get("misi_1", "")), "selesai", "misi selesai setelah tugas tahap 26")
 	assert_true(s.hadiah_diambil.has("misi_1"), "hadiah diberikan")
 
 
 func test_misi_belum_selesai_sebelum_tugas_terakhir() -> void:
 	var s := _sesi()
-	for n in range(1, 25):
+	for n in range(1, 26):
 		_kerjakan(s, n)
-	assert_eq(_aktif(s), 25, "tahap 25 aktif")
-	assert_eq(String(s.misi.get("misi_1", "")), "aktif", "misi belum selesai sebelum tugas tahap 25")
+	assert_eq(_aktif(s), 26, "tahap 26 aktif setelah tahap 25")
+	assert_eq(String(s.misi.get("misi_1", "")), "aktif", "misi belum selesai sebelum laporan tahap 26")
 	assert_false(s.hadiah_diambil.has("misi_1"), "hadiah belum diberikan")
-	_kerjakan(s, 25)
-	assert_eq(String(s.misi.get("misi_1", "")), "selesai", "misi selesai setelah tugas tahap 25")
+	_kerjakan(s, 26)
+	assert_eq(String(s.misi.get("misi_1", "")), "selesai", "misi selesai setelah laporan tahap 26")
 
 
 func test_progres_tahap_tetap_setelah_dimuat_ulang() -> void:

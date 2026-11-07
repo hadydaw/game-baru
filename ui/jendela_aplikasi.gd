@@ -21,10 +21,12 @@ var maksimal := false
 var diminimize := false
 
 var _area: Control
+var isi: Control  # konten aplikasi di dalam jendela
 
 # Dipanggil sebelum node masuk pohon. Membangun seluruh isi jendela.
 func setup(p_id: String, p_judul: String, p_ikon: String, konten: Control) -> void:
     id = p_id
+    isi = konten
     judul = p_judul
     add_theme_stylebox_override("panel", Tema.kotak(Tema.LATAR_PANEL, Tema.TEAL, 2, 0))
     mouse_filter = Control.MOUSE_FILTER_STOP
