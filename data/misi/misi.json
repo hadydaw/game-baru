@@ -666,8 +666,8 @@
     "pesan_selesai": {
       "subjek": "Terima kasih",
       "subjek_en": "Thank you",
-      "isi": "Jejak jaringan sudah lengkap, dan laporanmu sudah masuk ke arsip Agensi. Hadiahmu sudah dikirim. — Agensi",
-      "isi_en": "The network trail is complete, and your report has been filed with the Agency archive. Your reward has been sent. — Agency"
+      "isi": "Kerja bagus, operator. Kamu sudah memetakan seluruh subnet laboratorium: empat perangkat aktif, port layanan yang terbuka, dan jejak login yang tidak terenkripsi. Berkas laporan-jejak.txt sekarang ada di direktorimu. Itu hasil kerjamu sendiri, dan laporan seperti inilah yang membuat jaringan bisa diperbaiki sebelum orang lain menemukan celahnya. Hadiahmu sudah dikirim. Ingat: setiap jaringan meninggalkan jejak, dan sekarang kamu tahu cara membacanya. — Agensi",
+      "isi_en": "Good work, operator. You have mapped the entire lab subnet: four live devices, the open service ports, and an unencrypted login trail. The laporan-jejak.txt report is now in your home directory. It is your own work, and reports like this are how a network gets fixed before someone else finds the gap. Your reward has been sent. Remember: every network leaves a trail, and now you know how to read it. — Agency"
     }
   }
 ]
