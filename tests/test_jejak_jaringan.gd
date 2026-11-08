@@ -113,8 +113,36 @@ func test_nmap_oN_menulis_laporan_ke_berkas() -> void:
 	var abs := Vfs.normalisasi(s.cwd, "laporan-jejak.txt", s.home)
 	var node := s.fs.ambil(abs)
 	assert_false(node.is_empty(), "berkas laporan dibuat")
-	assert_true(String(node.get("isi", "")).contains("Nmap scan report for 10.8.1.8"))
+	var isi := String(node.get("isi", ""))
+	var harapan := "Nmap 7.94\nNetwork Discovery Report\n\nTarget: 10.8.1.0/24\n\n4 perangkat aktif:\n" \
+		+ "10.8.1.1 (gateway)\n10.8.1.50 (printer)\n10.8.1.77 (kamera)\n10.8.1.8 (berkas)\n\n" \
+		+ "Total perangkat ditemukan: 4\nTotal alamat IP dipindai: 256\n"
+	assert_eq(isi, harapan, "isi laporan sesuai format Nmap normal")
 	assert_true(s.jaringan.progres.has("nmap:laporan"))
+
+func test_laporan_nmap_mengikuti_jumlah_perangkat_aktual() -> void:
+	var s := _sesi()
+	_selesaikan_tutorial_1(s)
+	Misi.terima(s, "misi_2")
+	_jalan(s, "apt install -y nmap")
+	s.jaringan.data["lab2-printer"]["status"] = "mati"
+	_jalan(s, "nmap -sn -oN laporan-jejak.txt 10.8.1.0/24")
+	var abs := Vfs.normalisasi(s.cwd, "laporan-jejak.txt", s.home)
+	var isi := String(s.fs.ambil(abs).get("isi", ""))
+	assert_true(isi.contains("3 perangkat aktif:"), "jumlah mengikuti hasil pindai")
+	assert_false(isi.contains("(printer)"), "perangkat yang tidak aktif tidak tercantum")
+	assert_true(isi.contains("Total perangkat ditemukan: 3"))
+
+func test_laporan_nmap_bisa_dibaca_dengan_cat() -> void:
+	var s := _sesi()
+	_selesaikan_tutorial_1(s)
+	Misi.terima(s, "misi_2")
+	_jalan(s, "apt install -y nmap")
+	_jalan(s, "nmap -sn -oN laporan-jejak.txt 10.8.1.0/24")
+	var t := _jalan(s, "cat laporan-jejak.txt")
+	assert_true(t.contains("Nmap 7.94"))
+	assert_true(t.contains("10.8.1.77 (kamera)"))
+	assert_true(t.contains("Total alamat IP dipindai: 256"))
 
 func test_wireshark_sampel_jejak_dan_flag_kredensial() -> void:
 	var d := WiresharkData.muat_contoh("lab-jejak-internal")

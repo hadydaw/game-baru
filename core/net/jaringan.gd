@@ -41,6 +41,10 @@ func ip(id: String) -> String:
         return String(ip_node[id])
     return String(data.get(id, {}).get("ip", ""))
 
+# Jenis perangkat dari identitas node (mis. gateway, printer). Tidak di-hardcode per IP.
+func jenis(id: String) -> String:
+    return String(data.get(id, {}).get("jenis", "perangkat"))
+
 # Membuat IP privat acak yang unik untuk setiap node. Dipanggil sekali saat Sesi Baru.
 func acak_ip(rng: RandomNumberGenerator = null) -> void:
     if rng == null:

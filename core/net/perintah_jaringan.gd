@@ -146,6 +146,24 @@ static func _kunci_cocok(s: ShellSession, cfg: Dictionary) -> bool:
     return ShellCommands.isi_berkas(berkas).contains(token)
 
 # nmap -sn <subnet/24> [-oN berkas]: host discovery. Hanya host aktif di subnet yang ditampilkan.
+# Isi berkas untuk nmap -oN: dibangun dari hasil pemindaian aktual (id node yang ditemukan),
+# jadi jumlah dan daftar perangkat ikut berubah mengikuti sesi, bukan ringkasan statis.
+static func _laporan_sn(j: Jaringan, target: String, ids: Array) -> String:
+    var baris: Array = [
+        "Nmap 7.94",
+        "Network Discovery Report",
+        "",
+        "Target: %s" % target,
+        "",
+        "%d perangkat aktif:" % ids.size(),
+    ]
+    for id in ids:
+        baris.append("%s (%s)" % [j.ip(id), j.jenis(id)])
+    baris.append("")
+    baris.append("Total perangkat ditemukan: %d" % ids.size())
+    baris.append("Total alamat IP dipindai: 256")
+    return "\n".join(PackedStringArray(baris)) + "\n"
+
 static func _nmap_sn(s: ShellSession, p: Dictionary) -> Array:
     var args: Array = p["argumen"].duplicate()
     var berkas := ""
@@ -175,7 +193,7 @@ static func _nmap_sn(s: ShellSession, p: Dictionary) -> Array:
         hasil.append(s.baris("info", t))
     j.buka("nmap:sn")
     if berkas != "":
-        var gagal := s.tulis_keluaran(berkas, "\n".join(PackedStringArray(teks)))
+        var gagal := s.tulis_keluaran(berkas, _laporan_sn(j, target, ids))
         if not gagal.is_empty():
             return gagal
         j.buka("nmap:laporan")

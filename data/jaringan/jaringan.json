@@ -246,6 +246,7 @@
     }
   },
   "lab2-gerbang": {
+    "jenis": "gateway",
     "ip": "10.8.1.1",
     "ip_tetap": true,
     "mac": "02:4a:1c:10:00:01",
@@ -298,6 +299,7 @@
     }
   },
   "lab2-berkas": {
+    "jenis": "berkas",
     "ip": "10.8.1.8",
     "ip_tetap": true,
     "mac": "02:4a:1c:10:00:08",
@@ -360,6 +362,7 @@
     }
   },
   "lab2-printer": {
+    "jenis": "printer",
     "ip": "10.8.1.50",
     "ip_tetap": true,
     "mac": "02:4a:1c:10:00:50",
@@ -408,6 +411,7 @@
     }
   },
   "lab2-kamera": {
+    "jenis": "kamera",
     "ip": "10.8.1.77",
     "ip_tetap": true,
     "mac": "02:4a:1c:10:00:77",
